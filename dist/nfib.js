@@ -860,7 +860,7 @@ define('nfib',['text!../test/layouts/nfib.html','css!../css/nfib.css',], functio
             var interaction_id = interactionId[k];  
             question.push({
                 "text": this.text,
-                "correctanswer": jsonContent.responses[interaction_id].correct,
+                "correctanswer": jsonContent.content.responses[interaction_id].correct,
                 "interactionId": interaction_id
             }); 
         });
