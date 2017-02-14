@@ -664,7 +664,7 @@ define('nfib',['text!../test/layouts/nfib.html','css!../css/nfib.css',], functio
         /* CONSTANTS for Activity Layout to be used */
         TEMPLATES: {
             /* Regular FIB Layout */
-            NFIB: nelsonFibTemplate
+            nfib: nelsonFibTemplate
         }
     };
 
