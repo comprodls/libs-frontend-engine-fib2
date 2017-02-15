@@ -1,0 +1,79 @@
+/*******************************************************
+ *
+ * Core styles for the nfib Engine
+ * 
+ * These styles do not include any product-specific branding
+ * and/or layout / design. They represent minimal structural
+ * CSS which is necessary for a default rendering of an
+ * nfib activity
+ *
+ * The styles are linked/depending on the presence of 
+ * certain elements (classes / ids / tags) in the DOM (as would
+ * be injected via a valid nfib layout HTML and/or dynamically
+ * created by the nfib engine JS)
+ * 
+ * DOM Dependencies
+ * (1) QUESTION BLANKS (where user types answers): one or more <input type="text" ....> elements enclosed 
+      within list items (<ol>) inside container with class="nfib-body"
+ * (2) AVAILBALE OPTIONS: one or more <span ...> enclosed within an element with class="tag-cloud"
+	  inside container with class="nfib-body"
+ * (3) CORRECT/WRONG ANSWERS ICONS/MARKS: one or more <span class="correct OR wrong" ....> 
+       elements enclosed within list items (<ol>) inside container with class="nfib-body"
+ *
+ *
+ * Other dependencies
+ * - Font Awesome for check / cross icons
+ *
+ *******************************************************/
+
+/* left margins for the list of questions */
+.nfib-body ol > li {
+  list-style: none;
+}
+
+/* style for answer options */
+.nfib-body .answer-cloud {
+    border: 1px solid black;
+    box-shadow: none;
+}
+.nfib-body .answer-cloud span {
+  padding: 4px 8px;
+  font-weight: bold;
+}
+
+/* input type text box styles */
+.nfib-body .smart-form .input input {
+    border-width: 0 0px 1px 0px;
+}
+
+/* styling for inline input box */
+.nfib-body .inline-input ol > li input[type="text"], .nfib-body .inline-input ul > li input[type="text"], .nfib-body.nfib-passage .question-wrapper .input input[type="text"] {
+    text-align: center;
+	width: 150px;
+}
+.nfib-body .inline-input span.input {
+    display: inline;
+}
+.nfib-body .inline-input .input input {
+    display: inline;
+    font-size: 14px;
+}
+
+/* CORRECT ANSWER icon/mark */
+.nfib-body span.correct:before {
+    content: "\f00c";
+    font-family: fontawesome;
+    display: block;
+    margin: .15em .36em auto -4.5em;
+}
+
+/* WRONG ANSWER icon/mark */
+.nfib-body span.wrong:before {
+    content: "\f00d";
+    font-family: fontawesome;
+    display: block;
+    margin: .15em .36em auto -4.5em;
+}
+.small .nfib-body span.correct:before, .small .nfib-body span.wrong:before {
+    margin: .45em .36em auto -4.5em;   
+}

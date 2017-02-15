@@ -1,0 +1,51 @@
+{
+  "meta": {
+    "type": "nfib",
+    "score": {
+      "default": 0,
+      "max": 1,
+      "min": 0
+    }
+  },
+  "content": {
+    "instructions": [
+      {
+        "tag": "html",
+        "html": "Fill in the blank with numerical value."
+      }
+    ],
+    "canvas": {
+      "layout": "nfib",
+      "data": {
+        "questiondata": [
+          {
+            "text": "What score would you like? <a href='http://www.comprodls.com/m1.0/interaction/nfib'>i1</a>"
+          }                                            
+        ]
+      }
+    }
+  },
+  "interactions": {
+      "i1": {
+        "type": "nfib"
+      }
+  },
+  "feedback": {
+    "global": {
+      "correct": "",
+      "incorrect": "",
+      "empty": ""
+    }
+  },
+  "responses": {
+    "i1": {
+      "correct": "10",
+      "ignorecase": false,
+      "ignorewhitespace": false
+    }
+  },
+  "learning-objectives": [],
+  "tags": [
+    "test"
+  ]
+}
