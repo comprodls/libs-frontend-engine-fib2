@@ -408,7 +408,7 @@ define('text',['module'], function (module) {
 });
 
 
-define('text!../test/layouts/nfib.html',[],function () { return '{{#with content}}\r\n<div class="activity-body nfib-body">   \r\n    <h2><strong>{{getAdapterParams "activityName"}}</strong></h2>   \r\n    <p class="instructions">{{{directions}}} </p>\r\n    <div class="smart-form inline-input">\r\n        <ol>\r\n            {{#each questiondata}} \r\n                <li>    \r\n                    <label class="input">\r\n                        <span id="answer{{@index}}" class="invisible wrong pull-left"></span>\r\n                        {{#each parts}}\r\n                            {{#if this.content}}\r\n                                <span class="question_content">{{{this.content}}}</span>\r\n                            {{/if}}\r\n                        {{/each}}\r\n                    </label>\r\n                </li>\r\n            {{/each}}\r\n        </ol>\r\n    </div>\r\n</div>\r\n{{/with}}';});
+define('text!../test/layouts/nfib.html',[],function () { return '{{#with content}}\r\n<div class="activity-body nfib-body">   \r\n    <h2><strong>{{getAdapterParams "activityName"}}</strong></h2>   \r\n    <p class="instructions">{{{directions}}} </p>\r\n    <div class="smart-form inline-input">\r\n        <ol>\r\n            {{#each questiondata}} \r\n                <li>    \r\n                    <label class="input">\r\n                        <span id="answer{{@index}}" class="invisible wrong pull-left"></span>\r\n                        {{#each parts}}\r\n                            {{#if this.content}}\r\n                                <span class="question_content">{{{this.content}}}</span>\r\n                            {{/if}}\r\n                        {{/each}}\r\n                    </label>\r\n                </li>\r\n            {{/each}}\r\n        </ol>\r\n    </div>\r\n</div>\r\n{{/with}}\r\n<div style="height:500px; display: none" class="hidden-div">This div is hidden</div>\r\n<button class="toggleDiv">Toggle div</div>';});
 
 /*
  * Require-CSS RequireJS css! loader plugin
@@ -586,20 +586,20 @@ define('css!../css/nfib',[],function(){});
  *  
  * Interfaces / Modes :->
  * 
- *	1. Supports Standard ENGINE-SHELL interface
- *		{
- *			init(),
- *			getStatus(),
- *			getConfig()
- *		}
- *	2. Supports Multi-item handler interface
- *		{
- *			getAnswersJSON(),
- *			updateLastSavedResults(),
- *			markAnswers(),
- *			disableInputs(),
- *			isCorrectAnswer()
- *		}
+ *  1. Supports Standard ENGINE-SHELL interface
+ *      {
+ *          init(),
+ *          getStatus(),
+ *          getConfig()
+ *      }
+ *  2. Supports Multi-item handler interface
+ *      {
+ *          getAnswersJSON(),
+ *          updateLastSavedResults(),
+ *          markAnswers(),
+ *          disableInputs(),
+ *          isCorrectAnswer()
+ *      }
  * 
  * ENGINE - SHELL interface : ->
  *
@@ -737,6 +737,7 @@ define('nfib',['text!../test/layouts/nfib.html','css!../css/nfib.css',], functio
     function getStatus() {
 
     }   
+
     function getAnswersJSON(skipQuestion) {
         var score = 0;
         var answer = "";
@@ -761,16 +762,14 @@ define('nfib',['text!../test/layouts/nfib.html','css!../css/nfib.css',], functio
                 if (correctAnswer.toUpperCase() === answer.toUpperCase()) {
                   score++;
                 }
-                if(__content.activityType === __constants.ACTIVITY_FIB_PASSAGE) {
-                    questionText = __content.questionsXML[0];
-                } else {
-                    /* Get questionText having this id as interaction id. */
-                   $.each(__content.questionsXML, function(num) {
-                        if(this.interactionId.indexOf(answerKeys[i]) > -1) {
-                            questionText = this.questionText;
-                        }
-                    }); 
-                }
+                
+                /* Get questionText having this id as interaction id. */
+               $.each(__content.questionsXML, function(num) {
+                    if(this.interactionId.indexOf(answerKeys[i]) > -1) {
+                        questionText = this.questionText;
+                    }
+                }); 
+                
             }
             results = {
                 itemUID: this,
@@ -806,8 +805,6 @@ define('nfib',['text!../test/layouts/nfib.html','css!../css/nfib.css',], functio
             
             /*Send Results to platform*/
         activityAdaptor.savePartialResults(answerJSON, activityBodyObjectRef, function (data, status) {
-            
-            
         });
         
     }
@@ -910,10 +907,10 @@ define('nfib',['text!../test/layouts/nfib.html','css!../css/nfib.css',], functio
             var id = "";
 
             /* Count no of blanks in a question */
-            var interaction_id = interactionId[k];  
+            var interaction_id = interactionId[k];
             if(!jsonContent.responses){
                 jsonContent.responses = jsonContent.content.responses;
-            }
+            }  
             question.push({
                 "text": this.text,
                 "correctanswer": jsonContent.responses[interaction_id].correct,
@@ -986,6 +983,10 @@ define('nfib',['text!../test/layouts/nfib.html','css!../css/nfib.css',], functio
      */
     function setupEventHandlers() {
         $("." + __constants.DOM_SEL_INPUT_BOX).keydown(handleQuestionTextOnKeydown);
+        $('.toggleDiv').on('click',function(){
+            $('.hidden-div').toggle();
+            activityAdaptor.autoResizeActivityIframe();
+        })
     }
 
     function updateLastSavedResults(lastResults, isGradebookPreview) {
@@ -1003,7 +1004,7 @@ define('nfib',['text!../test/layouts/nfib.html','css!../css/nfib.css',], functio
         "init": init, /* Shell requests the engine intialized and render itself. */
         "getStatus": getStatus, /* Shell requests a gradebook status from engine, based on its current state. */
         "getConfig" : getConfig, /* Shell requests a engines config settings.  */
-        "updateLastSavedResults":updateLastSavedResults,
+        "updateLastSavedResults":updateLastSavedResults
     };
     };
 });

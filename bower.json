@@ -3,12 +3,9 @@
   "version": "0.0.1",
   "dependencies": {
     "handlebars": "~1.0.0",
-    "es5-shim": "~3.1.0",
     "jquery": "2.1.1",
-    "imagesloaded": "~3.1.8",
     "requirejs": "*",
-    "bootstrap": "3.3.0",
-    "libs-frontend-core": "git+https://55ac0b40d5c3247360c45f0296b7af3697b0d4f3:x-oauth-basic@github.com/comprodls/libs-frontend-core.git#0.6.4"
+    "bootstrap": "3.3.0"
   },
   "devDependencies" : {
     "less": "~2.3.0",
