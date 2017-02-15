@@ -911,6 +911,9 @@ define('nfib',['text!../test/layouts/nfib.html','css!../css/nfib.css',], functio
 
             /* Count no of blanks in a question */
             var interaction_id = interactionId[k];  
+            if(!jsonContent.responses){
+                jsonContent.responses = jsonContent.content.responses;
+            }
             question.push({
                 "text": this.text,
                 "correctanswer": jsonContent.responses[interaction_id].correct,
