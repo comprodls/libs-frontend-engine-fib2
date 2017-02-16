@@ -47,7 +47,7 @@
  *
  */
     
-define(['text!../test/layouts/nfib.html','css!../css/nfib.css',], function (nelsonFibTemplate) {
+define(['text!../html/nfib.html','css!../css/nfib.css',], function (nelsonFibTemplate) {
 	
   nfib = function () {
 	"use strict";
@@ -184,16 +184,14 @@ define(['text!../test/layouts/nfib.html','css!../css/nfib.css',], function (nels
                 if (correctAnswer.toUpperCase() === answer.toUpperCase()) {
                   score++;
                 }
-                if(__content.activityType === __constants.ACTIVITY_FIB_PASSAGE) {
-                    questionText = __content.questionsXML[0];
-                } else {
-                    /* Get questionText having this id as interaction id. */
-                   $.each(__content.questionsXML, function(num) {
-                        if(this.interactionId.indexOf(answerKeys[i]) > -1) {
-                            questionText = this.questionText;
-                        }
-                    }); 
-                }
+          
+                /* Get questionText having this id as interaction id. */
+               $.each(__content.questionsXML, function(num) {
+                    if(this.interactionId.indexOf(answerKeys[i]) > -1) {
+                        questionText = this.questionText;
+                    }
+                }); 
+                      
             }
             results = {
                 itemUID: this,
@@ -407,6 +405,10 @@ define(['text!../test/layouts/nfib.html','css!../css/nfib.css',], function (nels
 	 */
 	function setupEventHandlers() {
         $("." + __constants.DOM_SEL_INPUT_BOX).keydown(handleQuestionTextOnKeydown);
+        $('.toggleDiv').on('click',function(){
+            $('.hidden-div').toggle();
+            activityAdaptor.autoResizeActivityIframe();
+        });
 	}
 
     function updateLastSavedResults(lastResults, isGradebookPreview) {

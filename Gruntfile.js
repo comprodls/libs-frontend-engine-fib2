@@ -1,9 +1,10 @@
 'use strict';
-var engine_src = "src/engines/";
+var bowerjson = require('./bower.json');
+var engine_src = "src/js";
 var adaptor_src = "src/adaptor/js/";
-var vendors = "../../../../vendors/"
+var bower_components = "../../bower_components/"
 var dist = "dist/";
-var requireLib = "vendors/requirejs/";
+var requireLib = "bower_components/requirejs/";
 
 module.exports = function(grunt) {
     // Grunt project configuration.
@@ -19,31 +20,42 @@ module.exports = function(grunt) {
                 src: [
                     dist
                 ]
+            },
+            bower: {
+               src: "bower_components"
+            },
+        },
+
+        bower: {
+            install: {
+              options: { 
+                verbose: true,
+                copy:false
+              }             
             }
         },
         
-        // concat adaptor js to adaptor.js
-        concat: {
+       /* concat: {
             vendorLibs: {
                 src: [
-                    'vendors/jquery/jquery.js',
-                    'vendors/bootstrap/dist/js/bootstrap.js',
-                    'vendors/handlebars/handlebars.js'
+                    'bower_components/jquery/jquery.js',
+                    'bower_components/bootstrap/dist/js/bootstrap.js',
+                    'bower_components/handlebars/handlebars.js'
                 ],
-                dest: dist + 'js/vendor.js'
+                dest: dist + 'vendor.js'
             }
-        },
+        },*/
         requirejs: {
             nfib: {
                 options: {
-                    baseUrl: engine_src + "nfib/js",
+                    baseUrl: engine_src,
                     name: "nfib",
-                    out: dist + "js/nfib.js",
+                    out: dist + "nfib.js",
                     paths: {
-                        'text': vendors + 'text/text',
-                        'css': vendors + 'require-css/css',
-                        'css-builder': vendors + 'require-css/css-builder',
-                        'normalize': vendors + 'require-css/normalize'
+                        'text': bower_components + 'text/text',
+                        'css': bower_components + 'require-css/css',
+                        'css-builder': bower_components + 'require-css/css-builder',
+                        'normalize': bower_components + 'require-css/normalize'
                     },
                     optimize: 'none',
                     uglify2: {
@@ -56,35 +68,24 @@ module.exports = function(grunt) {
                     }
                 }
             }
-        },
-        // Minify all the js files present inside "dist/js"
-        uglify: {
-            libjs: {
-                files: {
-                    'dist/js/require.min.js': [requireLib + 'require.js']
-                }
-            }
-        },
-       
-       
-       
+        }
 
     });
     
     //Load grunt Tasks
     grunt.loadNpmTasks('grunt-contrib-clean');
-    grunt.loadNpmTasks('grunt-contrib-concat');
+    //grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-bower-task');
     grunt.loadNpmTasks('grunt-contrib-requirejs');
-    grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-text-replace');
     
     // Default task
     grunt.registerTask('default', [ 
         'clean:dist',
-        'concat',
-        'uglify',
-        'requirejs',
-        'clean:engines'
+        //'clean:bower',
+        //'bower:install',
+        //'concat',
+        'requirejs'
     ]);  
 
 };

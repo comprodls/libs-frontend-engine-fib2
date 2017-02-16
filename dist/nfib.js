@@ -408,7 +408,7 @@ define('text',['module'], function (module) {
 });
 
 
-define('text!../test/layouts/nfib.html',[],function () { return '{{#with content}}\r\n<div class="activity-body nfib-body">   \r\n    <h2><strong>{{getAdapterParams "activityName"}}</strong></h2>   \r\n    <p class="instructions">{{{directions}}} </p>\r\n    <div class="smart-form inline-input">\r\n        <ol>\r\n            {{#each questiondata}} \r\n                <li>    \r\n                    <label class="input">\r\n                        <span id="answer{{@index}}" class="invisible wrong pull-left"></span>\r\n                        {{#each parts}}\r\n                            {{#if this.content}}\r\n                                <span class="question_content">{{{this.content}}}</span>\r\n                            {{/if}}\r\n                        {{/each}}\r\n                    </label>\r\n                </li>\r\n            {{/each}}\r\n        </ol>\r\n    </div>\r\n</div>\r\n{{/with}}\r\n<div style="height:500px; display: none" class="hidden-div">This div is hidden</div>\r\n<button class="toggleDiv">Toggle div</div>';});
+define('text!../html/nfib.html',[],function () { return '{{#with content}}\r\n<div class="activity-body nfib-body">   \r\n    <h2><strong>{{getAdapterParams "activityName"}}</strong></h2>   \r\n    <p class="instructions">{{{directions}}} </p>\r\n    <div class="smart-form inline-input">\r\n        <ol>\r\n            {{#each questiondata}} \r\n                <li>    \r\n                    <label class="input">\r\n                        <span id="answer{{@index}}" class="invisible wrong pull-left"></span>\r\n                        {{#each parts}}\r\n                            {{#if this.content}}\r\n                                <span class="question_content">{{{this.content}}}</span>\r\n                            {{/if}}\r\n                        {{/each}}\r\n                    </label>\r\n                </li>\r\n            {{/each}}\r\n        </ol>\r\n    </div>\r\n</div>\r\n{{/with}}';});
 
 /*
  * Require-CSS RequireJS css! loader plugin
@@ -586,20 +586,20 @@ define('css!../css/nfib',[],function(){});
  *  
  * Interfaces / Modes :->
  * 
- *  1. Supports Standard ENGINE-SHELL interface
- *      {
- *          init(),
- *          getStatus(),
- *          getConfig()
- *      }
- *  2. Supports Multi-item handler interface
- *      {
- *          getAnswersJSON(),
- *          updateLastSavedResults(),
- *          markAnswers(),
- *          disableInputs(),
- *          isCorrectAnswer()
- *      }
+ *	1. Supports Standard ENGINE-SHELL interface
+ *		{
+ *			init(),
+ *			getStatus(),
+ *			getConfig()
+ *		}
+ *	2. Supports Multi-item handler interface
+ *		{
+ *			getAnswersJSON(),
+ *			updateLastSavedResults(),
+ *			markAnswers(),
+ *			disableInputs(),
+ *			isCorrectAnswer()
+ *		}
  * 
  * ENGINE - SHELL interface : ->
  *
@@ -625,42 +625,42 @@ define('css!../css/nfib',[],function(){});
  *
  */
     
-define('nfib',['text!../test/layouts/nfib.html','css!../css/nfib.css',], function (nelsonFibTemplate) {
-    
+define('nfib',['text!../html/nfib.html','css!../css/nfib.css',], function (nelsonFibTemplate) {
+	
   nfib = function () {
-    "use strict";
-    
-    /*
-     * Reference to platform's activity adaptor (initialized during init() ).
-     */
-    var activityAdaptor;     
+	"use strict";
+	
+	/*
+	 * Reference to platform's activity adaptor (initialized during init() ).
+	 */
+	var activityAdaptor;	 
       
     /*
-     * Internal Engine Config.
-     */ 
-    var __config = {};
-    /*
-     * Content (loaded / initialized during init() ).
-     */ 
-    var __content = {
-        questionsXML: [], /* Contains all questions obtained from content XML. */
-        directionsXML: "", /* Contains activity specific instruction obtained from content XML. */
-        answersXML: {}, /* Contains all correct answers obtained from content XML. */
-        userAnswersXML:{}, /* Contains all user answers submiited. */
+	 * Internal Engine Config.
+	 */ 
+	var __config = {};
+	/*
+	 * Content (loaded / initialized during init() ).
+	 */ 
+	var __content = {
+		questionsXML: [], /* Contains all questions obtained from content XML. */
+		directionsXML: "", /* Contains activity specific instruction obtained from content XML. */
+		answersXML: {}, /* Contains all correct answers obtained from content XML. */
+		userAnswersXML:{}, /* Contains all user answers submiited. */
         optionsXML: {},
-        activityType: null  /* Type of FIB activity. Possible Values :- FIBPassage.  */         
-    };
+		activityType: null  /* Type of FIB activity. Possible Values :- FIBPassage.  */			
+	};
 
-    /*
-     * Constants.
-     */
-    var __constants = {
+	/*
+	 * Constants.
+	 */
+	var __constants = {
         /* CONSTANTS for HTML selectors */
         
         DOM_SEL_INPUT_BOX: "userAnswer",
 
         ADAPTOR_INSTANCE_IDENTIFIER: "data-objectid",
-        
+		
         /* CONSTANTS for Activity Layout to be used */
         TEMPLATES: {
             /* Regular FIB Layout */
@@ -668,75 +668,75 @@ define('nfib',['text!../test/layouts/nfib.html','css!../css/nfib.css',], functio
         }
     };
 
-    /********************************************************/
-    /*                  ENGINE-SHELL INIT FUNCTION
-        
-        "elRoot" :->        DOM Element reference where the engine should paint itself.                                                     
-        "params" :->        Startup params passed by platform. Include the following sets of parameters:
-                        (a) State (Initial launch / Resume / Gradebook mode ).
-                        (b) TOC parameters (videoRoot, contentFile, keyframe, layout, etc.).
-        "adaptor" :->        An adaptor interface for communication with platform (saveResults, closeActivity, savePartialResults, getLastResults, etc.).
-        "htmlLayout" :->    Activity HTML layout (as defined in the TOC LINK paramter). 
-        "jsonContent" :->    Activity JSON content (as defined in the TOC LINK paramter).
-        "callback" :->      To inform the shell that init is complete.
-    */
-    /********************************************************/  
-    function init(elRoot, params, adaptor, htmlLayout, jsonContentObj, callback) {
-    
-        /* ---------------------- BEGIN OF INIT ---------------------------------*/
-        var isContentValid = true;
+	/********************************************************/
+	/*					ENGINE-SHELL INIT FUNCTION
+		
+		"elRoot" :->		DOM Element reference where the engine should paint itself.														
+		"params" :->		Startup params passed by platform. Include the following sets of parameters:
+						(a) State (Initial launch / Resume / Gradebook mode ).
+						(b) TOC parameters (videoRoot, contentFile, keyframe, layout, etc.).
+		"adaptor" :->        An adaptor interface for communication with platform (saveResults, closeActivity, savePartialResults, getLastResults, etc.).
+		"htmlLayout" :->    Activity HTML layout (as defined in the TOC LINK paramter). 
+		"jsonContent" :->    Activity JSON content (as defined in the TOC LINK paramter).
+		"callback" :->      To inform the shell that init is complete.
+	*/
+	/********************************************************/	
+	function init(elRoot, params, adaptor, htmlLayout, jsonContentObj, callback) {
+	
+		/* ---------------------- BEGIN OF INIT ---------------------------------*/
+		var isContentValid = true;
         var jsonContent = jQuery.extend(true, {}, jsonContentObj);
         activityAdaptor = adaptor;
-        
-        /* ------ VALIDATION BLOCK START -------- */    
+    	
+        /* ------ VALIDATION BLOCK START -------- */	
         if (jsonContent.content === undefined) {
             isContentValid = false;
         }
-        /* ------ VALIDATION BLOCK END -------- */  
+        /* ------ VALIDATION BLOCK END -------- */	
 
         if(!isContentValid) {
             /* Inform the shell that init is complete */
             if(callback) {
                 callback();
-            }           
+            }			
             return; /* -- EXITING --*/
-        }       
-                
-        /* Parse and update content JSON. */
-        var processedJsonContent = parseAndUpdateJSONContent(jsonContent, params);
-        
-        /* Apply the content JSON to the htmllayout */
-        var processedHTML = processLayoutWithContent(__constants.TEMPLATES[htmlLayout], processedJsonContent);
+        }		
+				
+		/* Parse and update content JSON. */
+		var processedJsonContent = parseAndUpdateJSONContent(jsonContent, params);
+		
+		/* Apply the content JSON to the htmllayout */
+		var processedHTML = processLayoutWithContent(__constants.TEMPLATES[htmlLayout], processedJsonContent);
 
-        /* Update the DOM and render the processed HTML - main body of the activity */      
-        $(elRoot).html(processedHTML);
-        
-        setupEventHandlers();
+		/* Update the DOM and render the processed HTML - main body of the activity */		
+		$(elRoot).html(processedHTML);
+		
+		setupEventHandlers();
         /* Inform the shell that init is complete */
         if(callback) {
             callback();
-        }                               
+        }								
       
-        /* ---------------------- END OF INIT ---------------------------------*/
-    } /* init() Ends. */        
-    
-    /**
-     * ENGINE-SHELL Interface
-     *
-     * Return configuration
-     */
-    function getConfig () {
-        return __config;
-    }
-    
-    /**
-     * ENGINE-SHELL Interface
-     *
-     * Return the current state (Activity Submitted/ Partial Save State.) of activity.
-     */
-    function getStatus() {
+		/* ---------------------- END OF INIT ---------------------------------*/
+	} /* init() Ends. */        
+	
+	/**
+	 * ENGINE-SHELL Interface
+	 *
+	 * Return configuration
+	 */
+	function getConfig () {
+		return __config;
+	}
+	
+	/**
+	 * ENGINE-SHELL Interface
+	 *
+	 * Return the current state (Activity Submitted/ Partial Save State.) of activity.
+	 */
+	function getStatus() {
 
-    }   
+	}	
 
     function getAnswersJSON(skipQuestion) {
         var score = 0;
@@ -762,14 +762,14 @@ define('nfib',['text!../test/layouts/nfib.html','css!../css/nfib.css',], functio
                 if (correctAnswer.toUpperCase() === answer.toUpperCase()) {
                   score++;
                 }
-                
+          
                 /* Get questionText having this id as interaction id. */
                $.each(__content.questionsXML, function(num) {
                     if(this.interactionId.indexOf(answerKeys[i]) > -1) {
                         questionText = this.questionText;
                     }
                 }); 
-                
+                      
             }
             results = {
                 itemUID: this,
@@ -809,7 +809,7 @@ define('nfib',['text!../test/layouts/nfib.html','css!../css/nfib.css',], functio
         
     }
 
-    /*
+	/*
      * -------------------
      * DOM EVENT HANDLERS                      
      * -------------------
@@ -835,22 +835,22 @@ define('nfib',['text!../test/layouts/nfib.html','css!../css/nfib.css',], functio
         /* Soft save answers. */
         saveResults();     
     }
-     
-    /**
-     * Function to process HandleBars template with JSON.
-     */
-    function processLayoutWithContent(layoutHTML, contentJSON) {
+	 
+	/**
+	 * Function to process HandleBars template with JSON.
+	 */
+	function processLayoutWithContent(layoutHTML, contentJSON) {
 
-        /* Compiling Template Using Handlebars. */
-        var compiledTemplate = Handlebars.compile(layoutHTML);
+		/* Compiling Template Using Handlebars. */
+		var compiledTemplate = Handlebars.compile(layoutHTML);
 
-        /*Compiling HTML from Template. */
-        var compiledHTML = compiledTemplate(contentJSON);
-        return compiledHTML;
-    }
-    
-    function parseAndUpdateJSONContent(jsonContent, params) {
-        jsonContent.content.displaySubmit = activityAdaptor.displaySubmit;    
+		/*Compiling HTML from Template. */
+		var compiledHTML = compiledTemplate(contentJSON);
+		return compiledHTML;
+	}
+	
+	function parseAndUpdateJSONContent(jsonContent, params) {
+		jsonContent.content.displaySubmit = activityAdaptor.displaySubmit;    
 
         /* Activity Instructions. */
         var tagName = jsonContent.content.instructions[0].tag;
@@ -862,14 +862,14 @@ define('nfib',['text!../test/layouts/nfib.html','css!../css/nfib.css',], functio
         __content.activityType = params.engineType;
 
         parseAndUpdateQuestionDataTypeJSON(jsonContent);
-        
-        /* Returning processed JSON. */
-        return jsonContent;     
-    }
+		
+		/* Returning processed JSON. */
+		return jsonContent;		
+	}
 
-    /**
-     * Parse and Update Question Data type JSON based on FIB specific requirements.
-     */  
+	/**
+	 * Parse and Update Question Data type JSON based on FIB specific requirements.
+	 */	 
     function parseAndUpdateQuestionDataTypeJSON (jsonContent) {
         var splitCharacter = "___";
         var blank_prefix = "";
@@ -978,16 +978,16 @@ define('nfib',['text!../test/layouts/nfib.html','css!../css/nfib.css',], functio
         jsonContent.content.questiondata = question;
     }
 
-    /**
-     * Setting event listeners.
-     */
-    function setupEventHandlers() {
+	/**
+	 * Setting event listeners.
+	 */
+	function setupEventHandlers() {
         $("." + __constants.DOM_SEL_INPUT_BOX).keydown(handleQuestionTextOnKeydown);
         $('.toggleDiv').on('click',function(){
             $('.hidden-div').toggle();
             activityAdaptor.autoResizeActivityIframe();
-        })
-    }
+        });
+	}
 
     function updateLastSavedResults(lastResults, isGradebookPreview) {
         
@@ -999,13 +999,13 @@ define('nfib',['text!../test/layouts/nfib.html','css!../css/nfib.css',], functio
         });
     }
 
-    return {
-        /*Engine-Shell Interface*/
-        "init": init, /* Shell requests the engine intialized and render itself. */
-        "getStatus": getStatus, /* Shell requests a gradebook status from engine, based on its current state. */
-        "getConfig" : getConfig, /* Shell requests a engines config settings.  */
+	return {
+		/*Engine-Shell Interface*/
+		"init": init, /* Shell requests the engine intialized and render itself. */
+		"getStatus": getStatus, /* Shell requests a gradebook status from engine, based on its current state. */
+		"getConfig" : getConfig, /* Shell requests a engines config settings.  */
         "updateLastSavedResults":updateLastSavedResults
-    };
+	};
     };
 });
 
