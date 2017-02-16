@@ -77,3 +77,8 @@
 .small .nfib-body span.correct:before, .small .nfib-body span.wrong:before {
     margin: .45em .36em auto -4.5em;   
 }
+.hidden-div{
+  height: 500px;
+  display: none;
+  border: 1px solid black;
+}
