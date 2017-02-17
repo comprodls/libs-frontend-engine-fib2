@@ -57,7 +57,7 @@ module.exports = function(grunt) {
                         'css-builder': bower_components + 'require-css/css-builder',
                         'normalize': bower_components + 'require-css/normalize'
                     },
-                    optimize: 'none',
+                    optimize: 'uglify2',
                     uglify2: {
                         mangle: false
                     },
@@ -86,6 +86,7 @@ module.exports = function(grunt) {
         //'bower:install',
         //'concat',
         'requirejs'
+        //'uglify'
     ]);  
 
 };
