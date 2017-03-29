@@ -315,13 +315,14 @@ define(['text!../html/nfib-editor.html','css!../css/nfib-editor.css',], function
     function saveUpdatedJson(){
         processedJsonContent.content.instructions = $('.edit-instruction-val').val();
         processedJsonContent.content.questiondata[0].correctanswer = $('.edit-answer-val').val();
-        recreateJSON(processedJsonContent);
+        return recreateJSON(processedJsonContent);
     }
 
     function recreateJSON(){
         var updatedJSON = jQuery.extend(true, {}, originalContent);
         updatedJSON.content.instructions[0].html = processedJsonContent.content.instructions;
         updatedJSON.content.responses.i1.correct = processedJsonContent.content.questiondata[0].correctanswer;
+        return updatedJSON;
     }
 
 	return {
