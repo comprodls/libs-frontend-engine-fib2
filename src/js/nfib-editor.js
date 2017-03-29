@@ -86,7 +86,7 @@ define(['text!../html/nfib-editor.html','css!../css/nfib-editor.css',], function
         /* CONSTANTS for Activity Layout to be used */
         TEMPLATES: {
             /* Regular FIB Layout */
-            "nfib-editor": nelsonFibTemplate
+            NFIB_EDITOR: nelsonFibTemplate
         }
     };
 
