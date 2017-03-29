@@ -47,7 +47,7 @@
  *
  */
     
-define(['text!../html/nfib-editor.html','css!../css/nfib.css',], function (nelsonFibTemplate) {
+define(['text!../html/nfib-editor.html','css!../css/nfib-editor.css',], function (nelsonFibTemplate) {
 	
   nfib = function () {
 	"use strict";
