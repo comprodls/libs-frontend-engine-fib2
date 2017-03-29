@@ -67,6 +67,28 @@ module.exports = function(grunt) {
                         done();
                     }
                 }
+            },
+            nfibEdit: {
+                options: {
+                    baseUrl: engine_src,
+                    name: "nfib-editor",
+                    out: dist + "nfib-editor.js",
+                    paths: {
+                        'text': bower_components + 'text/text',
+                        'css': bower_components + 'require-css/css',
+                        'css-builder': bower_components + 'require-css/css-builder',
+                        'normalize': bower_components + 'require-css/normalize'
+                    },
+                    optimize: 'uglify2',
+                    uglify2: {
+                        mangle: false
+                    },
+                    exclude: ['normalize'],
+                    done: function (done, output) {
+                        console.log('done requirejs for nfib-editor module');
+                        done();
+                    }
+                }
             }
         }
 

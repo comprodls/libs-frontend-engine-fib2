@@ -82,3 +82,12 @@
   display: none;
   border: 1px solid black;
 }
+
+.edit-instruction, .edit-answer{
+  font-size: 20px;
+}
+
+.edit-input{
+  margin-left: 20px;
+  padding-left: 5px;
+}
