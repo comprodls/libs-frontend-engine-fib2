@@ -86,7 +86,7 @@ define(['text!../html/nfib.html','css!../css/nfib.css',], function (nelsonFibTem
         /* CONSTANTS for Activity Layout to be used */
         TEMPLATES: {
             /* Regular FIB Layout */
-            nfib: nelsonFibTemplate
+            NFIB: nelsonFibTemplate
         }
     };
 

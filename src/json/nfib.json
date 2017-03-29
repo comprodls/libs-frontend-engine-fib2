@@ -1,6 +1,6 @@
 {
   "meta": {
-    "type": "nfib",
+    "type": "NFIB",
     "score": {
       "default": 0,
       "max": 1,
@@ -15,7 +15,7 @@
       }
     ],
     "canvas": {
-      "layout": "nfib",
+      "layout": "NFIB",
       "data": {
         "questiondata": [
           {
@@ -27,7 +27,7 @@
   },
   "interactions": {
       "i1": {
-        "type": "nfib"
+        "type": "NFIB"
       }
   },
   "feedback": {

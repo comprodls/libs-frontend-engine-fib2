@@ -312,7 +312,7 @@ define("text", ["module"], function(module) {
                     DOM_SEL_INPUT_BOX: "userAnswer",
                     ADAPTOR_INSTANCE_IDENTIFIER: "data-objectid",
                     TEMPLATES: {
-                        nfib: nelsonFibTemplate
+                        NFIB_EDITOR: nelsonFibTemplate
                     }
                 };
             return {
