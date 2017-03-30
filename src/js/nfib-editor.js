@@ -143,7 +143,7 @@ define(['text!../html/nfib-editor.html','css!../css/nfib-editor.css',], function
 		$(elRoot).html(processedHTML);
 		
         $(__constants.DOM_SEL_ACTIVITY_BODY).attr(__constants.ADAPTOR_INSTANCE_IDENTIFIER, adaptor.getId());       
-        
+
 		setupEventHandlers();
         /* Inform the shell that init is complete */
         if(callback) {
@@ -335,10 +335,11 @@ define(['text!../html/nfib-editor.html','css!../css/nfib-editor.css',], function
     }
 
     function recreateJSON(){
+        var activityBodyObjectRef = $(__constants.DOM_SEL_ACTIVITY_BODY).attr(__constants.ADAPTOR_INSTANCE_IDENTIFIER); 
         var updatedJSON = jQuery.extend(true, {}, originalContent);
         updatedJSON.content.instructions[0].html = processedJsonContent.content.instructions;
         updatedJSON.responses.i1.correct = processedJsonContent.content.questiondata[0].correctanswer;
-        activityAdaptor.submitEditChanges(updatedJSON);
+        activityAdaptor.submitEditChanges(updatedJSON, activityBodyObjectRef);
     }
 
 	return {
