@@ -327,7 +327,7 @@ define(['text!../html/nfib-editor.html','css!../css/nfib-editor.css',], function
     function saveUpdatedJson(){
         processedJsonContent.content.instructions = $('.edit-instruction-val').val();
         processedJsonContent.content.questiondata[0].correctanswer = $('.edit-answer-val').val();
-        return recreateJSON(processedJsonContent);
+        recreateJSON();
     }
 
     function recreateJSON(){

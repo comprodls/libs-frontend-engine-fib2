@@ -296,7 +296,7 @@ define("text", ["module"], function(module) {
             }
 
             function saveUpdatedJson() {
-                return processedJsonContent.content.instructions = $(".edit-instruction-val").val(), processedJsonContent.content.questiondata[0].correctanswer = $(".edit-answer-val").val(), recreateJSON(processedJsonContent)
+                processedJsonContent.content.instructions = $(".edit-instruction-val").val(), processedJsonContent.content.questiondata[0].correctanswer = $(".edit-answer-val").val(), recreateJSON()
             }
 
             function recreateJSON() {
