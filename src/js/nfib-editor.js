@@ -81,9 +81,9 @@ define(['text!../html/nfib-editor.html','css!../css/nfib-editor.css',], function
         
         DOM_SEL_INPUT_BOX: "userAnswer",
 
-        DOM_EDIT_INSTRUCTION = 'edit-instruction-val';
+        DOM_EDIT_INSTRUCTION: 'edit-instruction-val',
 
-        DOM_ANS_VAL = 'edit-answer-val';
+        DOM_ANS_VAL: 'edit-answer-val',
 
         ADAPTOR_INSTANCE_IDENTIFIER: "data-objectid",
 		
