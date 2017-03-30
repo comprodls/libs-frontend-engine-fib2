@@ -301,7 +301,7 @@ define("text", ["module"], function(module) {
 
             function recreateJSON() {
                 var updatedJSON = jQuery.extend(!0, {}, originalContent);
-                updatedJSON.content.instructions[0].html = processedJsonContent.content.instructions, updatedJSON.content.responses.i1.correct = processedJsonContent.content.questiondata[0].correctanswer, activityAdaptor.submitEditChanges(updatedJSON)
+                updatedJSON.content.instructions[0].html = processedJsonContent.content.instructions, updatedJSON.responses.i1.correct = processedJsonContent.content.questiondata[0].correctanswer, activityAdaptor.submitEditChanges(updatedJSON)
             }
             var activityAdaptor, processedJsonContent, originalContent, __config = {},
                 __content = {

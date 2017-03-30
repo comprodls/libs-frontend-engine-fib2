@@ -333,7 +333,7 @@ define(['text!../html/nfib-editor.html','css!../css/nfib-editor.css',], function
     function recreateJSON(){
         var updatedJSON = jQuery.extend(true, {}, originalContent);
         updatedJSON.content.instructions[0].html = processedJsonContent.content.instructions;
-        updatedJSON.content.responses.i1.correct = processedJsonContent.content.questiondata[0].correctanswer;
+        updatedJSON.responses.i1.correct = processedJsonContent.content.questiondata[0].correctanswer;
         activityAdaptor.submitEditChanges(updatedJSON);
     }
 
