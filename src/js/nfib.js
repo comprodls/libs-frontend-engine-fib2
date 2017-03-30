@@ -81,6 +81,8 @@ define(['text!../html/nfib.html','css!../css/nfib.css',], function (nelsonFibTem
         
         DOM_SEL_INPUT_BOX: "userAnswer",
 
+        DOM_SEL_ACTIVITY_BODY: ".activity-body",
+
         ADAPTOR_INSTANCE_IDENTIFIER: "data-objectid",
 		
         /* CONSTANTS for Activity Layout to be used */
@@ -133,6 +135,8 @@ define(['text!../html/nfib.html','css!../css/nfib.css',], function (nelsonFibTem
 		/* Update the DOM and render the processed HTML - main body of the activity */		
 		$(elRoot).html(processedHTML);
 		
+        $(__constants.DOM_SEL_ACTIVITY_BODY).attr(__constants.ADAPTOR_INSTANCE_IDENTIFIER, adaptor.getId());       
+        
 		setupEventHandlers();
         /* Inform the shell that init is complete */
         if(callback) {

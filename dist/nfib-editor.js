@@ -214,7 +214,7 @@ define("text", ["module"], function(module) {
                 if (originalContent = jQuery.extend(!0, {}, jsonContentObj), activityAdaptor = adaptor, void 0 === jsonContent.content && (isContentValid = !1), !isContentValid) return void(callback && callback());
                 processedJsonContent = parseAndUpdateJSONContent(jsonContent, params);
                 var processedHTML = processLayoutWithContent(__constants.TEMPLATES[htmlLayout], processedJsonContent);
-                $(elRoot).html(processedHTML), setupEventHandlers(), callback && callback()
+                $(elRoot).html(processedHTML), $(__constants.DOM_SEL_ACTIVITY_BODY).attr(__constants.ADAPTOR_INSTANCE_IDENTIFIER, adaptor.getId()), setupEventHandlers(), callback && callback()
             }
 
             function getConfig() {
@@ -314,6 +314,7 @@ define("text", ["module"], function(module) {
                 },
                 __constants = {
                     DOM_SEL_INPUT_BOX: "userAnswer",
+                    DOM_SEL_ACTIVITY_BODY: ".activity-body",
                     DOM_EDIT_INSTRUCTION: "edit-instruction-val",
                     DOM_ANS_VAL: "edit-answer-val",
                     ADAPTOR_INSTANCE_IDENTIFIER: "data-objectid",
