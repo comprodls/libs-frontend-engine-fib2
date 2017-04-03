@@ -2,7 +2,9 @@
 <div class="activity-body nfib-body">   
     <h2><strong>{{getAdapterParams "activityName"}}</strong></h2>   
     <div class="instructions">
-        <span class="edit-instruction">Edit Instructions:</span> <input value="{{{directions}}}" class="edit-input edit-instruction-val" size="50"></input> 
+        {{#each instructions}} 
+            <span class="edit-instruction">Edit Instructions:</span> <input value="{{{this.html}}}" class="edit-input edit-instruction-val" size="50"></input>
+        {{/each}} 
     </div>
     
     <div class="instructions questions">
