@@ -174,6 +174,7 @@ define(['text!../html/nfib-editor.html','css!../css/nfib-editor.css',], function
 	 */	 
     function parseAndUpdateQuestionDataTypeJSON (jsonContent) {
          var question = [];
+         var interaction_id = "i1" ;
          /* Make question object which contains question and correct answer. */
          $.each(jsonContent.content.canvas.data.questiondata, function (num) {
             question.push({
