@@ -14,14 +14,6 @@
  *			getStatus(),
  *			getConfig()
  *		}
- *	2. Supports Multi-item handler interface
- *		{
- *			getAnswersJSON(),
- *			updateLastSavedResults(),
- *			markAnswers(),
- *			disableInputs(),
- *			isCorrectAnswer()
- *		}
  * 
  * ENGINE - SHELL interface : ->
  *
@@ -61,25 +53,12 @@ define(['text!../html/nfib-editor.html','css!../css/nfib-editor.css',], function
 	 * Internal Engine Config.
 	 */ 
 	var __config = {};
-	/*
-	 * Content (loaded / initialized during init() ).
-	 */ 
-	var __content = {
-		questionsXML: [], /* Contains all questions obtained from content XML. */
-		directionsXML: "", /* Contains activity specific instruction obtained from content XML. */
-		answersXML: {}, /* Contains all correct answers obtained from content XML. */
-		userAnswersXML:{}, /* Contains all user answers submiited. */
-        optionsXML: {},
-		activityType: null  /* Type of FIB activity. Possible Values :- FIBPassage.  */			
-	};
-
+	
 	/*
 	 * Constants.
 	 */
 	var __constants = {
         /* CONSTANTS for HTML selectors */
-        
-        DOM_SEL_INPUT_BOX: "userAnswer",
 
         DOM_SEL_ACTIVITY_BODY: ".activity-body",
 
@@ -185,16 +164,6 @@ define(['text!../html/nfib-editor.html','css!../css/nfib-editor.css',], function
 	
 	function parseAndUpdateJSONContent(jsonContent, params) {
 		jsonContent.content.displaySubmit = activityAdaptor.displaySubmit;    
-
-        /* Activity Instructions. */
-        var tagName = jsonContent.content.instructions[0].tag;
-        __content.directionsXML = jsonContent.content.instructions[0][tagName];
-        /* Put directions in JSON. */
-        jsonContent.content.directions = __content.directionsXML;
-
-        /* Set Type for Activity from engine type */
-        __content.activityType = params.engineType;
-
         parseAndUpdateQuestionDataTypeJSON(jsonContent);
 		/* Returning processed JSON. */
 		return jsonContent;		
@@ -204,46 +173,8 @@ define(['text!../html/nfib-editor.html','css!../css/nfib-editor.css',], function
 	 * Parse and Update Question Data type JSON based on FIB specific requirements.
 	 */	 
     function parseAndUpdateQuestionDataTypeJSON (jsonContent) {
-        var splitCharacter = "___";
-        var blank_prefix = "";
-        var blank_suffix = "";
-
-       
-        var question = [];
-        var k = 0;
-
-        /* Make question object which contains question and correct answer. */
+         /* Make question object which contains question and correct answer. */
          $.each(jsonContent.content.canvas.data.questiondata, function (num) {
-
-            /* Extract interaction id's and tags from question text. */
-            var interactionId = [];
-            var interactionTag = [];
-            /* String present in href of interaction tag. */
-            var interactionReferenceString = "http://www.comprodls.com/m1.0/interaction/nfib";
-            /* Parse questiontext as HTML to get HTML tags. */
-            var parsedQuestionArray = $.parseHTML(this.text);
-            var j = 0;
-            $.each( parsedQuestionArray, function(i) {
-              if(this.href === interactionReferenceString) {
-                interactionId[j] = this.childNodes[0].nodeValue.trim();
-                interactionTag[j] = this.outerHTML;
-                interactionTag[j] = interactionTag[j].replace(/"/g, "'");
-                j++;
-              }
-            });
-            $.each(interactionTag, function(i) {
-              jsonContent.content.canvas.data.questiondata[num].text = jsonContent.content.canvas.data.questiondata[num].text.replace(interactionTag[i],"___");  
-            });
-            
-            var counter = 0;
-            var answer = "";
-            var id = "";
-
-            /* Count no of blanks in a question */
-            var interaction_id = interactionId[k];
-            if(!jsonContent.responses){
-                jsonContent.responses = jsonContent.content.responses;
-            }  
             question.push({
                 "text": this.text,
                 "correctanswer": jsonContent.responses[interaction_id].correct,
@@ -251,63 +182,6 @@ define(['text!../html/nfib-editor.html','css!../css/nfib-editor.css',], function
             }); 
         });
         
-         $.each(question, function (num) {
-            var questionWithBlank = this.text;
-            var startIndex = 0;
-            var endIndex = 0;
-            var parts = [];
-            var splitCharacterPos = 0;
-            var blankNumber = 0;
-            this.answers = 0;
-            blank_prefix = "";
-            blank_suffix = "";
-           
-            var i = 0; 
-            while (true) {
-                var part = {};
-                splitCharacterPos = questionWithBlank.indexOf(splitCharacter, startIndex);
-
-                if (splitCharacterPos === -1) {
-                    endIndex = questionWithBlank.length;
-                } else {
-                    endIndex = splitCharacterPos;
-                }
-
-                if (startIndex !== endIndex) {
-                    part = {
-                        content: questionWithBlank.substring(startIndex, endIndex)
-                    };
-                    parts.push(part); /* ADDING PREVIOUS PART */
-                }
-                if (splitCharacterPos !== -1) {
-                    var interactionId = this.interactionId;
-                    var answer = this.correctanswer;
-                    
-                    part = {
-                        content: blank_prefix + "<span class='answer'><input type='text' id='" + interactionId + "' data-quesNo='" + num + "' class='input-sm " + __constants.DOM_SEL_INPUT_BOX + "'/></span>" + blank_suffix
-                    };
-                    
-                    parts.push(part); /* ADDING PREVIOUS PART */
-                    
-                    this.answers ++;
-                    blankNumber++;
-                    /* Make answer and useranswer xml */
-                    __content.userAnswersXML[interactionId] = "";
-                    __content.answersXML[interactionId] = answer;
-                }
-
-                startIndex = splitCharacterPos + splitCharacter.length;
-                
-                if (splitCharacterPos === -1) {
-                    this.index = num;
-                    this.parts = parts;
-                
-                    this.questionText = questionWithBlank.replace(/__/g, "[.....]");
-                    __content.questionsXML.push(this);
-                    break;
-                }
-            }
-         });
         jsonContent.content.questiondata = question;
     }
 
@@ -316,25 +190,21 @@ define(['text!../html/nfib-editor.html','css!../css/nfib-editor.css',], function
 	 */
 	function setupEventHandlers() {
         $("." + __constants.DOM_EDIT_INSTRUCTION).blur(function(){
-            activityAdaptor.showSaveButton();
+            activityAdaptor.itemChangedInEditor();
         });
 
         $("." + __constants.DOM_ANS_VAL).blur(function(){
-            activityAdaptor.showSaveButton();
+            activityAdaptor.itemChangedInEditor();
         });        
 
         $('.update-json').on('click',function(){
-            saveUpdatedJson();
+            saveItemInEditor();
         });
 	}
 
-    function saveUpdatedJson(){
+    function saveItemInEditor(){
         processedJsonContent.content.instructions = $('.edit-instruction-val').val();
         processedJsonContent.content.questiondata[0].correctanswer = $('.edit-answer-val').val();
-        recreateJSON();
-    }
-
-    function recreateJSON(){
         var activityBodyObjectRef = $(__constants.DOM_SEL_ACTIVITY_BODY).attr(__constants.ADAPTOR_INSTANCE_IDENTIFIER); 
         var updatedJSON = jQuery.extend(true, {}, originalContent);
         updatedJSON.content.instructions[0].html = processedJsonContent.content.instructions;
@@ -347,7 +217,7 @@ define(['text!../html/nfib-editor.html','css!../css/nfib-editor.css',], function
 		"init": init, /* Shell requests the engine intialized and render itself. */
 		"getStatus": getStatus, /* Shell requests a gradebook status from engine, based on its current state. */
 		"getConfig" : getConfig, /* Shell requests a engines config settings.  */
-        "saveUpdatedJson" : saveUpdatedJson
+        "saveItemInEditor" : saveItemInEditor
 	};
     };
 });
