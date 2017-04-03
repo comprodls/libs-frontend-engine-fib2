@@ -173,6 +173,7 @@ define(['text!../html/nfib-editor.html','css!../css/nfib-editor.css',], function
 	 * Parse and Update Question Data type JSON based on FIB specific requirements.
 	 */	 
     function parseAndUpdateQuestionDataTypeJSON (jsonContent) {
+         var question = [];
          /* Make question object which contains question and correct answer. */
          $.each(jsonContent.content.canvas.data.questiondata, function (num) {
             question.push({
