@@ -205,7 +205,7 @@ define("text", ["module"], function(module) {
             (useImportLoad ? importLoad : linkLoad)(req.toUrl(cssId + ".css"), load)
         }, cssAPI
     }), define("css!../css/nfib-editor", [], function() {}), define("nfib-editor", ["text!../html/nfib-editor.html", "css!../css/nfib-editor.css"], function(nelsonFibTemplate) {
-        nfib = function() {
+        nfibEditor = function() {
             "use strict";
 
             function init(elRoot, params, adaptor, htmlLayout, jsonContentObj, callback) {
