@@ -75,8 +75,7 @@ define(['text!../html/nfib-editor.html','css!../css/nfib-editor.css',], function
         }
     };
 
-    var processedJsonContent;
-    var originalContent;
+    var jsonContent;
 	/********************************************************/
 	/*					ENGINE-SHELL INIT FUNCTION
 		
@@ -94,44 +93,56 @@ define(['text!../html/nfib-editor.html','css!../css/nfib-editor.css',], function
 	
 		/* ---------------------- BEGIN OF INIT ---------------------------------*/
 		var isContentValid = true;
-        var jsonContent = jQuery.extend(true, {}, jsonContentObj);
-        originalContent = jQuery.extend(true, {}, jsonContentObj);
+        jsonContent = jQuery.extend(true, {}, jsonContentObj);
         activityAdaptor = adaptor;
     	
         /* ------ VALIDATION BLOCK START -------- */	
-        if (jsonContent.content === undefined) {
+        /*if (jsonContent.content === undefined) {
             isContentValid = false;
         }
-        /* ------ VALIDATION BLOCK END -------- */	
-
         if(!isContentValid) {
-            /* Inform the shell that init is complete */
             if(callback) {
                 callback();
             }			
-            return; /* -- EXITING --*/
-        }		
-				
+            return;
+        }*/		
+		//To Do validations depending on the engine
+        /* ------ VALIDATION BLOCK END -------- */			
 		/* Parse and update content JSON. */
-		processedJsonContent = parseAndUpdateJSONContent(jsonContent, params);
+		var processedJsonContent = __parseAndUpdateJSONContent(jsonContent, params);
 		
 		/* Apply the content JSON to the htmllayout */
-		var processedHTML = processLayoutWithContent(__constants.TEMPLATES[htmlLayout], processedJsonContent);
+		var processedHTML = __processLayoutWithContent(__constants.TEMPLATES[htmlLayout], processedJsonContent);
 
 		/* Update the DOM and render the processed HTML - main body of the activity */		
 		$(elRoot).html(processedHTML);
 		
         $(__constants.DOM_SEL_ACTIVITY_BODY).attr(__constants.ADAPTOR_INSTANCE_IDENTIFIER, adaptor.getId());       
 
-		setupEventHandlers();
+        /* ------ SETUP EVENT HANDLER BLOCK STARTS -------- */	
+		$("." + __constants.DOM_EDIT_INSTRUCTION).blur(function(){
+            activityAdaptor.itemChangedInEditor();
+        });
+
+        $("." + __constants.DOM_ANS_VAL).blur(function(){
+            activityAdaptor.itemChangedInEditor();
+        });        
+
+        $('.update-json').on('click',function(){
+            saveItemInEditor();
+        });
+
+        /* ------ SETUP EVENT HANDLER BLOCK STARTS -------- */	
+
         /* Inform the shell that init is complete */
         if(callback) {
             callback();
         }								
-      
+      	/* ------ SETUP EVENT HANDLER BLOCK ENDS -------- */
 		/* ---------------------- END OF INIT ---------------------------------*/
 	} /* init() Ends. */        
 	
+	/* ---------------------- PUBLIC FUNCTIONS START ---------------------------------*/
 	/**
 	 * ENGINE-SHELL Interface
 	 *
@@ -147,35 +158,36 @@ define(['text!../html/nfib-editor.html','css!../css/nfib-editor.css',], function
 	 * Return the current state (Activity Submitted/ Partial Save State.) of activity.
 	 */
 	function getStatus() {
-
+		//To do, editor will return some status related to editing
 	}	
-	 
+
+	/*Update jsoncontent recieved and pass to adaptor submitEditChanges()*/
+    function saveItemInEditor(){
+    	var activityBodyObjectRef = $(__constants.DOM_SEL_ACTIVITY_BODY).attr(__constants.ADAPTOR_INSTANCE_IDENTIFIER); 
+        jsonContent.content.instructions[0].html = $('.edit-instruction-val').val();
+        jsonContent.responses.i1.correct = $('.edit-answer-val').val();
+        activityAdaptor.submitEditChanges(jsonContent, activityBodyObjectRef);
+    }
+
+	/* ---------------------- PUBLIC FUNCTIONS END ---------------------------------*/
+
+	/* ---------------------- PRIVATE FUNCTIONS START ---------------------------------*/
 	/**
 	 * Function to process HandleBars template with JSON.
 	 */
-	function processLayoutWithContent(layoutHTML, contentJSON) {
+	function __processLayoutWithContent(layoutHTML, contentJSON) {
 		/* Compiling Template Using Handlebars. */
 		var compiledTemplate = Handlebars.compile(layoutHTML);
-
 		/*Compiling HTML from Template. */
 		var compiledHTML = compiledTemplate(contentJSON);
 		return compiledHTML;
 	}
 	
-	function parseAndUpdateJSONContent(jsonContent, params) {
+	function __parseAndUpdateJSONContent(jsonContent, params) {
+		var question = [];
+        var interaction_id = "i1" ;
 		jsonContent.content.displaySubmit = activityAdaptor.displaySubmit;    
-        parseAndUpdateQuestionDataTypeJSON(jsonContent);
-		/* Returning processed JSON. */
-		return jsonContent;		
-	}
-
-	/**
-	 * Parse and Update Question Data type JSON based on FIB specific requirements.
-	 */	 
-    function parseAndUpdateQuestionDataTypeJSON (jsonContent) {
-         var question = [];
-         var interaction_id = "i1" ;
-         /* Make question object which contains question and correct answer. */
+		 /* Make question object which contains question and correct answer. */
          $.each(jsonContent.content.canvas.data.questiondata, function (num) {
             question.push({
                 "text": this.text,
@@ -185,34 +197,10 @@ define(['text!../html/nfib-editor.html','css!../css/nfib-editor.css',], function
         });
         
         jsonContent.content.questiondata = question;
-    }
-
-	/**
-	 * Setting event listeners.
-	 */
-	function setupEventHandlers() {
-        $("." + __constants.DOM_EDIT_INSTRUCTION).blur(function(){
-            activityAdaptor.itemChangedInEditor();
-        });
-
-        $("." + __constants.DOM_ANS_VAL).blur(function(){
-            activityAdaptor.itemChangedInEditor();
-        });        
-
-        $('.update-json').on('click',function(){
-            saveItemInEditor();
-        });
+		/* Returning processed JSON. */
+		return jsonContent;		
 	}
-
-    function saveItemInEditor(){
-        processedJsonContent.content.instructions = $('.edit-instruction-val').val();
-        processedJsonContent.content.questiondata[0].correctanswer = $('.edit-answer-val').val();
-        var activityBodyObjectRef = $(__constants.DOM_SEL_ACTIVITY_BODY).attr(__constants.ADAPTOR_INSTANCE_IDENTIFIER); 
-        var updatedJSON = jQuery.extend(true, {}, originalContent);
-        updatedJSON.content.instructions[0].html = processedJsonContent.content.instructions;
-        updatedJSON.responses.i1.correct = processedJsonContent.content.questiondata[0].correctanswer;
-        activityAdaptor.submitEditChanges(updatedJSON, activityBodyObjectRef);
-    }
+	/* ---------------------- PRIVATE FUNCTIONS END ---------------------------------*/
 
 	return {
 		/*Engine-Shell Interface*/
