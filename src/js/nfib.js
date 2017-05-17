@@ -174,9 +174,9 @@ define(['text!../html/nfib.html','css!../css/nfib.css',], function (nelsonFibTem
 
     function updateLastSavedResults(lastResults, isGradebookPreview) {
         /* Displaying results. */
-        $.each(lastResults.results, function(i) {
-            __content.userAnswersXML[this.itemUID] = this.answer;
-            $("#" + this.itemUID).val(this.answer);
+        $.each(lastResults.interactions, function(i) {
+            __content.userAnswersXML[this.id] = this.answer;
+            $("#" + this.id).val(this.answer);
         });
     }
     /* ---------------------- PUBLIC FUNCTIONS END ---------------------------------*/
@@ -186,10 +186,10 @@ define(['text!../html/nfib.html','css!../css/nfib.css',], function (nelsonFibTem
         var score = 0;
         var answer = "";
         var correctAnswer = "";
-        var results = {};
+        var interactions = {};
         
-        /*Setup results array */
-        var resultArray = [];
+        /*Setup interactions array */
+        var interactionArray = [];
 
         /* Get interaction id's from answerXML */
         var answerKeys = Object.keys(__content.answersXML);
@@ -215,21 +215,17 @@ define(['text!../html/nfib.html','css!../css/nfib.css',], function (nelsonFibTem
                 }); 
                       
             }
-            results = {
-                itemUID: this,
-                question: questionText,
-                correctAnswer: correctAnswer,
+            interactions = {
+                id: this,
                 score: score,
-                comment: '',
                 answer: answer,
-                possible: 1
+                maxscore: 1
             };
-            resultArray[i] = results;
+            interactionArray[i] = interactions;
         });
         return {
             response: {
-                "directions": __content.directionsXML,
-                "results": resultArray
+                "interactions": interactionArray
             }
         };
     }
