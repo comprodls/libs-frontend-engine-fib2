@@ -1,6 +1,6 @@
 # comproDLS ES6 | Seed
 
-Bboilerplate for producing front-end libraries and Nodejs modules (Input: ES6, Output: universal library)
+Boilerplate for producing front-end libraries and Nodejs modules (Input: ES6, Output: universal library)
 
 * Webpack 3 
 * ES6 as a source.
