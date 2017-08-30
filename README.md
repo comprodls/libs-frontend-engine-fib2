@@ -1,16 +1,14 @@
-# Webpack library starter
+# comproDLS ES6 | Seed
 
-Webpack based boilerplate for producing libraries (Input: ES6, Output: universal library)
+Bboilerplate for producing front-end libraries and Nodejs modules (Input: ES6, Output: universal library)
 
-## Features
-
-* Webpack 3 based.
+* Webpack 3 
 * ES6 as a source.
-* Exports in a [umd](https://github.com/umdjs/umd) format so your library works everywhere.
+* Exports in a [umd](https://github.com/umdjs/umd) format so your library works in browser and Nodejs (serverside)
 * ES6 test setup with [Mocha](http://mochajs.org/) and [Chai](http://chaijs.com/).
 * Linting with [ESLint](http://eslint.org/).
 
-## Process
+## Build Process
 
 ```
 ES6 source files
@@ -27,7 +25,7 @@ ES6 source files
 
 *Have in mind that you have to build your library before publishing. The files under the `lib` folder are the ones that should be distributed.*
 
-## Getting started
+## Using the SEED for your own Library/Module
 
 1. Setting up the name of your library
   * Open `webpack.config.js` file and change the value of `libraryName` variable.
@@ -40,16 +38,16 @@ ES6 source files
 4. Running the tests
   * Run `npm run test`
 
-## Scripts
+## Commands
 
 * `npm run build` - produces production version of your library under the `lib` folder
 * `npm run dev` - produces development version of your library and runs a watcher
 * `npm run test` - well ... it runs the tests :)
 * `npm run test:watch` - same as above but in a watch mode
 
-## ES5 Depedencies
+## Linking ES5 Depedencies (legacy libraries)
 
-An example of using dependencies that shouldn’t be resolved by webpack, but should become dependencies of the resulting bundle. In the following example we are excluding React and Lodash:
+An example of using non ES6 dependencies that shouldn’t be resolved by webpack (babel), but should become dependencies of the resulting bundle. In the following example we are excluding React and Lodash:
 
 ```js
 {
