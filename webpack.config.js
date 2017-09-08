@@ -4,6 +4,8 @@ const webpack = require('webpack');
 const UglifyJsPlugin = webpack.optimize.UglifyJsPlugin;
 const path = require('path');
 const env = require('yargs').argv.env; 
+// contains externals function that ignores node_modules when bundling in Webpack
+const nodeExternals = require('webpack-node-externals');
 
 let libraryName = 'comprodls-lib-seed';
 
@@ -44,7 +46,8 @@ const config = {
     modules: [path.resolve('./node_modules'), path.resolve('./src')],
     extensions: ['.json', '.js']
   },
-  plugins: plugins
+  plugins: plugins,
+  externals: nodeExternals() // in order to avoid bundling of modules in node_modules folder 
 };
 
 module.exports = config;
