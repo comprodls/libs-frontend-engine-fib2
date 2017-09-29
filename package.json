@@ -1,0 +1,49 @@
+{
+  "name": "comprodls-lib-seed-es6",
+  "version": "0.3.0",
+  "description": "Universal library (UMD) with node v8, webpack and es6",
+  "main": "lib/comprodls-lib-seed.js",
+  "engines": {
+    "node": ">=8.0"
+  },
+  "scripts": {
+    "build": "webpack --env build",
+    "dev": "webpack --progress --colors --watch --env dev",
+    "test": "mocha --compilers js:babel-core/register --colors ./test/*.spec.js",
+    "test:watch": "mocha --compilers js:babel-core/register --colors -w ./test/*.spec.js"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-eslint": "^7.2.3",
+    "babel-loader": "^7.1.2",
+    "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-preset-es2015": "^6.24.1",
+    "chai": "^4.1.1",
+    "eslint": "^4.5.0",
+    "eslint-loader": "^1.9.0",
+    "mocha": "^3.5.0",
+    "webpack": "^3.5.5",
+    "webpack-node-externals": "^1.6.0",
+    "yargs": "^8.0.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comprodls/lib-seed-es6"
+  },
+  "keywords": [
+    "webpack",
+    "es6",
+    "starter",
+    "library",
+    "universal",
+    "umd",
+    "commonjs"
+  ],
+  "author": "Compro",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/comprodls/lib-seed-es6/issues"
+  },
+  "homepage": "https://github.com/comprodls/lib-seed-es6"
+}
