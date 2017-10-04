@@ -1,8 +1,8 @@
 {
-  "name": "comprodls-lib-seed-es6",
-  "version": "0.3.0",
-  "description": "Universal library (UMD) with node v8, webpack and es6",
-  "main": "lib/comprodls-lib-seed.js",
+  "name": "comprodls-libs-frontend-engine-fib2",
+  "version": "0.0.1",
+  "description": "DND Engine with node v8, webpack and es6",
+  "main": "dist/dnd2.js",
   "engines": {
     "node": ">=8.0"
   },
@@ -25,11 +25,13 @@
     "mocha": "^3.5.0",
     "webpack": "^3.5.5",
     "webpack-node-externals": "^1.6.0",
-    "yargs": "^8.0.2"
+    "yargs": "^8.0.2",
+    "html-loader": "^0.5.1",
+    "webpack-dev-server": "^2.8.2"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/comprodls/lib-seed-es6"
+    "url": "https://github.com/comprodls/libs-frontend-engine-fib2"
   },
   "keywords": [
     "webpack",
@@ -43,7 +45,7 @@
   "author": "Compro",
   "license": "UNLICENSED",
   "bugs": {
-    "url": "https://github.com/comprodls/lib-seed-es6/issues"
+    "url": "https://github.com/comprodls/libs-frontend-engine-fib2/issues"
   },
-  "homepage": "https://github.com/comprodls/lib-seed-es6"
+  "homepage": "https://github.com/comprodls/libs-frontend-engine-fib2"
 }

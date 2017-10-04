@@ -7,7 +7,7 @@ const env = require('yargs').argv.env;
 // contains externals function that ignores node_modules when bundling in Webpack
 const nodeExternals = require('webpack-node-externals');
 
-let libraryName = 'comprodls-lib-seed';
+let libraryName = 'dnd2';
 
 let plugins = [], outputFile;
 
@@ -19,12 +19,11 @@ if (env === 'build') {
 }
 
 const config = {
-  entry: __dirname + '/src/index.js',
+  entry: __dirname + '/src/js/dnd2.js',
   devtool: 'source-map',
   output: {
-    path: __dirname + '/lib',
+    path: __dirname + '/dist',
     filename: outputFile,
-    library: libraryName,
     libraryTarget: 'umd',
     umdNamedDefine: true
   },
@@ -39,7 +38,12 @@ const config = {
         test: /(\.jsx|\.js)$/,
         loader: 'eslint-loader',
         exclude: /node_modules/
-      }
+      },
+      {
+        test: /\.html$/,
+        exclude: /(node_modules|bower_components)/,
+        loader: 'html-loader'
+      }      
     ]
   },
   resolve: {
