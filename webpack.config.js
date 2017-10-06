@@ -43,7 +43,15 @@ const config = {
         test: /\.html$/,
         exclude: /(node_modules|bower_components)/,
         loader: 'html-loader'
-      }      
+      },
+      {
+        test: /\.css$/,
+        exclude: /(node_modules|bower_components)/,
+        use: [
+          { loader: "style-loader" },
+          { loader: "css-loader" }
+        ] 
+      }            
     ]
   },
   resolve: {
