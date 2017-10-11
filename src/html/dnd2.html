@@ -1,2 +1,15 @@
 <!-- Engine Renderer Template -->
-<div>Hello ES6 !!</div>
+{{#with content}}
+<div class="activity-body kdnd-body">    
+    <p class="instructions">{{{directions.text}}} </p>
+    <div class="smart-form inline-input">
+        <ol>
+            <li>    
+                <label class="input">
+                     <span class="question_content" id="test">{{{questionData.text}}}</span>
+                </label>
+            </li>
+        </ol>
+    </div>
+</div>
+{{/with}}

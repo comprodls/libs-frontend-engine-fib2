@@ -21,10 +21,7 @@ class dnd2 {
         /* ---------------------- BEGIN OF INIT ---------------------------------*/
 
         //Clone the JSON so that original is preserved.
-        var jsonContent = jQuery.extend(true, {}, jsonContentObj);
-
-        //Store the adaptor
-        utils.activityAdaptor = adaptor;
+        let jsonContent = jQuery.extend(true, {}, jsonContentObj);
 
         /* ------ VALIDATION BLOCK START -------- */    
         if (jsonContent.content === undefined) {
@@ -34,18 +31,24 @@ class dnd2 {
             //TODO - In future more advanced schema validations could be done here        
             return; /* -- EXITING --*/
         }
+        /* ------ VALIDATION BLOCK END -------- */
 
-        /* ------ VALIDATION BLOCK END -------- */        
+        //Store the adaptor
+        utils.activityAdaptor = adaptor;
 
-        /* Apply the layout HTML to the dom */
+        /* Parse and update content JSON. */
+        let processedJsonContent = utils.parseAndUpdateJSONContent(jsonContent, params);
 
-        $(elRoot).html(utils.__constants.TEMPLATES[htmlLayout]);
+        /* Apply the content JSON to the htmllayout */
+        let processedHTML = utils.processLayoutWithContent(utils.__constants.TEMPLATES[htmlLayout], processedJsonContent);
+
+        /* Update the DOM and render the processed HTML - main body of the activity */      
+        $(elRoot).html(processedHTML);
 
         /* Inform the shell that init is complete */
         if (callback) {
             callback();
         }
-
         /* ---------------------- END OF INIT ---------------------------------*/
     } /* init() Ends. */
 
