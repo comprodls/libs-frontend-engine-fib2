@@ -19,7 +19,7 @@ if (env === 'build') {
 }
 
 const config = {
-  entry: __dirname + '/src/js/dnd2.js',
+  entry: __dirname + '/src/js/index.js',
   devtool: 'source-map',
   output: {
     path: __dirname + '/dist',

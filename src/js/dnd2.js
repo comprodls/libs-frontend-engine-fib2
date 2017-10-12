@@ -17,14 +17,14 @@ class dnd2 {
         "callback" :->      To inform the shell that init is complete.
     */
     /********************************************************/  
-    init(elRoot, params, adaptor, htmlLayout, jsonContentObj, callback) {
+    constructor(elRoot, params, adaptor, htmlLayout, jsonContentObj, callback) {
         /* ---------------------- BEGIN OF INIT ---------------------------------*/
 
         //Clone the JSON so that original is preserved.
-        let jsonContent = jQuery.extend(true, {}, jsonContentObj);
+        this.jsonContent = jQuery.extend(true, {}, jsonContentObj);
 
         /* ------ VALIDATION BLOCK START -------- */    
-        if (jsonContent.content === undefined) {
+        if (this.jsonContent.content === undefined) {
             if (callback) {
                 callback();
             }
@@ -37,13 +37,13 @@ class dnd2 {
         utils.activityAdaptor = adaptor;
 
         /* Parse and update content JSON. */
-        let processedJsonContent = utils.parseAndUpdateJSONContent(jsonContent, params);
+        this.processedJsonContent = utils.parseAndUpdateJSONContent(this.jsonContent, params);
 
         /* Apply the content JSON to the htmllayout */
-        let processedHTML = utils.processLayoutWithContent(utils.__constants.TEMPLATES[htmlLayout], processedJsonContent);
+        this.processedHTML = utils.processLayoutWithContent(utils.__constants.TEMPLATES[htmlLayout], this.processedJsonContent);
 
         /* Update the DOM and render the processed HTML - main body of the activity */      
-        $(elRoot).html(processedHTML);
+        $(elRoot).html(this.processedHTML);
 
         /* Inform the shell that init is complete */
         if (callback) {
@@ -71,4 +71,4 @@ class dnd2 {
     }
 }
 
-export {dnd2};
+export default dnd2;
