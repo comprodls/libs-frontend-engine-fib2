@@ -107,7 +107,6 @@ Object.defineProperty(exports, "__esModule", {
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /* global $ */
 /* global jQuery */
 
-
 var _utils = __webpack_require__(2);
 
 var utils = _interopRequireWildcard(_utils);
@@ -116,62 +115,77 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+/**
+ *  Engine initialization Class. Provides public functions
+ *  -getConfig()
+ *  -getStatus()
+ */
+
 var dnd2 = function () {
 
-    /********************************************************/
-    /*                  ENGINE-SHELL INIT FUNCTION
-        
-        "elRoot" :->        DOM Element reference where the engine should paint itself.
-        "params" :->        Startup params passed by platform. Include the following sets of parameters:
-                        (a) State (Initial launch / Resume / Gradebook mode ).
-                        (b) TOC parameters (videoRoot, contentFile, keyframe, layout, etc.).
-        "adaptor" :->        An adaptor interface for communication with platform (__saveResults, closeActivity, savePartialResults, getLastResults, etc.).
-        "htmlLayout" :->    Activity HTML layout (as defined in the TOC LINK paramter). 
-        "jsonContent" :->    Activity JSON content (as defined in the TOC LINK paramter).
-        "callback" :->      To inform the shell that init is complete.
-    */
-    /********************************************************/
+    /**  ENGINE-SHELL CONSTRUCTOR FUNCTION
+     *   @constructor
+     *   @param {String} elRoot - DOM Element reference where the engine should paint itself.
+     *   @param {Object} params - Startup params passed by platform. Include the following sets of parameters:
+     *                   (a) State (Initial launch / Resume / Gradebook mode ).
+     *                   (b) TOC parameters (contentFile, layout, etc.).
+     *   @param {Object} adaptor - An adaptor interface for communication with platform (__saveResults, closeActivity, savePartialResults, getLastResults, etc.).
+     *   @param {String} htmlLayout - Activity HTML layout (as defined in the TOC LINK paramter). 
+     *   @param {Object} jsonContent - Activity JSON content (as defined in the TOC LINK paramter).
+     *   @param {Function} callback - To inform the shell that init is complete.
+     */
+
     function dnd2(elRoot, params, adaptor, htmlLayout, jsonContentObj, callback) {
         _classCallCheck(this, dnd2);
 
-        /* ---------------------- BEGIN OF INIT ---------------------------------*/
-
-        //Clone the JSON so that original is preserved.
+        /** 
+          * @member {Object}
+          * Clone the JSON so that original is preserved.
+          */
         this.jsonContent = jQuery.extend(true, {}, jsonContentObj);
 
-        /* ------ VALIDATION BLOCK START -------- */
+        /** 
+          * Validation block.
+          */
         if (this.jsonContent.content === undefined) {
             if (callback) {
                 callback();
             }
-            //TODO - In future more advanced schema validations could be done here        
-            return; /* -- EXITING --*/
+            //TODO - In future more advanced schema validations could be done here.        
+            return;
         }
-        /* ------ VALIDATION BLOCK END -------- */
 
-        //Store the adaptor
+        /**
+          * Store the adaptor.
+          */
         utils.activityAdaptor = adaptor;
 
-        /* Parse and update content JSON. */
+        /** 
+          * @member {Object}
+          * Parse and update content JSON. 
+          */
         this.processedJsonContent = utils.parseAndUpdateJSONContent(this.jsonContent, params);
 
-        /* Apply the content JSON to the htmllayout */
+        /** 
+          * @member {String}
+          * Apply the content JSON to the htmllayout.
+          */
         this.processedHTML = utils.processLayoutWithContent(utils.__constants.TEMPLATES[htmlLayout], this.processedJsonContent);
 
-        /* Update the DOM and render the processed HTML - main body of the activity */
+        /** 
+          * Update the DOM and render the processed HTML - main body of the activity.
+          */
         $(elRoot).html(this.processedHTML);
 
-        /* Inform the shell that init is complete */
+        /** Inform the shell that initialization is complete */
         if (callback) {
             callback();
         }
-        /* ---------------------- END OF INIT ---------------------------------*/
-    } /* init() Ends. */
+    }
 
     /**
      * ENGINE-SHELL Interface
-     *
-     * Return configuration
+     * @return {String} - Configuration
      */
 
 
@@ -183,8 +197,7 @@ var dnd2 = function () {
 
         /**
          * ENGINE-SHELL Interface
-         *
-         * Return the current state (Activity Submitted/ Partial Save State.) of activity.
+         * @return {Boolean} - The current state (Activity Submitted/ Partial Save State.) of activity.
          */
 
     }, {
@@ -214,76 +227,92 @@ exports.processLayoutWithContent = processLayoutWithContent;
 exports.parseAndUpdateJSONContent = parseAndUpdateJSONContent;
 /* global Handlebars */
 /* global $ */
+
 var dnd2TemplateRef = __webpack_require__(3);
 
 __webpack_require__(4);
 
-/*
-* Reference to platform's activity adaptor (initialized during init() ).
-*/
+/**
+ * @type {Object}
+ * Reference to platform's activity adaptor (initialized using constructor).
+ */
 var activityAdaptor = exports.activityAdaptor = void 0;
 
-/*
+/**
+ * @const {Object}
  * Internal Engine Config.
  */
 var __config = exports.__config = {
-    MAX_RETRIES: 10, /* Maximum number of retries for sending results to platform for a particular activity. */
-    RESIZE_MODE: 'auto', /* Possible values - "manual"/"auto". Default value is "auto". */
-    RESIZE_HEIGHT: '580' /* Applicable, if RESIZE_MODE is manual. If RESIZE_HEIGHT is defined in TOC then that will overrides. */
-    /* If both config RESIZE_HEIGHT and TOC RESIZE_HEIGHT are not defined then RESIZE_MODE is set to "auto"*/
+    MAX_RETRIES: 10, /** Maximum number of retries for sending results to platform for a particular activity. */
+    RESIZE_MODE: 'auto', /** Possible values - "manual"/"auto". Default value is "auto". */
+    RESIZE_HEIGHT: '580' /** Applicable, if RESIZE_MODE is manual. If RESIZE_HEIGHT is defined in TOC then that will overrides. */
+    /** If both config RESIZE_HEIGHT and TOC RESIZE_HEIGHT are not defined then RESIZE_MODE is set to "auto"*/
 };
 
-/*
+/**
+ * @type {Object}
  * Internal Engine State.
  */
 var __state = exports.__state = {
-    currentTries: 0, /* Current try of sending results to platform */
-    activityPariallySubmitted: false, /* State whether activity has been partially submitted. Possible Values: true/false(Boolean) */
-    activitySubmitted: false, /* State whether activity has been submitted. Possible Values: true/false(Boolean) */
-    radioButtonClicked: false /* State whether radio button is clicked.  Possible Values: true/false(Boolean) */
+    currentTries: 0, /** Current try of sending results to platform */
+    activityPariallySubmitted: false, /** State whether activity has been partially submitted. Possible Values: true/false(Boolean) */
+    activitySubmitted: false, /** State whether activity has been submitted. Possible Values: true/false(Boolean) */
+    radioButtonClicked: false /** State whether radio button is clicked.  Possible Values: true/false(Boolean) */
 };
 
-/*
- * Content (loaded / initialized during init() ).
+/**
+ * @type {Object}
+ * Content (loaded / initialized using constructor).
  */
 var __content = exports.__content = {
-    directionsJSON: '',
-    questionsJSON: [], /* Contains the question obtained from content JSON. */
-    optionsJSON: [], /* Contains all the options for a particular question obtained from content JSON. */
-    answersJSON: [], /* Contains the answer for a particular question obtained from content JSON. */
-    userAnswersJSON: [], /* Contains the user answer for a particular question. */
-    feedbackJSON: {}, /* Contains the feedback for question*/
-    activityType: null /* Type of FIB activity. Possible Values :- FIBPassage. */
+    directionsJSON: '', /** Contains the directions obtained from content JSON. */
+    questionsJSON: [], /** Contains the question obtained from content JSON. */
+    optionsJSON: [], /** Contains all the options for a particular question obtained from content JSON. */
+    answersJSON: [], /** Contains the answer for a particular question obtained from content JSON. */
+    userAnswersJSON: [], /** Contains the user answer for a particular question. */
+    feedbackJSON: {}, /** Contains the feedback for question. */
+    activityType: null /** Type of DND activity. */
 };
 
-/*
- * Constants.
+/**
+ * @const {Object}
+ * Constants
  */
 var __constants = exports.__constants = {
-    /* CONSTANT for PLATFORM Save Status NO ERROR */
-    STATUS_NOERROR: 'NO_ERROR',
-    DOM_SEL_SUBMIT_BTN: '#submit',
     TEMPLATES: {
-        /* Regular DND Layout */
-        DND2: dnd2TemplateRef
+        DND2: dnd2TemplateRef /** Regular DND Layout */
     }
 };
 
-// Array of all interaction tags in question
+/** 
+ * @type {Array}
+ * Array of all interaction tags in question 
+ */
 var __interactionIds = exports.__interactionIds = [];
-var __processedJsonContent = exports.__processedJsonContent = void 0;
 
-/***************************************************************************/
+/** 
+ *  <-----------------PRIVATE FUNCTIONS----------------->
+ */
 
 /**
- * Function to process HandleBars template with JSON.
+ *  Function to process HandleBars template with JSON.
+ *
+ *  @param {String} layoutHTML -  Activity HTML template.
+ *  @param {Object} contentJSON - Updated JSON content as per the activity/template requirement.
+ *  @return {String} compiledHTML - Activity HTML layout compiled with JSON content.  
  */
 function processLayoutWithContent(layoutHTML, contentJSON) {
 
-    /* Compiling Template Using Handlebars. */
+    /** 
+     * @type {Function}
+     * Compiling Template Using Handlebars. 
+     */
     var compiledTemplate = Handlebars.compile(layoutHTML);
 
-    /*Compiling HTML from Template. */
+    /** 
+     * @type {String} 
+     * Compiling HTML from Template. 
+     */
     var compiledHTML = compiledTemplate(contentJSON);
 
     return compiledHTML;
@@ -291,33 +320,36 @@ function processLayoutWithContent(layoutHTML, contentJSON) {
 
 /**
  *  Function to modify JSON as per the activity / template requirement.
+ *
+ *  @param {Object} jsonContent - Activity JSON content.
+ *  @param {Object} params - Startup params passed by platform.
+ *  @return {Object} jsonContent - Modified activity JSON content.
  */
 function parseAndUpdateJSONContent(jsonContent, params) {
 
-    /* Make "options" node in JSON. */
+    /** Make "options" node in JSON. */
     jsonContent.content.options = [];
 
-    /* Type of DND activity */
+    /** Type of DND activity */
     __content.activityType = params.variation;
 
-    /* Activity Instructions. */
+    /** Activity Instructions. */
     if (jsonContent.content.instructions[0].tag) {
         __content.directionsJSON = jsonContent.content.instructions[0].tag;
     }
 
-    __content.maxscore = jsonContent.meta.score.max;
     jsonContent.content.directions = {};
     jsonContent.content.directions.text = __content.directionsJSON;
 
     $.each(jsonContent.content.canvas.data.questiondata, function (num) {
         var questionData = this.text;
-        /* Extract interaction id's and tags from question text. */
+        /** Extract interaction id's and tags from question text. */
         var interactionId = [];
         var interactionTag = [];
 
-        /* String present in href of interaction tag. */
-        var interactionReferenceString = 'http://www.comprodls.com/m1.0/interaction/kdnd';
-        /* Parse questiontext as HTML to get HTML tags. */
+        /** String present in href of interaction tag. */
+        var interactionReferenceString = 'http://www.comprodls.com/m1.0/interaction/dnd2';
+        /** Parse questiontext as HTML to get HTML tags. */
         var parsedQuestionArray = $.parseHTML(questionData);
         var j = 0;
 
