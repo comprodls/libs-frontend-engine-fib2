@@ -81,15 +81,33 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 exports.dnd2 = undefined;
+
+var _dnd = __webpack_require__(1);
+
+var _dnd2 = _interopRequireDefault(_dnd);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.dnd2 = _dnd2.default;
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /* global $ */
 /* global jQuery */
 
-
-var _utils = __webpack_require__(1);
+var _utils = __webpack_require__(2);
 
 var utils = _interopRequireWildcard(_utils);
 
@@ -97,70 +115,81 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+/**
+ *  Engine initialization Class. Provides public functions
+ *  -getConfig()
+ *  -getStatus()
+ */
+
 var dnd2 = function () {
-    function dnd2() {
+
+    /**  ENGINE-SHELL CONSTRUCTOR FUNCTION
+     *   @constructor
+     *   @param {String} elRoot - DOM Element reference where the engine should paint itself.
+     *   @param {Object} params - Startup params passed by platform. Include the following sets of parameters:
+     *                   (a) State (Initial launch / Resume / Gradebook mode ).
+     *                   (b) TOC parameters (contentFile, layout, etc.).
+     *   @param {Object} adaptor - An adaptor interface for communication with platform (__saveResults, closeActivity, savePartialResults, getLastResults, etc.).
+     *   @param {String} htmlLayout - Activity HTML layout (as defined in the TOC LINK paramter). 
+     *   @param {Object} jsonContent - Activity JSON content (as defined in the TOC LINK paramter).
+     *   @param {Function} callback - To inform the shell that init is complete.
+     */
+
+    function dnd2(elRoot, params, adaptor, htmlLayout, jsonContentObj, callback) {
         _classCallCheck(this, dnd2);
-    }
 
-    _createClass(dnd2, [{
-        key: 'init',
+        /** 
+          * @member {Object}
+          * Clone the JSON so that original is preserved.
+          */
+        this.jsonContent = jQuery.extend(true, {}, jsonContentObj);
 
-
-        /********************************************************/
-        /*                  ENGINE-SHELL INIT FUNCTION
-            
-            "elRoot" :->        DOM Element reference where the engine should paint itself.
-            "params" :->        Startup params passed by platform. Include the following sets of parameters:
-                            (a) State (Initial launch / Resume / Gradebook mode ).
-                            (b) TOC parameters (videoRoot, contentFile, keyframe, layout, etc.).
-            "adaptor" :->        An adaptor interface for communication with platform (__saveResults, closeActivity, savePartialResults, getLastResults, etc.).
-            "htmlLayout" :->    Activity HTML layout (as defined in the TOC LINK paramter). 
-            "jsonContent" :->    Activity JSON content (as defined in the TOC LINK paramter).
-            "callback" :->      To inform the shell that init is complete.
-        */
-        /********************************************************/
-        value: function init(elRoot, params, adaptor, htmlLayout, jsonContentObj, callback) {
-            /* ---------------------- BEGIN OF INIT ---------------------------------*/
-
-            //Clone the JSON so that original is preserved.
-            var jsonContent = jQuery.extend(true, {}, jsonContentObj);
-
-            /* ------ VALIDATION BLOCK START -------- */
-            if (jsonContent.content === undefined) {
-                if (callback) {
-                    callback();
-                }
-                //TODO - In future more advanced schema validations could be done here        
-                return; /* -- EXITING --*/
-            }
-            /* ------ VALIDATION BLOCK END -------- */
-
-            //Store the adaptor
-            utils.activityAdaptor = adaptor;
-
-            /* Parse and update content JSON. */
-            var processedJsonContent = utils.parseAndUpdateJSONContent(jsonContent, params);
-
-            /* Apply the content JSON to the htmllayout */
-            var processedHTML = utils.processLayoutWithContent(utils.__constants.TEMPLATES[htmlLayout], processedJsonContent);
-
-            /* Update the DOM and render the processed HTML - main body of the activity */
-            $(elRoot).html(processedHTML);
-
-            /* Inform the shell that init is complete */
+        /** 
+          * Validation block.
+          */
+        if (this.jsonContent.content === undefined) {
             if (callback) {
                 callback();
             }
-            /* ---------------------- END OF INIT ---------------------------------*/
-        } /* init() Ends. */
+            //TODO - In future more advanced schema validations could be done here.        
+            return;
+        }
 
         /**
-         * ENGINE-SHELL Interface
-         *
-         * Return configuration
-         */
+          * Store the adaptor.
+          */
+        utils.activityAdaptor = adaptor;
 
-    }, {
+        /** 
+          * @member {Object}
+          * Parse and update content JSON. 
+          */
+        this.processedJsonContent = utils.parseAndUpdateJSONContent(this.jsonContent, params);
+
+        /** 
+          * @member {String}
+          * Apply the content JSON to the htmllayout.
+          */
+        this.processedHTML = utils.processLayoutWithContent(utils.__constants.TEMPLATES[htmlLayout], this.processedJsonContent);
+
+        /** 
+          * Update the DOM and render the processed HTML - main body of the activity.
+          */
+        $(elRoot).html(this.processedHTML);
+
+        /** Inform the shell that initialization is complete */
+        if (callback) {
+            callback();
+        }
+    }
+
+    /**
+     * ENGINE-SHELL Interface
+     * @return {String} - Configuration
+     */
+
+
+    _createClass(dnd2, [{
         key: 'getConfig',
         value: function getConfig() {
             return utils.__config;
@@ -168,8 +197,7 @@ var dnd2 = function () {
 
         /**
          * ENGINE-SHELL Interface
-         *
-         * Return the current state (Activity Submitted/ Partial Save State.) of activity.
+         * @return {Boolean} - The current state (Activity Submitted/ Partial Save State.) of activity.
          */
 
     }, {
@@ -182,10 +210,11 @@ var dnd2 = function () {
     return dnd2;
 }();
 
-exports.dnd2 = dnd2;
+exports.default = dnd2;
+module.exports = exports['default'];
 
 /***/ }),
-/* 1 */
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -198,76 +227,92 @@ exports.processLayoutWithContent = processLayoutWithContent;
 exports.parseAndUpdateJSONContent = parseAndUpdateJSONContent;
 /* global Handlebars */
 /* global $ */
-var dnd2TemplateRef = __webpack_require__(2);
 
-__webpack_require__(3);
+var dnd2TemplateRef = __webpack_require__(3);
 
-/*
-* Reference to platform's activity adaptor (initialized during init() ).
-*/
+__webpack_require__(4);
+
+/**
+ * @type {Object}
+ * Reference to platform's activity adaptor (initialized using constructor).
+ */
 var activityAdaptor = exports.activityAdaptor = void 0;
 
-/*
+/**
+ * @const {Object}
  * Internal Engine Config.
  */
 var __config = exports.__config = {
-    MAX_RETRIES: 10, /* Maximum number of retries for sending results to platform for a particular activity. */
-    RESIZE_MODE: 'auto', /* Possible values - "manual"/"auto". Default value is "auto". */
-    RESIZE_HEIGHT: '580' /* Applicable, if RESIZE_MODE is manual. If RESIZE_HEIGHT is defined in TOC then that will overrides. */
-    /* If both config RESIZE_HEIGHT and TOC RESIZE_HEIGHT are not defined then RESIZE_MODE is set to "auto"*/
+    MAX_RETRIES: 10, /** Maximum number of retries for sending results to platform for a particular activity. */
+    RESIZE_MODE: 'auto', /** Possible values - "manual"/"auto". Default value is "auto". */
+    RESIZE_HEIGHT: '580' /** Applicable, if RESIZE_MODE is manual. If RESIZE_HEIGHT is defined in TOC then that will overrides. */
+    /** If both config RESIZE_HEIGHT and TOC RESIZE_HEIGHT are not defined then RESIZE_MODE is set to "auto"*/
 };
 
-/*
+/**
+ * @type {Object}
  * Internal Engine State.
  */
 var __state = exports.__state = {
-    currentTries: 0, /* Current try of sending results to platform */
-    activityPariallySubmitted: false, /* State whether activity has been partially submitted. Possible Values: true/false(Boolean) */
-    activitySubmitted: false, /* State whether activity has been submitted. Possible Values: true/false(Boolean) */
-    radioButtonClicked: false /* State whether radio button is clicked.  Possible Values: true/false(Boolean) */
+    currentTries: 0, /** Current try of sending results to platform */
+    activityPariallySubmitted: false, /** State whether activity has been partially submitted. Possible Values: true/false(Boolean) */
+    activitySubmitted: false, /** State whether activity has been submitted. Possible Values: true/false(Boolean) */
+    radioButtonClicked: false /** State whether radio button is clicked.  Possible Values: true/false(Boolean) */
 };
 
-/*
- * Content (loaded / initialized during init() ).
+/**
+ * @type {Object}
+ * Content (loaded / initialized using constructor).
  */
 var __content = exports.__content = {
-    directionsJSON: '',
-    questionsJSON: [], /* Contains the question obtained from content JSON. */
-    optionsJSON: [], /* Contains all the options for a particular question obtained from content JSON. */
-    answersJSON: [], /* Contains the answer for a particular question obtained from content JSON. */
-    userAnswersJSON: [], /* Contains the user answer for a particular question. */
-    feedbackJSON: {}, /* Contains the feedback for question*/
-    activityType: null /* Type of FIB activity. Possible Values :- FIBPassage. */
+    directionsJSON: '', /** Contains the directions obtained from content JSON. */
+    questionsJSON: [], /** Contains the question obtained from content JSON. */
+    optionsJSON: [], /** Contains all the options for a particular question obtained from content JSON. */
+    answersJSON: [], /** Contains the answer for a particular question obtained from content JSON. */
+    userAnswersJSON: [], /** Contains the user answer for a particular question. */
+    feedbackJSON: {}, /** Contains the feedback for question. */
+    activityType: null /** Type of DND activity. */
 };
 
-/*
- * Constants.
+/**
+ * @const {Object}
+ * Constants
  */
 var __constants = exports.__constants = {
-    /* CONSTANT for PLATFORM Save Status NO ERROR */
-    STATUS_NOERROR: 'NO_ERROR',
-    DOM_SEL_SUBMIT_BTN: '#submit',
     TEMPLATES: {
-        /* Regular DND Layout */
-        DND2: dnd2TemplateRef
+        DND2: dnd2TemplateRef /** Regular DND Layout */
     }
 };
 
-// Array of all interaction tags in question
+/** 
+ * @type {Array}
+ * Array of all interaction tags in question 
+ */
 var __interactionIds = exports.__interactionIds = [];
-var __processedJsonContent = exports.__processedJsonContent = void 0;
 
-/***************************************************************************/
+/** 
+ *  <-----------------PRIVATE FUNCTIONS----------------->
+ */
 
 /**
-     * Function to process HandleBars template with JSON.
-     */
+ *  Function to process HandleBars template with JSON.
+ *
+ *  @param {String} layoutHTML -  Activity HTML template.
+ *  @param {Object} contentJSON - Updated JSON content as per the activity/template requirement.
+ *  @return {String} compiledHTML - Activity HTML layout compiled with JSON content.  
+ */
 function processLayoutWithContent(layoutHTML, contentJSON) {
 
-    /* Compiling Template Using Handlebars. */
+    /** 
+     * @type {Function}
+     * Compiling Template Using Handlebars. 
+     */
     var compiledTemplate = Handlebars.compile(layoutHTML);
 
-    /*Compiling HTML from Template. */
+    /** 
+     * @type {String} 
+     * Compiling HTML from Template. 
+     */
     var compiledHTML = compiledTemplate(contentJSON);
 
     return compiledHTML;
@@ -275,33 +320,36 @@ function processLayoutWithContent(layoutHTML, contentJSON) {
 
 /**
  *  Function to modify JSON as per the activity / template requirement.
+ *
+ *  @param {Object} jsonContent - Activity JSON content.
+ *  @param {Object} params - Startup params passed by platform.
+ *  @return {Object} jsonContent - Modified activity JSON content.
  */
 function parseAndUpdateJSONContent(jsonContent, params) {
 
-    /* Make "options" node in JSON. */
+    /** Make "options" node in JSON. */
     jsonContent.content.options = [];
 
-    /* Type of DND activity */
+    /** Type of DND activity */
     __content.activityType = params.variation;
 
-    /* Activity Instructions. */
+    /** Activity Instructions. */
     if (jsonContent.content.instructions[0].tag) {
         __content.directionsJSON = jsonContent.content.instructions[0].tag;
     }
 
-    __content.maxscore = jsonContent.meta.score.max;
     jsonContent.content.directions = {};
     jsonContent.content.directions.text = __content.directionsJSON;
 
     $.each(jsonContent.content.canvas.data.questiondata, function (num) {
         var questionData = this.text;
-        /* Extract interaction id's and tags from question text. */
+        /** Extract interaction id's and tags from question text. */
         var interactionId = [];
         var interactionTag = [];
 
-        /* String present in href of interaction tag. */
-        var interactionReferenceString = 'http://www.comprodls.com/m1.0/interaction/kdnd';
-        /* Parse questiontext as HTML to get HTML tags. */
+        /** String present in href of interaction tag. */
+        var interactionReferenceString = 'http://www.comprodls.com/m1.0/interaction/dnd2';
+        /** Parse questiontext as HTML to get HTML tags. */
         var parsedQuestionArray = $.parseHTML(questionData);
         var j = 0;
 
@@ -321,19 +369,19 @@ function parseAndUpdateJSONContent(jsonContent, params) {
 }
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, exports) {
 
-module.exports = "{{#with content}}\r\n<div class=\"activity-body kdnd-body\">    \r\n    <p class=\"instructions\">{{{directions.text}}} </p>\r\n    <div class=\"smart-form inline-input\">\r\n        <ol>\r\n            <li>    \r\n                <label class=\"input\">\r\n                     <span class=\"question_content\" id=\"test\">{{{questionData.text}}}</span>\r\n                </label>\r\n            </li>\r\n        </ol>\r\n    </div>\r\n</div>\r\n{{/with}}";
+module.exports = "<!-- Engine Renderer Template -->\r\n{{#with content}}\r\n<div class=\"activity-body kdnd-body\">    \r\n    <p class=\"instructions\">{{{directions.text}}} </p>\r\n    <div class=\"smart-form inline-input\">\r\n        <ol>\r\n            <li>    \r\n                <label class=\"input\">\r\n                     <span class=\"question_content\" id=\"test\">{{{questionData.text}}}</span>\r\n                </label>\r\n            </li>\r\n        </ol>\r\n    </div>\r\n</div>\r\n{{/with}}";
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(4);
+var content = __webpack_require__(5);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
@@ -341,7 +389,7 @@ var transform;
 var options = {"hmr":true}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(6)(content, options);
+var update = __webpack_require__(7)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -358,21 +406,21 @@ if(false) {
 }
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(5)(undefined);
+exports = module.exports = __webpack_require__(6)(undefined);
 // imports
 
 
 // module
-exports.push([module.i, "/*******************************************************\r\n * \r\n * ----------------------\r\n * Engine Renderer Styles\r\n * ----------------------\r\n *\r\n * These styles do not include any product-specific branding\r\n * and/or layout / design. They represent minimal structural\r\n * CSS which is necessary for a default rendering of an\r\n * MCQSC activity\r\n *\r\n * The styles are linked/depending on the presence of\r\n * certain elements (classes / ids / tags) in the DOM (as would\r\n * be injected via a valid MCQSC layout HTML and/or dynamically\r\n * created by the MCQSC engine JS)\r\n *\r\n *\r\n *******************************************************/\r\n#test{\r\n    background-color: red;\r\n}\r\n\r\n.kdnd-body .form *{\r\n    margin: 0;\r\n    padding: 0;\r\n}\r\n\r\n.kdnd-body .form .kdnd-img{\r\n    padding-top: 10px;\r\n}\r\n\r\n.kdnd-body .form .kdnd-img-options{\r\n    padding: 5px;\r\n    max-height: 200px;\r\n}\r\n\r\n.kdnd-body .form ul.img-options{\r\n    margin-top: 30px;\r\n}\r\n\r\n.kdnd-body .form ul li{\r\n    padding: .7em .4em .4em 1.8em;\r\n    position: relative;\r\n}\r\n\r\n.kdnd-body .form ul.img-options li{ \r\n    margin-right: 30px;\r\n    padding-bottom: 2em;\r\n}\r\n\r\n.kdnd-body .form ul li.highlight{\r\n    background-color: #F2F2F2;\r\n    border-radius: 6px;\r\n}\r\n\r\n.kdnd-body .form ul li i{\r\n    height: 1.8em;\r\n    width: 1.8em;\r\n    border-radius: 50%;\r\n    position: absolute;\r\n    top: 0;\r\n    left: 0;\r\n    display: block;\r\n    outline: 0;\r\n    border: 1px solid #BDBDBD;\r\n    background: #FFF;\r\n    padding: 10px;\r\n}\r\n\r\n.kdnd-body .form ul li i:after {\r\n    background-color: #3276B1;\r\n    content: '';\r\n    border-radius: 50%;\r\n    height: 1.1em;\r\n    width: 1.1em;\r\n    top: .29em;\r\n    left: .29em;\r\n    position: absolute;\r\n    opacity: 0;\r\n}\r\n\r\n.kdnd-body .form ul li.highlight i{\r\n    border-color: #3276B1;\r\n}\r\n\r\n.kdnd-body .form ul li.highlight i:after{\r\n    opacity: 1;\r\n}\r\n\r\n.kdnd-body .form ul li .radio{\r\n    line-height: 1.8em;\r\n    font-weight: normal;\r\n    cursor: pointer;\r\n    padding-left: 25px;\r\n}\r\n\r\n\r\n.kdnd-body .form ul li .radio input {\r\n    position: absolute;\r\n    left: -9999px;\r\n}\r\n\r\n.kdnd-body .form ul li .radio span.content {\r\n   padding-left: 10px;\r\n}\r\n\r\n.kdnd-body .form ul li .radio.state-error i{\r\n    background: #fff0f0;\r\n    border-color: #a90329;\r\n}\r\n\r\n.kdnd-body .form ul li .radio.state-error i:after {\r\n    background-color: #a90329;\r\n}\r\n\r\n.kdnd-body .form ul li .radio.state-success i{\r\n    background: #f0fff0;\r\n    border-color: #7DC27D;\r\n}\r\n\r\n.kdnd-body .form ul li .radio.state-success i:after {\r\n    background-color: #7DC27D;\r\n}\r\n\r\n.kdnd-body span.correct:before {\r\n    content: \"\\F00C\";\r\n    font-family: fontawesome;\r\n    display: inline-block;\r\n    margin: 0 3.5em auto -3.2em;\r\n    color: green;\r\n}\r\n\r\n.kdnd-body span.wrong:before {\r\n    content: \"\\F00D\";\r\n    font-family: fontawesome;\r\n    display: inline-block;\r\n    margin: 0 3.6em auto -3.2em;\r\n    color: red;\r\n}\r\n\r\n.kdnd-body span.wrong.options:before {\r\n    position: absolute;\r\n    top: 0;\r\n}\r\n\r\n.kdnd-body .answer{\r\n    margin-left: 20px;\r\n}\r\n\r\n.kdnd-body span.correct, .kdnd-body span.wrong{\r\n    margin-left: 0;\r\n    width: 0;\r\n}\r\n\r\n.kdnd-body .col-md-6.last-child {\r\n    min-height: 200px;\r\n    border-left: 1px solid #C2C2C2;\r\n    padding-left: 20px;\r\n}\r\n\r\n.kdnd-body .stimulus {\r\n    margin: 25px 0 25px 0;\r\n}\r\n#feedback-area {\r\n    margin-top: 18px;   \r\n    border: 1px solid #ddd;\r\n    border-radius: 4px;\r\n    padding: 20px;\r\n    margin: 10px 0px 10px 0px;\r\n    background-color: #eee;\r\n    color: #3D3D3D;\r\n}\r\n#feedback-area > h4 {\r\n    padding-bottom: 10px;\r\n    font-weight: 700;\r\n}\r\n/* CORRECT ANSWER icon/mark */\r\n.kdnd-body #feedback-area span.correct:before {\r\n    content: \"\\F00C\";\r\n    font-family: fontawesome;\r\n    display: inline-block;\r\n    margin-right: 10px;\r\n    color: #009900;\r\n    float: left;\r\n    font-size: 18px;\r\n    border: 2px solid #009900;\r\n    padding: 3px 5px 3px 5px;\r\n    border-radius: 16px;\r\n    margin: 10px;\r\n}\r\n.kdnd-body #feedback-area span.wrong:before {\r\n    content: \"\\F00D\";\r\n    font-family: fontawesome;\r\n    display: inline-block;\r\n    margin-right: 10px;\r\n    color: red;\r\n    float: left;\r\n    font-size: 18px;\r\n    border: 2px solid red;\r\n    padding: 2px 6px 2px 6px;\r\n    border-radius: 16px;\r\n    margin: 10px;\r\n}\r\n\r\n.kdnd-body .activity-toolbar{\r\n    padding-top: 20px;\r\n}\r\n\r\n.kdnd-body .activity-toolbar .btn-primary{\r\n    font-size: 18px;\r\n}", ""]);
+exports.push([module.i, "/*******************************************************\r\n * \r\n * ----------------------\r\n * Engine Renderer Styles\r\n * ----------------------\r\n *\r\n * These styles do not include any product-specific branding\r\n * and/or layout / design. They represent minimal structural\r\n * CSS which is necessary for a default rendering of an\r\n * DND2 activity\r\n *\r\n * The styles are linked/depending on the presence of\r\n * certain elements (classes / ids / tags) in the DOM (as would\r\n * be injected via a valid DND2 layout HTML and/or dynamically\r\n * created by the DND2 engine JS)\r\n *\r\n *\r\n *******************************************************/\r\n#test{\r\n    background-color: red;\r\n}", ""]);
 
 // exports
 
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports) {
 
 /*
@@ -454,7 +502,7 @@ function toComment(sourceMap) {
 
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -510,7 +558,7 @@ var singleton = null;
 var	singletonCounter = 0;
 var	stylesInsertedAtTop = [];
 
-var	fixUrls = __webpack_require__(7);
+var	fixUrls = __webpack_require__(8);
 
 module.exports = function(list, options) {
 	if (typeof DEBUG !== "undefined" && DEBUG) {
@@ -826,7 +874,7 @@ function updateLink (link, options, obj) {
 
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports) {
 
 
