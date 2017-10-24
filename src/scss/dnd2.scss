@@ -17,16 +17,22 @@
  *
  *******************************************************/
 
-@import "dnd2_utils";
+$primaryColor: #eeffcc;
+$bodyColor: #d3d3d3;
 
 @mixin change ($color) {
   border: 2px solid $color;
 }
 
-$primaryColor: #eeffcc;
 
 %input-style {
     background-color: $primaryColor;
+}
+
+
+.kdnd-body {
+    	background-color: $bodyColor;
+    	
 }
 
 #test {
