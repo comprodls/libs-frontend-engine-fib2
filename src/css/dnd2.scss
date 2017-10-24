@@ -17,7 +17,7 @@
  *
  *******************************************************/
 
-@import "dnd2_1";
+@import "dnd2_utils";
 
 @mixin change ($color) {
   border: 2px solid $color;
