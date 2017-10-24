@@ -3,7 +3,7 @@
 
 let dnd2TemplateRef = require('../html/dnd2.html');
 
-require('../css/dnd2.css');
+require('../css/dnd2.scss');
 
 /**
  * @type {Object}
