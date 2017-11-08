@@ -1,7 +1,12 @@
 /* global Handlebars */
 /* global $ */
 
+/* DND2 Template Reference */
 let dnd2TemplateRef = require('../html/dnd2.html');
+/* DND2 Light Theme Template Reference */
+let dnd2LightTemplateRef = require('../html/dnd2-light.html');
+/* DND2 Dark Theme Template Reference */
+let dnd2DarkTemplateRef = require('../html/dnd2-dark.html');
 
 require('../scss/index.scss');
 
@@ -10,6 +15,12 @@ require('../scss/index.scss');
  * Reference to platform's activity adaptor (initialized using constructor).
  */
 export let activityAdaptor;
+
+/**
+ * @type {Object}
+ * Theme Configurations.
+ */ 
+export let themeConfig = {};
 
 /**
  * @const {Object}
@@ -53,7 +64,17 @@ export let __content = {
  */
 export const __constants = {
     TEMPLATES: {
-        DND2: dnd2TemplateRef /** Regular DND Layout */
+        DND2: dnd2TemplateRef, /** Regular DND Layout */
+        DND2_LIGHT: dnd2LightTemplateRef, /** Regular DND Light Layout */
+        DND2_DARK: dnd2DarkTemplateRef /** Regular DND Dark Layout */
+    },
+    THEME_CONFIG: {
+        'LIGHT': {
+            'backgroundColor': '#F7F1CF' /** Background color for LIGHT Theme */
+        },
+        'DARK': {
+            'backgroundColor': '#8967F3' /** Background color for DARK Theme */
+        }
     }
 };
 

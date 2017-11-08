@@ -47,6 +47,15 @@ class dnd2 {
           */
         utils.activityAdaptor = adaptor;
 
+        /**
+          * Setting theme configurations.
+          */
+        if (htmlLayout.indexOf('_LIGHT') !== -1) {
+            utils.themeConfig = utils.__constants.THEME_CONFIG['LIGHT'];
+        } else if (htmlLayout.indexOf('_DARK') !== -1) {
+            utils.themeConfig = utils.__constants.THEME_CONFIG['DARK'];
+        }
+
         /** 
           * @member {Object}
           * Parse and update content JSON. 
@@ -66,7 +75,7 @@ class dnd2 {
 
         /** Inform the shell that initialization is complete */
         if (callback) {
-            callback();
+            callback(utils.themeConfig);
         }
     }
 
