@@ -163,6 +163,7 @@ var dnd2 = function () {
         /**
           * Setting theme configurations.
           */
+        utils.themeConfig = {};
         if (htmlLayout.indexOf('_LIGHT') !== -1) {
             utils.themeConfig = utils.__constants.THEME_CONFIG['LIGHT'];
         } else if (htmlLayout.indexOf('_DARK') !== -1) {
