@@ -160,6 +160,15 @@ var dnd2 = function () {
           */
         utils.activityAdaptor = adaptor;
 
+        /**
+          * Setting theme configurations.
+          */
+        if (htmlLayout.indexOf('_LIGHT') !== -1) {
+            utils.themeConfig = utils.__constants.THEME_CONFIG['LIGHT'];
+        } else if (htmlLayout.indexOf('_DARK') !== -1) {
+            utils.themeConfig = utils.__constants.THEME_CONFIG['DARK'];
+        }
+
         /** 
           * @member {Object}
           * Parse and update content JSON. 
@@ -179,7 +188,7 @@ var dnd2 = function () {
 
         /** Inform the shell that initialization is complete */
         if (callback) {
-            callback();
+            callback(utils.themeConfig);
         }
     }
 
@@ -228,15 +237,26 @@ exports.parseAndUpdateJSONContent = parseAndUpdateJSONContent;
 /* global Handlebars */
 /* global $ */
 
+/* DND2 Template Reference */
 var dnd2TemplateRef = __webpack_require__(3);
+/* DND2 Light Theme Template Reference */
+var dnd2LightTemplateRef = __webpack_require__(4);
+/* DND2 Dark Theme Template Reference */
+var dnd2DarkTemplateRef = __webpack_require__(5);
 
-__webpack_require__(4);
+__webpack_require__(6);
 
 /**
  * @type {Object}
  * Reference to platform's activity adaptor (initialized using constructor).
  */
 var activityAdaptor = exports.activityAdaptor = void 0;
+
+/**
+ * @type {Object}
+ * Theme Configurations.
+ */
+var themeConfig = exports.themeConfig = {};
 
 /**
  * @const {Object}
@@ -280,7 +300,17 @@ var __content = exports.__content = {
  */
 var __constants = exports.__constants = {
     TEMPLATES: {
-        DND2: dnd2TemplateRef /** Regular DND Layout */
+        DND2: dnd2TemplateRef, /** Regular DND Layout */
+        DND2_LIGHT: dnd2LightTemplateRef, /** Regular DND Light Layout */
+        DND2_DARK: dnd2DarkTemplateRef /** Regular DND Dark Layout */
+    },
+    THEME_CONFIG: {
+        'LIGHT': {
+            'backgroundColor': '#F7F1CF' /** Background color for LIGHT Theme */
+        },
+        'DARK': {
+            'backgroundColor': '#8967F3' /** Background color for DARK Theme */
+        }
     }
 };
 
@@ -376,12 +406,24 @@ module.exports = "<!-- Engine Renderer Template -->\r\n{{#with content}}\r\n<div
 
 /***/ }),
 /* 4 */
+/***/ (function(module, exports) {
+
+module.exports = "<!-- Engine Renderer Template -->\r\n{{#with content}}\r\n<div class=\"activity-body kdnd-body\" style=\"background-color:#f7f1cf;\">\r\n    <p class=\"instructions\">{{{directions.text}}} </p>\r\n    <div class=\"smart-form inline-input\" id=\"test\">\r\n        <ol>\r\n            <li>\r\n                <label class=\"input\">\r\n                     <span class=\"question_content\">{{{questionData.text}}}</span>\r\n                </label>\r\n            </li>\r\n        </ol>\r\n    </div>\r\n</div>\r\n{{/with}}";
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports) {
+
+module.exports = "<!-- Engine Renderer Template -->\r\n{{#with content}}\r\n<div class=\"activity-body kdnd-body\" style=\"background-color:#8967F3;\">\r\n    <p class=\"instructions\">{{{directions.text}}} </p>\r\n    <div class=\"smart-form inline-input\" id=\"test\">\r\n        <ol>\r\n            <li>\r\n                <label class=\"input\">\r\n                     <span class=\"question_content\">{{{questionData.text}}}</span>\r\n                </label>\r\n            </li>\r\n        </ol>\r\n    </div>\r\n</div>\r\n{{/with}}";
+
+/***/ }),
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(5);
+var content = __webpack_require__(7);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
@@ -389,7 +431,7 @@ var transform;
 var options = {"hmr":true}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(7)(content, options);
+var update = __webpack_require__(9)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -406,10 +448,10 @@ if(false) {
 }
 
 /***/ }),
-/* 5 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(6)(undefined);
+exports = module.exports = __webpack_require__(8)(undefined);
 // imports
 
 
@@ -420,7 +462,7 @@ exports.push([module.i, "/******************************************************
 
 
 /***/ }),
-/* 6 */
+/* 8 */
 /***/ (function(module, exports) {
 
 /*
@@ -502,7 +544,7 @@ function toComment(sourceMap) {
 
 
 /***/ }),
-/* 7 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -558,7 +600,7 @@ var singleton = null;
 var	singletonCounter = 0;
 var	stylesInsertedAtTop = [];
 
-var	fixUrls = __webpack_require__(8);
+var	fixUrls = __webpack_require__(10);
 
 module.exports = function(list, options) {
 	if (typeof DEBUG !== "undefined" && DEBUG) {
@@ -874,7 +916,7 @@ function updateLink (link, options, obj) {
 
 
 /***/ }),
-/* 8 */
+/* 10 */
 /***/ (function(module, exports) {
 
 
