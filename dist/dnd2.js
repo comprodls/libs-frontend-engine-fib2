@@ -238,11 +238,11 @@ exports.parseAndUpdateJSONContent = parseAndUpdateJSONContent;
 /* global Handlebars */
 /* global $ */
 
-/* DND2 Template Reference */
+/** DND2 Template Reference */
 var dnd2TemplateRef = __webpack_require__(3);
-/* DND2 Light Theme Template Reference */
+/** DND2 Light Theme Template Reference */
 var dnd2LightTemplateRef = __webpack_require__(4);
-/* DND2 Dark Theme Template Reference */
+/** DND2 Dark Theme Template Reference */
 var dnd2DarkTemplateRef = __webpack_require__(5);
 
 __webpack_require__(6);
@@ -257,7 +257,7 @@ var activityAdaptor = exports.activityAdaptor = void 0;
  * @type {Object}
  * Theme Configurations.
  */
-var themeConfig = exports.themeConfig = {};
+var themeConfig = exports.themeConfig = void 0;
 
 /**
  * @const {Object}

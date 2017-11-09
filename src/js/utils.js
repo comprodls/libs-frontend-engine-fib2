@@ -1,11 +1,11 @@
 /* global Handlebars */
 /* global $ */
 
-/* DND2 Template Reference */
+/** DND2 Template Reference */
 let dnd2TemplateRef = require('../html/dnd2.html');
-/* DND2 Light Theme Template Reference */
+/** DND2 Light Theme Template Reference */
 let dnd2LightTemplateRef = require('../html/dnd2-light.html');
-/* DND2 Dark Theme Template Reference */
+/** DND2 Dark Theme Template Reference */
 let dnd2DarkTemplateRef = require('../html/dnd2-dark.html');
 
 require('../scss/index.scss');
@@ -20,7 +20,7 @@ export let activityAdaptor;
  * @type {Object}
  * Theme Configurations.
  */ 
-export let themeConfig = {};
+export let themeConfig;
 
 /**
  * @const {Object}
