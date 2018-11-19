@@ -1,14 +1,14 @@
 /* global Handlebars */
 /* global $ */
 
-/** DND2 Template Reference */
-let dnd2TemplateRef = require('../html/dnd2.html');
-/** DND2 Light Theme Template Reference */
-let dnd2LightTemplateRef = require('../html/dnd2-light.html');
-/** DND2 Dark Theme Template Reference */
-let dnd2DarkTemplateRef = require('../html/dnd2-dark.html');
+/** FIB2 Template Reference */
+let fib2TemplateRef = require('../../html/fib2.html');
+/** FIB2 Light Theme Template Reference */
+let fib2LightTemplateRef = require('../../html/fib2-light.html');
+/** FIB2 Dark Theme Template Reference */
+let fib2DarkTemplateRef = require('../../html/fib2-dark.html');
 
-require('../scss/index.scss');
+require('../../scss/index.scss');
 
 /**
  * @type {Object}
@@ -55,7 +55,7 @@ export let __content = {
     answersJSON: [], /** Contains the answer for a particular question obtained from content JSON. */
     userAnswersJSON: [], /** Contains the user answer for a particular question. */
     feedbackJSON: {}, /** Contains the feedback for question. */
-    activityType: null /** Type of DND activity. */
+    activityType: null /** Type of FIB activity. */
 };
 
 /**
@@ -64,9 +64,9 @@ export let __content = {
  */
 export const __constants = {
     TEMPLATES: {
-        DND2: dnd2TemplateRef, /** Regular DND Layout */
-        DND2_LIGHT: dnd2LightTemplateRef, /** Regular DND Light Layout */
-        DND2_DARK: dnd2DarkTemplateRef /** Regular DND Dark Layout */
+        FIB2: fib2TemplateRef, /** Regular FIB Layout */
+        FIB2_LIGHT: fib2LightTemplateRef, /** Regular FIB Light Layout */
+        FIB2_DARK: fib2DarkTemplateRef /** Regular FIB Dark Layout */
     },
     THEME_CONFIG: {
         'LIGHT': {
@@ -124,7 +124,7 @@ export function parseAndUpdateJSONContent(jsonContent, params) {
     /** Make "options" node in JSON. */
     jsonContent.content.options = [];
 
-    /** Type of DND activity */
+    /** Type of FIB activity */
     __content.activityType = params.variation;
 
     /** Activity Instructions. */
@@ -142,7 +142,7 @@ export function parseAndUpdateJSONContent(jsonContent, params) {
         let interactionTag = [];
 
         /** String present in href of interaction tag. */
-        let interactionReferenceString = 'http://www.comprodls.com/m1.0/interaction/dnd2';
+        let interactionReferenceString = 'http://www.comprodls.com/m1.0/interaction/fib2';
         /** Parse questiontext as HTML to get HTML tags. */
         let parsedQuestionArray = $.parseHTML(questionData);
         let j = 0;

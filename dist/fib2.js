@@ -83,15 +83,15 @@ return /******/ (function(modules) { // webpackBootstrap
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.dnd2 = undefined;
+exports.fib2 = undefined;
 
-var _dnd = __webpack_require__(1);
+var _fib = __webpack_require__(1);
 
-var _dnd2 = _interopRequireDefault(_dnd);
+var _fib2 = _interopRequireDefault(_fib);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.dnd2 = _dnd2.default;
+exports.fib2 = _fib2.default;
 
 /***/ }),
 /* 1 */
@@ -121,7 +121,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  *  -getStatus()
  */
 
-var dnd2 = function () {
+var fib2 = function () {
 
     /**  ENGINE-SHELL CONSTRUCTOR FUNCTION
      *   @constructor
@@ -135,8 +135,8 @@ var dnd2 = function () {
      *   @param {Function} callback - To inform the shell that init is complete.
      */
 
-    function dnd2(elRoot, params, adaptor, htmlLayout, jsonContentObj, callback) {
-        _classCallCheck(this, dnd2);
+    function fib2(elRoot, params, adaptor, htmlLayout, jsonContentObj, callback) {
+        _classCallCheck(this, fib2);
 
         /** 
           * @member {Object}
@@ -199,7 +199,7 @@ var dnd2 = function () {
      */
 
 
-    _createClass(dnd2, [{
+    _createClass(fib2, [{
         key: 'getConfig',
         value: function getConfig() {
             return utils.__config;
@@ -217,10 +217,10 @@ var dnd2 = function () {
         }
     }]);
 
-    return dnd2;
+    return fib2;
 }();
 
-exports.default = dnd2;
+exports.default = fib2;
 module.exports = exports['default'];
 
 /***/ }),
@@ -238,12 +238,12 @@ exports.parseAndUpdateJSONContent = parseAndUpdateJSONContent;
 /* global Handlebars */
 /* global $ */
 
-/** DND2 Template Reference */
-var dnd2TemplateRef = __webpack_require__(3);
-/** DND2 Light Theme Template Reference */
-var dnd2LightTemplateRef = __webpack_require__(4);
-/** DND2 Dark Theme Template Reference */
-var dnd2DarkTemplateRef = __webpack_require__(5);
+/** FIB2 Template Reference */
+var fib2TemplateRef = __webpack_require__(3);
+/** FIB2 Light Theme Template Reference */
+var fib2LightTemplateRef = __webpack_require__(4);
+/** FIB2 Dark Theme Template Reference */
+var fib2DarkTemplateRef = __webpack_require__(5);
 
 __webpack_require__(6);
 
@@ -292,7 +292,7 @@ var __content = exports.__content = {
     answersJSON: [], /** Contains the answer for a particular question obtained from content JSON. */
     userAnswersJSON: [], /** Contains the user answer for a particular question. */
     feedbackJSON: {}, /** Contains the feedback for question. */
-    activityType: null /** Type of DND activity. */
+    activityType: null /** Type of FIB activity. */
 };
 
 /**
@@ -301,9 +301,9 @@ var __content = exports.__content = {
  */
 var __constants = exports.__constants = {
     TEMPLATES: {
-        DND2: dnd2TemplateRef, /** Regular DND Layout */
-        DND2_LIGHT: dnd2LightTemplateRef, /** Regular DND Light Layout */
-        DND2_DARK: dnd2DarkTemplateRef /** Regular DND Dark Layout */
+        FIB2: fib2TemplateRef, /** Regular FIB Layout */
+        FIB2_LIGHT: fib2LightTemplateRef, /** Regular FIB Light Layout */
+        FIB2_DARK: fib2DarkTemplateRef /** Regular FIB Dark Layout */
     },
     THEME_CONFIG: {
         'LIGHT': {
@@ -361,7 +361,7 @@ function parseAndUpdateJSONContent(jsonContent, params) {
     /** Make "options" node in JSON. */
     jsonContent.content.options = [];
 
-    /** Type of DND activity */
+    /** Type of FIB activity */
     __content.activityType = params.variation;
 
     /** Activity Instructions. */
@@ -379,7 +379,7 @@ function parseAndUpdateJSONContent(jsonContent, params) {
         var interactionTag = [];
 
         /** String present in href of interaction tag. */
-        var interactionReferenceString = 'http://www.comprodls.com/m1.0/interaction/dnd2';
+        var interactionReferenceString = 'http://www.comprodls.com/m1.0/interaction/fib2';
         /** Parse questiontext as HTML to get HTML tags. */
         var parsedQuestionArray = $.parseHTML(questionData);
         var j = 0;
@@ -403,19 +403,19 @@ function parseAndUpdateJSONContent(jsonContent, params) {
 /* 3 */
 /***/ (function(module, exports) {
 
-module.exports = "<!-- Engine Renderer Template -->\r\n{{#with content}}\r\n<div class=\"activity-body kdnd-body\">    \r\n    <p class=\"instructions\">{{{directions.text}}} </p>\r\n    <div class=\"smart-form inline-input\" id=\"test\">\r\n        <ol>\r\n            <li>    \r\n                <label class=\"input\">\r\n                     <span class=\"question_content\">{{{questionData.text}}}</span>\r\n                </label>\r\n            </li>\r\n        </ol>\r\n    </div>\r\n</div>\r\n{{/with}}";
+module.exports = "<!-- Engine Renderer Template -->\r\n{{#with content}}\r\n<div class=\"activity-body fib-body\">    \r\n    <p class=\"instructions\">{{{directions.text}}} </p>\r\n    <div class=\"smart-form inline-input\" id=\"test\">\r\n        <ol>\r\n            <li>    \r\n                <label class=\"input\">\r\n                     <span class=\"question_content\">{{{questionData.text}}}</span>\r\n                </label>\r\n            </li>\r\n        </ol>\r\n    </div>\r\n</div>\r\n{{/with}}";
 
 /***/ }),
 /* 4 */
 /***/ (function(module, exports) {
 
-module.exports = "<!-- Engine Renderer Template -->\r\n{{#with content}}\r\n<div class=\"activity-body kdnd-body\" style=\"background-color:#f7f1cf;\">\r\n    <p class=\"instructions\">{{{directions.text}}} </p>\r\n    <div class=\"smart-form inline-input\" id=\"test\">\r\n        <ol>\r\n            <li>\r\n                <label class=\"input\">\r\n                     <span class=\"question_content\">{{{questionData.text}}}</span>\r\n                </label>\r\n            </li>\r\n        </ol>\r\n    </div>\r\n</div>\r\n{{/with}}";
+module.exports = "<!-- Engine Renderer Template -->\r\n{{#with content}}\r\n<div class=\"activity-body fib-body\" style=\"background-color:#f7f1cf;\">\r\n    <p class=\"instructions\">{{{directions.text}}} </p>\r\n    <div class=\"smart-form inline-input\" id=\"test\">\r\n        <ol>\r\n            <li>\r\n                <label class=\"input\">\r\n                     <span class=\"question_content\">{{{questionData.text}}}</span>\r\n                </label>\r\n            </li>\r\n        </ol>\r\n    </div>\r\n</div>\r\n{{/with}}";
 
 /***/ }),
 /* 5 */
 /***/ (function(module, exports) {
 
-module.exports = "<!-- Engine Renderer Template -->\r\n{{#with content}}\r\n<div class=\"activity-body kdnd-body\" style=\"background-color:#8967F3;\">\r\n    <p class=\"instructions\">{{{directions.text}}} </p>\r\n    <div class=\"smart-form inline-input\" id=\"test\">\r\n        <ol>\r\n            <li>\r\n                <label class=\"input\">\r\n                     <span class=\"question_content\">{{{questionData.text}}}</span>\r\n                </label>\r\n            </li>\r\n        </ol>\r\n    </div>\r\n</div>\r\n{{/with}}";
+module.exports = "<!-- Engine Renderer Template -->\r\n{{#with content}}\r\n<div class=\"activity-body fib-body\" style=\"background-color:#8967F3;\">\r\n    <p class=\"instructions\">{{{directions.text}}} </p>\r\n    <div class=\"smart-form inline-input\" id=\"test\">\r\n        <ol>\r\n            <li>\r\n                <label class=\"input\">\r\n                     <span class=\"question_content\">{{{questionData.text}}}</span>\r\n                </label>\r\n            </li>\r\n        </ol>\r\n    </div>\r\n</div>\r\n{{/with}}";
 
 /***/ }),
 /* 6 */
@@ -452,12 +452,12 @@ if(false) {
 /* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(8)(undefined);
+exports = module.exports = __webpack_require__(8)(false);
 // imports
 
 
 // module
-exports.push([module.i, "/*******************************************************\r\n * \r\n * ----------------------\r\n * Engine Renderer Styles\r\n * ----------------------\r\n *\r\n * These styles do not include any product-specific branding\r\n * and/or layout / design. They represent minimal structural\r\n * SCSS which is necessary for a default rendering of an\r\n * DND2 activity\r\n *\r\n * The styles are linked/depending on the presence of\r\n * certain elements (classes / ids / tags) in the DOM (as would\r\n * be injected via a valid DND2 layout HTML and/or dynamically\r\n * created by the DND2 engine JS)\r\n *\r\n *\r\n *******************************************************/\n/*******************************************************\r\n * \r\n * ----------------------\r\n * Engine Renderer Styles\r\n * ----------------------\r\n *\r\n * These styles do not include any product-specific branding\r\n * and/or layout / design. They represent minimal structural\r\n * SCSS which is necessary for a default rendering of an\r\n * DND2 activity\r\n *\r\n * The styles are linked/depending on the presence of\r\n * certain elements (classes / ids / tags) in the DOM (as would\r\n * be injected via a valid DND2 layout HTML and/or dynamically\r\n * created by the DND2 engine JS)\r\n *\r\n *\r\n *******************************************************/\n#test {\n  background-color: #eeffcc; }\n\n.kdnd-body {\n  background-color: #d3d3d3; }\n\n#test span {\n  background-color: pink;\n  border: 2px solid #ff0000; }\n", ""]);
+exports.push([module.i, "/*******************************************************\r\n * \r\n * ----------------------\r\n * Engine Renderer Styles\r\n * ----------------------\r\n *\r\n * These styles do not include any product-specific branding\r\n * and/or layout / design. They represent minimal structural\r\n * SCSS which is necessary for a default rendering of an\r\n * FIB2 activity\r\n *\r\n * The styles are linked/depending on the presence of\r\n * certain elements (classes / ids / tags) in the DOM (as would\r\n * be injected via a valid FIB2 layout HTML and/or dynamically\r\n * created by the FIB2 engine JS)\r\n *\r\n *\r\n *******************************************************/\n/*******************************************************\r\n * \r\n * ----------------------\r\n * Engine Renderer Styles\r\n * ----------------------\r\n *\r\n * These styles do not include any product-specific branding\r\n * and/or layout / design. They represent minimal structural\r\n * SCSS which is necessary for a default rendering of an\r\n * FIB2 activity\r\n *\r\n * The styles are linked/depending on the presence of\r\n * certain elements (classes / ids / tags) in the DOM (as would\r\n * be injected via a valid FIB2 layout HTML and/or dynamically\r\n * created by the FIB2 engine JS)\r\n *\r\n *\r\n *******************************************************/\n#test {\n  background-color: #eeffcc; }\n\n.fib-body {\n  background-color: #d3d3d3; }\n\n#test span {\n  background-color: pink;\n  border: 2px solid #ff0000; }\n", ""]);
 
 // exports
 
@@ -614,7 +614,7 @@ module.exports = function(list, options) {
 
 	// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
 	// tags it will allow on a page
-	if (!options.singleton) options.singleton = isOldIE();
+	if (!options.singleton && typeof options.singleton !== "boolean") options.singleton = isOldIE();
 
 	// By default, add <style> tags to the <head> element
 	if (!options.insertInto) options.insertInto = "head";
@@ -1014,4 +1014,4 @@ module.exports = function (css) {
 /***/ })
 /******/ ]);
 });
-//# sourceMappingURL=dnd2.js.map
+//# sourceMappingURL=fib2.js.map

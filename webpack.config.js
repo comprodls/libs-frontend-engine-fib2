@@ -4,26 +4,35 @@ const webpack = require('webpack');
 const UglifyJsPlugin = webpack.optimize.UglifyJsPlugin;
 const path = require('path');
 const env = require('yargs').argv.env; 
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 // contains externals function that ignores node_modules when bundling in Webpack
 const nodeExternals = require('webpack-node-externals');
 
-let libraryName = 'dnd2';
+let fib2 = 'fib2', fib2editor = 'fib2editor';
 
-let plugins = [], outputFile;
+let pathsToClean = [
+  'dist'
+];
+
+let plugins = [];
 
 if (env === 'build') {
   plugins.push(new UglifyJsPlugin({ minimize: true }));
-  outputFile = libraryName + '.min.js';
+  fib2 = fib2 + '.min';
+  fib2editor = fib2editor + '.min';
 } else {
-  outputFile = libraryName + '.js';
+  plugins.unshift(new CleanWebpackPlugin(pathsToClean));
 }
 
 const config = {
-  entry: __dirname + '/src/js/index.js',
+  entry: {
+    [fib2] : __dirname + '/src/js/index.js',
+    [fib2editor] : __dirname + '/src/js/fib-editor/fib2editor.js',
+  },
   devtool: 'source-map',
   output: {
     path: __dirname + '/dist',
-    filename: outputFile,
+    filename: '[name].js',
     libraryTarget: 'umd',
     umdNamedDefine: true
   },
