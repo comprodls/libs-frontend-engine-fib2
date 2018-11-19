@@ -2,7 +2,7 @@
   "content": {
     "instructions": [
       {
-        "tag": "Directions for dnd2"
+        "tag": "Directions for fib2"
       } 
     ],
     "stimulus": [
@@ -11,11 +11,11 @@
       }
     ],
     "canvas": {
-      "layout": "DND2",
+      "layout": "FIB2",
       "data": {
         "questiondata": [
           {
-            "text": "Hello ES6 and Webpack <a href='http://www.comprodls.com/m1.0/interaction/dnd2'>i1</a> "
+            "text": "Hello ES6 and Webpack <a href='http://www.comprodls.com/m1.0/interaction/fib2'>i1</a> "
           }
         ]
       },
@@ -23,8 +23,8 @@
     },     
     "interactions": {
       "i1": {
-        "type": "DND2",
-        "DND2": [
+        "type": "FIB2",
+        "FIB2": [
           {
             "choiceA": "Choice A" 
           },

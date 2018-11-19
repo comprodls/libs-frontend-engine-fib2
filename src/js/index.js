@@ -1,3 +1,3 @@
-import dnd2 from './dnd2.js';
+import fib2 from './fib-engine/fib2';
 
-export { dnd2 };
+export { fib2 };

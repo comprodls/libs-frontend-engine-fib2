@@ -9,7 +9,7 @@ import * as utils from './utils.js';
  *  -getStatus()
  */
 
-class dnd2 {
+class fib2 {
 
     /**  ENGINE-SHELL CONSTRUCTOR FUNCTION
      *   @constructor
@@ -97,4 +97,4 @@ class dnd2 {
     }
 }
 
-export default dnd2;
+export default fib2;
