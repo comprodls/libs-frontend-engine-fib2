@@ -1,6 +1,3 @@
-/* global $ */
-/* global jQuery */
-
 class fib2Editor {
 }
 
