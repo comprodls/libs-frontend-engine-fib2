@@ -2,12 +2,13 @@
   "content": {
     "instructions": [
       {
-        "tag": "Directions for fib2"
-      } 
+        "tag": "html",
+        "html": "Directions for fib2"
+      }
     ],
     "stimulus": [
       {
-        "tag": "options"
+        "tag": ""
       }
     ],
     "canvas": {
@@ -15,29 +16,21 @@
       "data": {
         "questiondata": [
           {
-            "text": "Hello ES6 and Webpack <a href='http://www.comprodls.com/m1.0/interaction/fib2'>i1</a> "
+            "text": "Hello ES6 and Webpack <a href='http://www.comprodls.com/m1.0/interaction/fib2'>i1</a>"
+          },
+          {
+            "text": "Hello FIB2 Engine <a href='http://www.comprodls.com/m1.0/interaction/fib2'>i1</a> "
           }
         ]
       },
       "raw": ""
-    },     
+    },
     "interactions": {
       "i1": {
-        "type": "FIB2",
-        "FIB2": [
-          {
-            "choiceA": "Choice A" 
-          },
-          {
-            "choiceB": "Choice B"
-          },
-          {
-            "choiceC": "Choice C"
-          },
-          {
-            "choiceD": "Choice D"
-          }          
-        ]
+        "type": "FIB2"
+      },
+      "i2": {
+        "type": "FIB2"
       }
     },
     "hint": {}
@@ -51,7 +44,10 @@
   },
   "responses": {
     "i1": {
-      "correct": "choiceC"
+      "correct": "Hello"
+    },
+    "i2": {
+      "correct": "Hello"
     }
   }
 }
