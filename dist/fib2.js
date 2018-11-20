@@ -7,7 +7,7 @@
 		var a = factory();
 		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
 	}
-})(this, function() {
+})(typeof self !== 'undefined' ? self : this, function() {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -107,9 +107,9 @@ Object.defineProperty(exports, "__esModule", {
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /* global $ */
 /* global jQuery */
 
-var _utils = __webpack_require__(2);
+var _fib2Utils = __webpack_require__(2);
 
-var utils = _interopRequireWildcard(_utils);
+var utils = _interopRequireWildcard(_fib2Utils);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -130,7 +130,7 @@ var fib2 = function () {
      *                   (a) State (Initial launch / Resume / Gradebook mode ).
      *                   (b) TOC parameters (contentFile, layout, etc.).
      *   @param {Object} adaptor - An adaptor interface for communication with platform (__saveResults, closeActivity, savePartialResults, getLastResults, etc.).
-     *   @param {String} htmlLayout - Activity HTML layout (as defined in the TOC LINK paramter). 
+     *   @param {String} htmlLayout - Activity HTML layout (as defined in the TOC LINK paramter).
      *   @param {Object} jsonContent - Activity JSON content (as defined in the TOC LINK paramter).
      *   @param {Function} callback - To inform the shell that init is complete.
      */
@@ -138,20 +138,20 @@ var fib2 = function () {
     function fib2(elRoot, params, adaptor, htmlLayout, jsonContentObj, callback) {
         _classCallCheck(this, fib2);
 
-        /** 
+        /**
           * @member {Object}
           * Clone the JSON so that original is preserved.
           */
         this.jsonContent = jQuery.extend(true, {}, jsonContentObj);
 
-        /** 
+        /**
           * Validation block.
           */
         if (this.jsonContent.content === undefined) {
             if (callback) {
                 callback();
             }
-            //TODO - In future more advanced schema validations could be done here.        
+            //TODO - In future more advanced schema validations could be done here.
             return;
         }
 
@@ -170,19 +170,19 @@ var fib2 = function () {
             utils.themeConfig = utils.__constants.THEME_CONFIG['DARK'];
         }
 
-        /** 
+        /**
           * @member {Object}
-          * Parse and update content JSON. 
+          * Parse and update content JSON.
           */
         this.processedJsonContent = utils.parseAndUpdateJSONContent(this.jsonContent, params);
 
-        /** 
+        /**
           * @member {String}
           * Apply the content JSON to the htmllayout.
           */
         this.processedHTML = utils.processLayoutWithContent(utils.__constants.TEMPLATES[htmlLayout], this.processedJsonContent);
 
-        /** 
+        /**
           * Update the DOM and render the processed HTML - main body of the activity.
           */
         $(elRoot).html(this.processedHTML);
@@ -315,13 +315,13 @@ var __constants = exports.__constants = {
     }
 };
 
-/** 
+/**
  * @type {Array}
- * Array of all interaction tags in question 
+ * Array of all interaction tags in question
  */
 var __interactionIds = exports.__interactionIds = [];
 
-/** 
+/**
  *  <-----------------PRIVATE FUNCTIONS----------------->
  */
 
@@ -330,19 +330,19 @@ var __interactionIds = exports.__interactionIds = [];
  *
  *  @param {String} layoutHTML -  Activity HTML template.
  *  @param {Object} contentJSON - Updated JSON content as per the activity/template requirement.
- *  @return {String} compiledHTML - Activity HTML layout compiled with JSON content.  
+ *  @return {String} compiledHTML - Activity HTML layout compiled with JSON content.
  */
 function processLayoutWithContent(layoutHTML, contentJSON) {
 
-    /** 
+    /**
      * @type {Function}
-     * Compiling Template Using Handlebars. 
+     * Compiling Template Using Handlebars.
      */
     var compiledTemplate = Handlebars.compile(layoutHTML);
 
-    /** 
-     * @type {String} 
-     * Compiling HTML from Template. 
+    /**
+     * @type {String}
+     * Compiling HTML from Template.
      */
     var compiledHTML = compiledTemplate(contentJSON);
 
