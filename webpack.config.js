@@ -20,7 +20,7 @@ if (env === 'build') {
   plugins.push(new UglifyJsPlugin({ minimize: true }));
   fib2 = fib2 + '.min';
   fib2editor = fib2editor + '.min';
-} else {
+} else if (env === 'dev') {
   plugins.unshift(new CleanWebpackPlugin(pathsToClean));
 }
 
@@ -77,7 +77,10 @@ const config = {
     extensions: ['.json', '.js']
   },
   plugins: plugins,
-  externals: nodeExternals() // in order to avoid bundling of modules in node_modules folder 
+  externals: nodeExternals(), // in order to avoid bundling of modules in node_modules folder 
+  devServer: {
+    port: 9000
+  }
 };
 
 module.exports = config;

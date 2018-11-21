@@ -1,14 +1,15 @@
 {
   "name": "comprodls-libs-frontend-engine-fib2",
   "version": "0.0.1",
-  "description": "DND Engine with node v8, webpack and es6",
-  "main": "dist/dnd2.js",
+  "description": "FIB2 Engine with node v8, webpack and es6",
+  "main": "dist/fib2.js",
   "engines": {
     "node": ">=8.0"
   },
   "scripts": {
     "build": "webpack --env build",
-    "dev": "webpack --progress --colors --watch --env dev"
+    "dev": "webpack --progress --colors --watch --env dev",
+    "serve": "webpack-dev-server"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
