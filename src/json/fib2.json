@@ -1,9 +1,16 @@
 {
+  "meta": {
+    "type": "FIB2",
+    "score": {
+      "default": 0,
+      "max": 2,
+      "min": 0
+    }
+  },
   "content": {
     "instructions": [
       {
-        "tag": "html",
-        "html": "Directions for fib2"
+        "tag": "Directions for fib2"
       }
     ],
     "stimulus": [
