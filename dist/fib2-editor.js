@@ -82,20 +82,28 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+        value: true
 });
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var fib2Editor = function fib2Editor() {
-  _classCallCheck(this, fib2Editor);
+/* global $ */
+
+var fib2Editor = function fib2Editor(elRoot, params, adaptor, htmlLayout, jsonContentObj) {
+        var callback = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : function () {};
+
+        _classCallCheck(this, fib2Editor);
+
+        $(elRoot).html('FIB2 Editor');
+
+        /** Inform the shell that initialization is complete */
+        callback();
 };
 
-exports.default = fib2Editor;
-module.exports = exports["default"];
+exports.fib2Editor = fib2Editor;
 
 /***/ })
 
 /******/ });
 });
-//# sourceMappingURL=fib2editor.js.map
+//# sourceMappingURL=fib2-editor.js.map

@@ -8,7 +8,7 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 // contains externals function that ignores node_modules when bundling in Webpack
 const nodeExternals = require('webpack-node-externals');
 
-let fib2 = 'fib2', fib2editor = 'fib2editor';
+let fib2 = 'fib2', fib2editor = 'fib2-editor';
 
 let pathsToClean = [
   'dist'
