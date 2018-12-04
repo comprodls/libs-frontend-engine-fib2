@@ -1,0 +1,32 @@
+@import "../generic/index";
+
+main {
+  font-size: $font_14;
+}
+
+.instructions {
+  color: $color_chicago_approx;
+  font-style: italic;
+}
+
+
+.smart-form {
+  line-height: 0.8em;
+
+  .question-li {
+    padding: .7em .4em .7em 1.8em;
+  }
+
+  .question {
+    font-weight: normal;
+    margin: 0;
+
+    input {
+      border-width: 0 0 1px 0;
+      outline: none;
+      width: 150px;
+      text-align: center;
+
+    }
+  }
+}
