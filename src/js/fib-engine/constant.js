@@ -21,5 +21,5 @@ export const Constants = {
   STATEMENT_ANSWERED: 'answered',
   STATEMENT_INTERACTED: 'interacted',
   STATEMENT_SUBMITTED: 'submitted',
-  STATEMENT_NOERROR: 'NO_ERROR'
+  STATUS_NOERROR: 'NO_ERROR'
 };

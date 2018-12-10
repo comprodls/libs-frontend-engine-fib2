@@ -9,12 +9,27 @@ main {
   font-style: italic;
 }
 
-
 .smart-form {
   line-height: 0.8em;
 
   .question-li {
     padding: .7em .4em .7em 1.8em;
+
+    .wrong:before {
+      content: "\f00d";
+      color: red;
+      font-family: $font_0;
+      display: block;
+      margin: .15em .36em auto -4.5em;
+    }
+
+    .correct:before {
+      content: "\f00c";
+      color: green;
+      display: block;
+      font-family: $font_0;
+      margin: .15em .36em auto -4.5em;
+    }
   }
 
   .question {
@@ -26,7 +41,27 @@ main {
       outline: none;
       width: 150px;
       text-align: center;
-
+      border-radius: 0;
+      display: inline;
     }
+  }
+
+  .state-success {
+    input {
+      background: #f0fff0;
+      border-color: #7DC27D;
+    }
+  }
+
+  .state-error {
+    input {
+      background: #fff0f0;
+      border-color: #A90329;
+    }
+  }
+
+  input:disabled {
+    opacity: 0.6 !important;
+    background-color: #ffffff;
   }
 }

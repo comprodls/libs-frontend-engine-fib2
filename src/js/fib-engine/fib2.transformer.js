@@ -30,7 +30,8 @@ class FIB2Transformer {
       },
       responses: {},
       type: '',
-      theme: ''
+      theme: '',
+      interactionIds: []
     };
   }
 
@@ -63,21 +64,25 @@ class FIB2Transformer {
 
   [setInteractions]() {
     let entity = this.entity;
+    let _self = this;
 
-    this.fib2Model.questionData = entity.content.canvas.data.questiondata.map(function (element, index) {
+    this.fib2Model.questionData = entity.content.canvas.data.questiondata.map((element, index) => {
       let obj = {};
       let parsedQuestionArray = $('<div>' + element['text'] + '</div>');
       let interactionsReferences = $(parsedQuestionArray).find('a[href=\'' + INTERACTION_REFERENCE_STR + '\']');
 
-      obj.ids = [];
+      obj.interactions = [];
       obj.types = [];
+      obj.numberOfInteractions = 0;
       interactionsReferences.each(function (idx) {
         let currinteractionid = $(this).text().trim();
-        let newchild = $(`<span  class='input answer'><input type='text' id='${index}-${idx}-${currinteractionid}' class='input-sm userAnswer'/></span>`)[0];
+        let newchild = $(`<span  class='input answer'><input type='text' id='${currinteractionid}' class='userAnswer'/></span>`)[0];
 
         $(this).replaceWith(newchild);
-        obj.ids.push(currinteractionid);
+        obj.interactions.push(currinteractionid);
+        obj.numberOfInteractions += 1;
         obj.types.push(entity.content.interactions[currinteractionid]);
+        _self.fib2Model.interactionIds.push(currinteractionid);
       });
 
       obj.questionText = parsedQuestionArray[0].innerHTML;

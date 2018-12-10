@@ -3,7 +3,7 @@
     "type": "FIBSR",
     "score": {
       "default": 0,
-      "max": 0.5,
+      "max": 3,
       "min": 0
     }
   },

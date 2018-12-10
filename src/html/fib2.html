@@ -8,6 +8,7 @@
     <section class="smart-form inline-input">
       <ol>
         <li rv-each-question="content.questionData" class="question-li">
+          <span class="invisible pull-left" rv-answer-id="index"></span>
           <label class="question">
             <span rv-text-parse="question.questionText"></span>
           </label>

@@ -37,16 +37,14 @@ class Fib2ModelAndView {
       return (function () {
         let properties = [];
 
-        for (let key in obj) {
+        const keys = Object.keys(obj);
+
+        for (const key of keys) {
           properties.push({key: key, value: obj[key]});
-        };
+        }
 
         return properties;
       })();
-    };
-
-    rivets.formatters.idcreator = function (index, idvalue) {
-      return idvalue + index;
     };
 
     rivets.binders['src-strict'] = function (el, value) {
@@ -76,15 +74,15 @@ class Fib2ModelAndView {
       $(el).html(innerHtml);
     };
 
+    rivets.binders['answer-id'] = function (el, value) {
+      el.id = 'answer' + value;
+    };
+
     let data = {
       content: this.model
     };
 
-    let json = JSON.stringify(data);
-
-    console.log(json);
     /*Bind the data to template using rivets*/
-
     rivets.bind($('#fib2-engine'), data);
   }
 }

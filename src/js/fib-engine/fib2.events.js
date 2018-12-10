@@ -1,12 +1,12 @@
 /* global $ */
 
 import {Constants} from './constant';
-import {Fib2UserResponse} from './fib2.responseProcess';
+import {Fib2ResponseProcessor} from './fib2.responseProcess';
 
 class Fib2Events {
   constructor(fib2Obj) {
     this.fib2Obj = fib2Obj;
-    this.fib2UserResponse = new Fib2UserResponse(fib2Obj);
+    this.fib2UserResponse = new Fib2ResponseProcessor(fib2Obj);
   }
 
   /** Function to handle on input focus in*/
@@ -28,7 +28,7 @@ class Fib2Events {
       this.fib2Obj.userAnswers[interactionId] = newAnswer;
 
       /* Soft save answers. */
-      this.fib2UserResponse.savePartial(interactionId);
+      this.fib2UserResponse.savePartial();
 
     }, 10000);
   }
@@ -52,7 +52,7 @@ class Fib2Events {
     this.fib2Obj.userAnswers[interactionId] = newAnswer;
 
     /* Soft save answers. */
-    this.fib2UserResponse.savePartial(interactionId);
+    this.fib2UserResponse.savePartial();
   }
 
   bindEvents() {
