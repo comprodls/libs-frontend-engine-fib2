@@ -364,8 +364,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var getAnswersJSON = Symbol('getAnswersJSON');
 var getFibsrAnswersJSON = Symbol('getFibsrAnswersJSON');
+var getUserAnswersStats = Symbol('getUserAnswersStats');
 var markInput = Symbol('markInput');
-// const buildFeedbackResponse = Symbol('buildFeedbackResponse');
+var buildFeedbackResponse = Symbol('buildFeedbackResponse');
 
 var __state = {
   currentTries: 0, /* Current try of sending results to platform */
@@ -470,22 +471,31 @@ var Fib2ResponseProcessor = function () {
       var maxScore = this.fib2Obj.jsonContent.meta.score.max;
       var perInteractionScore = maxScore / this.fib2Obj.fib2Model.interactionIds.length;
       var resultArray = [];
+      var feedback = void 0;
       var statusEvaluation = 'empty';
       var isUserAnswerCorrect = false;
       var countCorrectInteractionAttempt = 0;
+      var isAllInteractionsEmpty = true;
 
       this.fib2Obj.fib2Model.interactionIds.forEach(function (id, index) {
         var score = 0;
 
         if (_this3.fib2Obj.userAnswers.hasOwnProperty(id)) {
           if (_this3.fib2Obj.userAnswers[id].length === _this3.fib2Obj.fib2Model.responses[id]['correct'].length) {
-            if (_this3.fib2Obj.userAnswers[id] === _this3.fib2Obj.fib2Model.responses[id]['correct']) {
+            var correctAnswer = _this3.fib2Obj.fib2Model.responses[id]['correct'];
+            var userAnswer = _this3.fib2Obj.userAnswers[id];
+
+            if (userAnswer === correctAnswer) {
               score = perInteractionScore;
+              isAllInteractionsEmpty = false;
+            } else if (userAnswer !== undefined && userAnswer !== '') {
+              isAllInteractionsEmpty = false;
             }
             countCorrectInteractionAttempt++;
             isUserAnswerCorrect = true;
           }
         }
+
         resultArray.push({
           id: id,
           score: score,
@@ -496,16 +506,85 @@ var Fib2ResponseProcessor = function () {
 
       if (isUserAnswerCorrect) {
         statusEvaluation = 'correct';
+        feedback = this[buildFeedbackResponse]('global.correct', 'correct', this.fib2Obj.fib2Model.feedback.global.correct);
       } else if (countCorrectInteractionAttempt === 0) {
         statusEvaluation = 'incorrect';
+        if (isAllInteractionsEmpty) {
+          feedback = this[buildFeedbackResponse]('global.empty', statusEvaluation, this.fib2Obj.fib2Model.feedback.global.empty);
+        } else {
+          feedback = this[buildFeedbackResponse]('global.incorrect', statusEvaluation, this.fib2Obj.fib2Model.feedback.global.incorrect);
+        }
       } else {
         statusEvaluation = 'partially_correct';
+        feedback = this[buildFeedbackResponse]('global.incorrect', 'incorrect', this.fib2Obj.fib2Model.global.incorrect);
       }
+
       return {
         response: {
           'interactions': resultArray,
-          'statusEvaluation': statusEvaluation
+          'statusEvaluation': statusEvaluation,
+          feedback: feedback
         }
+      };
+    }
+  }, {
+    key: getUserAnswersStats,
+    value: function value() {
+      var _this4 = this;
+
+      var questions = this.fib2Obj.fib2Model.questionData;
+      var totalInteractions = this.fib2Obj.fib2Model.interactionIds.length;
+      var totalQuestions = this.fib2Obj.fib2Model.questionData.length;
+      var countCorrectQuestionAttempt = 0;
+      var countIncorrectQuestionAttempt = 0;
+      var countCorrectInteractionsAttempt = 0;
+      var countIncorrectInteractionsAttempt = 0;
+      var isAllInteractionsEmpty = true;
+
+      questions.forEach(function (question, index) {
+        var isQuestionCorrect = true;
+
+        question.interactions.forEach(function (interactionId) {
+          var correctAnswer = _this4.fib2Obj.fib2Model.responses[interactionId].correct;
+          var userAnswer = _this4.fib2Obj.userAnswers[interactionId];
+
+          if (_this4.fib2Obj.fib2Model.responses[interactionId].ignorecase) {
+            correctAnswer = correctAnswer.toLowerCase();
+            userAnswer = correctAnswer.toLowerCase();
+          }
+
+          if (_this4.fib2Obj.fib2Model.responses[interactionId].ignorewhitespace) {
+            correctAnswer = correctAnswer.replace(/ /g, '')();
+            userAnswer = correctAnswer.replace(/ /g, '')();
+          }
+
+          if (userAnswer !== correctAnswer) {
+            isQuestionCorrect = false;
+            if (userAnswer !== undefined && userAnswer !== '') {
+              isAllInteractionsEmpty = false;
+            }
+            countIncorrectQuestionAttempt += 1;
+          } else {
+            isAllInteractionsEmpty = false;
+            countCorrectInteractionsAttempt += 1;
+          }
+        });
+
+        if (isQuestionCorrect) {
+          countCorrectQuestionAttempt += 1;
+        } else {
+          countIncorrectQuestionAttempt += 1;
+        }
+      });
+
+      return {
+        totalInteractions: totalInteractions,
+        countIncorrectInteractionsAttempt: countIncorrectInteractionsAttempt,
+        countCorrectInteractionsAttempt: countCorrectInteractionsAttempt,
+        totalQuestions: totalQuestions,
+        countCorrectQuestionAttempt: countCorrectQuestionAttempt,
+        countIncorrectQuestionAttempt: countIncorrectQuestionAttempt,
+        isAllInteractionsEmpty: isAllInteractionsEmpty
       };
     }
   }, {
@@ -517,7 +596,7 @@ var Fib2ResponseProcessor = function () {
   }, {
     key: markInput,
     value: function value() {
-      var _this4 = this;
+      var _this5 = this;
 
       var questions = this.fib2Obj.fib2Model.questionData;
 
@@ -525,8 +604,8 @@ var Fib2ResponseProcessor = function () {
         var isQuestionCorrect = true;
 
         question.interactions.forEach(function (interactionId) {
-          var userAnswer = _this4.fib2Obj.userAnswers[interactionId];
-          var correctAnswer = _this4.fib2Obj.fib2Model.responses[interactionId].correct;
+          var userAnswer = _this5.fib2Obj.userAnswers[interactionId];
+          var correctAnswer = _this5.fib2Obj.fib2Model.responses[interactionId].correct;
 
           if (userAnswer !== correctAnswer) {
             isQuestionCorrect = false;
@@ -545,6 +624,44 @@ var Fib2ResponseProcessor = function () {
         }
       });
     }
+  }, {
+    key: buildFeedbackResponse,
+    value: function value(id, status, content) {
+      var feedback = {};
+
+      feedback.id = id;
+      feedback.status = status;
+      feedback.content = content;
+      return feedback;
+    }
+  }, {
+    key: 'feedbackProcessor',
+    value: function feedbackProcessor() {
+      var type = this.fib2Obj.fib2Model.type;
+      var stats = this[getUserAnswersStats]();
+
+      this.fib2Obj.fib2Model.feedbackState.correct = false;
+      this.fib2Obj.fib2Model.feedbackState.incorrect = false;
+      this.fib2Obj.fib2Model.feedbackState.partiallyCorrect = false;
+      this.fib2Obj.fib2Model.feedbackState.partiallyIncorrect = false;
+      this.fib2Obj.fib2Model.feedbackState.empty = false;
+
+      if (type === 'FIBSR') {
+        if (stats.isAllInteractionsEmpty) {
+          this.fib2Obj.fib2Model.feedbackState.empty = true;
+        } else if (stats.totalQuestions === stats.countCorrectQuestionAttempt && stats.totalInteractions === stats.countCorrectInteractionsAttempt) {
+          this.fib2Obj.fib2Model.feedbackState.correct = true;
+        } else if (stats.countCorrectQuestionAttempt >= Math.floor(stats.totalQuestions / 2)) {
+          this.fib2Obj.fib2Model.feedbackState.partiallyCorrect = true;
+        } else if (stats.countIncorrectQuestionAttempt >= Math.floor(stats.totalQuestions / 2)) {
+          this.fib2Obj.fib2Model.feedbackState.partiallyIncorrect = true;
+        } else if (stats.countCorrectQuestionAttempt === 0) {
+          this.fib2Obj.fib2Model.feedbackState.incorrect = true;
+        }
+      }
+
+      this.fib2Obj.adaptor.autoResizeActivityIframe();
+    }
   }], [{
     key: 'getState',
     value: function getState() {
@@ -553,11 +670,16 @@ var Fib2ResponseProcessor = function () {
   }, {
     key: 'resetView',
     value: function resetView() {
+      var persistUserAnswers = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
 
       $('label.question').removeClass('state-disabled');
 
       $('.userAnswer').each(function () {
-        $(this).val('').removeClass('wrongAnswer correctAnswer').attr('disabled', false);
+        if (!persistUserAnswers) {
+          $(this).val('');
+        }
+        $(this).removeClass('wrongAnswer correctAnswer').attr('disabled', false);
       });
 
       $('[id^="answer"]').removeClass('correct wrong').addClass('invisible').next('label').removeClass('state-success state-error');
@@ -700,7 +822,10 @@ var fib2 = function () {
     this.userAnswers = {};
     this[load]();
     if (callback) {
-      callback({ backgroundColor: _constant.Constants.LAYOUT_COLOR.BG[htmlLayout] });
+      callback({
+        backgroundColor: _constant.Constants.LAYOUT_COLOR.BG[htmlLayout],
+        fontFamily: 'open-sans-font'
+      });
     }
   }
 
@@ -780,18 +905,22 @@ var fib2 = function () {
   }, {
     key: 'showGrades',
     value: function showGrades() {
-      var mcqResponseProcessor = new _fib4.Fib2ResponseProcessor(this);
+      var fib2ResponseProcessor = new _fib4.Fib2ResponseProcessor(this);
 
       $('label.question').addClass('state-disabled');
-      mcqResponseProcessor.markAnswers();
+      fib2ResponseProcessor.markAnswers();
     }
   }, {
     key: 'showFeedback',
-    value: function showFeedback() {}
+    value: function showFeedback() {
+      var fib2ResponseProcessor = new _fib4.Fib2ResponseProcessor(this);
+
+      fib2ResponseProcessor.feedbackProcessor();
+    }
   }, {
     key: 'clearGrades',
     value: function clearGrades() {
-      _fib4.Fib2ResponseProcessor.resetView();
+      _fib4.Fib2ResponseProcessor.resetView(true);
       fib2ModelAndView.clearGrades();
     }
   }]);
@@ -822,6 +951,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var buildModelandViewContent = Symbol('ModelandViewContent');
 var setTheme = Symbol('engine-theme');
+var setType = Symbol('setType');
 var setInteractions = Symbol('setInteractions');
 var setStimuli = Symbol('setStimuli');
 var setInstructions = Symbol('setInstructions');
@@ -845,7 +975,9 @@ var FIB2Transformer = function () {
       feedback: {},
       feedbackState: {
         'correct': false,
+        'partiallyCorrect': false,
         'incorrect': false,
+        'partiallyIncorrect': false,
         'empty': false
       },
       responses: {},
@@ -866,6 +998,7 @@ var FIB2Transformer = function () {
     value: function value() {
       this[setTheme](this.themeObj);
       this[setInteractions]();
+      this[setType]();
       this[setStimuli]();
       this[setInstructions]();
       this[setFeedback]();
@@ -876,6 +1009,11 @@ var FIB2Transformer = function () {
     key: setTheme,
     value: function value(themeKey) {
       this.fib2Model.theme = _constant.Constants.THEMES[themeKey];
+    }
+  }, {
+    key: setType,
+    value: function value() {
+      this.fib2Model.type = this.entity.meta.type;
     }
   }, {
     key: setInstructions,
@@ -958,7 +1096,7 @@ exports.FIB2Transformer = FIB2Transformer;
 /* 8 */
 /***/ (function(module, exports) {
 
-module.exports = "<!-- Engine Renderer Template -->\n<div class=\"fib2-body\" id=\"fib2-engine\">\n  <main rv-addclass='content.theme'>\n    <section class=\"instructions\">\n      <p class=\"instruction\" rv-each-instruction=\"content.instructions\" rv-text-parse=\"instruction.text\"></p>\n    </section>\n\n    <section class=\"smart-form inline-input\">\n      <ol>\n        <li rv-each-question=\"content.questionData\" class=\"question-li\">\n          <span class=\"invisible pull-left\" rv-answer-id=\"index\"></span>\n          <label class=\"question\">\n            <span rv-text-parse=\"question.questionText\"></span>\n          </label>\n        </li>\n      </ol>\n    </section>\n\n    <section class=\"feedback\">\n      <div class=\"row\">\n        <div class=\"col-sm-12 col-md-12\">\n          <div class=\"alert alert-success align-2-item\" role=\"alert\" rv-show=\"showFeedback.feedbackState.correct\">\n            <span>\n              <i class=\"fa fa-2x fa-smile-o\"></i>&nbsp;</span>\n            <span rv-text=\"feedback.global.correct\"></span>\n          </div>\n        </div>\n      </div>\n      <div class=\"row\">\n        <div class=\"col-sm-12 col-md-12\">\n          <div class=\"alert alert-danger align-2-item\" role=\"alert\" rv-show=\"showFeedback.feedbackState.incorrect\">\n            <span>\n              <i class=\"fa fa-2x fa-meh-o\"></i>\n            </span>&nbsp;\n            <span rv-text=\"feedback.global.incorrect\"></span>\n          </div>\n        </div>\n      </div>\n      <div class=\"row\">\n        <div class=\"col-sm-6 col-md-6\">\n          <div class=\"alert alert-warning align-2-item\" role=\"alert\" rv-show=\"showFeedback.feedbackState.empty\">\n            <span>\n              <i class=\"fa fa-2x fa-meh-o\"></i>&nbsp;</span>\n            <span rv-text=\"feedback.global.empty\"></span>\n          </div>\n        </div>\n      </div>\n    </section>\n  </main>\n</div>\n";
+module.exports = "<!-- Engine Renderer Template -->\n<div class=\"fib2-body\" id=\"fib2-engine\">\n  <main rv-addclass='content.theme'>\n    <section class=\"instructions\">\n      <p class=\"instruction\" rv-each-instruction=\"content.instructions\" rv-text-parse=\"instruction.text\"></p>\n    </section>\n\n    <section class=\"smart-form inline-input\">\n      <ol>\n        <li rv-each-question=\"content.questionData\" class=\"question-li\">\n          <span class=\"invisible pull-left\" rv-answer-id=\"index\"></span>\n          <label class=\"question\">\n            <span rv-text-parse=\"question.questionText\"></span>\n          </label>\n        </li>\n      </ol>\n    </section>\n\n    <section class=\"feedback\">\n      <div class=\"row\">\n        <div class=\"col-sm-12 col-md-12\">\n          <div class=\"alert alert-success align-2-item\" role=\"alert\" rv-show=\"content.feedbackState.correct\">\n            <span>\n              <i class=\"fa fa-2x fa-smile-o\" style=\"vertical-align: middle\"></i>&nbsp;</span>\n            <span rv-text=\"content.feedback.global.correct\" style=\"vertical-align: middle\"></span>\n          </div>\n        </div>\n      </div>\n\n      <div class=\"row\">\n        <div class=\"col-sm-12 col-md-12\">\n          <div class=\"alert alert-danger align-2-item\" role=\"alert\" rv-show=\"content.feedbackState.incorrect\">\n            <span>\n              <i class=\"fa fa-2x fa-meh-o\" style=\"vertical-align: middle\"></i>\n            </span>&nbsp;\n            <span rv-text=\"content.feedback.global.incorrect\" style=\"vertical-align: middle\"></span>\n          </div>\n        </div>\n      </div>\n\n      <div class=\"row\">\n        <div class=\"col-sm-12 col-md-12\">\n          <div class=\"alert alert-danger align-2-item\" role=\"alert\" rv-show=\"content.feedbackState.partiallyCorrect\">\n            <span>\n              <i class=\"fa fa-2x fa-meh-o\" style=\"vertical-align: middle\"></i>\n            </span>&nbsp;\n            <span rv-text=\"content.feedback.global.partiallyCorrect\" style=\"vertical-align: middle\"></span>\n          </div>\n        </div>\n      </div>\n\n      <div class=\"row\">\n        <div class=\"col-sm-12 col-md-12\">\n          <div class=\"alert alert-danger align-2-item\" role=\"alert\" rv-show=\"content.feedbackState.partiallyIncorrect\">\n            <span>\n              <i class=\"fa fa-2x fa-meh-o\" style=\"vertical-align: middle\"></i>\n            </span>&nbsp;\n            <span rv-text=\"content.feedback.global.partiallyIncorrect\" style=\"vertical-align: middle\"></span>\n          </div>\n        </div>\n      </div>\n\n      <div class=\"row\">\n        <div class=\"col-sm-6 col-md-6\">\n          <div class=\"alert alert-warning align-2-item\" role=\"alert\" rv-show=\"content.feedbackState.empty\">\n            <span>\n              <i class=\"fa fa-2x fa-meh-o\" style=\"vertical-align: middle\"></i>&nbsp;</span>\n            <span rv-text=\"content.feedback.global.empty\" style=\"vertical-align: middle\"></span>\n          </div>\n        </div>\n      </div>\n\n    </section>\n  </main>\n</div>\n";
 
 /***/ }),
 /* 9 */
@@ -2585,7 +2723,7 @@ exports = module.exports = __webpack_require__(14)(false);
 
 
 // module
-exports.push([module.i, "/*******************************************************\n *\n * ----------------------\n * Engine Renderer Styles\n * ----------------------\n *\n * These styles do not include any product-specific branding\n * and/or layout / design. They represent minimal structural\n * SCSS which is necessary for a default rendering of an\n * FIB2 activity\n *\n * The styles are linked/depending on the presence of\n * certain elements (classes / ids / tags) in the DOM (as would\n * be injected via a valid FIB2 layout HTML and/or dynamically\n * created by the FIB2 engine JS)\n *\n *\n *******************************************************/\nmain {\n  font-size: 14px; }\n\n.instructions {\n  color: #5c5c5c;\n  font-style: italic; }\n\n.smart-form {\n  line-height: 0.8em; }\n  .smart-form .question-li {\n    padding: .7em .4em .7em 1.8em; }\n    .smart-form .question-li .wrong:before {\n      content: \"\\F00D\";\n      color: red;\n      font-family: fontawesome;\n      display: block;\n      margin: .15em .36em auto -4.5em; }\n    .smart-form .question-li .correct:before {\n      content: \"\\F00C\";\n      color: green;\n      display: block;\n      font-family: fontawesome;\n      margin: .15em .36em auto -4.5em; }\n  .smart-form .question {\n    font-weight: normal;\n    margin: 0; }\n    .smart-form .question input {\n      border-width: 0 0 1px 0;\n      outline: none;\n      width: 150px;\n      text-align: center;\n      border-radius: 0;\n      display: inline; }\n  .smart-form .state-success input {\n    background: #f0fff0;\n    border-color: #7DC27D; }\n  .smart-form .state-error input {\n    background: #fff0f0;\n    border-color: #A90329; }\n  .smart-form input:disabled {\n    opacity: 0.6 !important;\n    background-color: #ffffff; }\n", ""]);
+exports.push([module.i, "/*******************************************************\n *\n * ----------------------\n * Engine Renderer Styles\n * ----------------------\n *\n * These styles do not include any product-specific branding\n * and/or layout / design. They represent minimal structural\n * SCSS which is necessary for a default rendering of an\n * FIB2 activity\n *\n * The styles are linked/depending on the presence of\n * certain elements (classes / ids / tags) in the DOM (as would\n * be injected via a valid FIB2 layout HTML and/or dynamically\n * created by the FIB2 engine JS)\n *\n *\n *******************************************************/\nmain {\n  font-size: 14px;\n  font-family: 'Open Sans', Verdana, sans-serif; }\n\n.instructions {\n  font-size: 1.1em;\n  color: #5c5c5c;\n  margin-bottom: 0.9em; }\n\n.smart-form {\n  line-height: 0.8em; }\n  .smart-form ol {\n    padding: 0; }\n  .smart-form .question-li {\n    padding: .7em .4em .7em 1.8em;\n    margin-left: 2em;\n    color: #666; }\n    .smart-form .question-li .wrong:before {\n      content: \"\\F00D\";\n      color: red;\n      font-family: fontawesome;\n      display: block;\n      margin: .15em .36em auto -4.5em; }\n    .smart-form .question-li .correct:before {\n      content: \"\\F00C\";\n      color: green;\n      display: block;\n      font-family: fontawesome;\n      margin: .15em .36em auto -4.5em; }\n  .smart-form .question {\n    font-weight: normal;\n    margin: 0;\n    line-height: 1.5em; }\n    .smart-form .question input {\n      border-width: 0 0 1px 0;\n      outline: none;\n      width: 150px;\n      text-align: center;\n      border-radius: 0;\n      display: inline; }\n    .smart-form .question input:disabled {\n      opacity: 0.6;\n      background: #ffffff; }\n  .smart-form .state-success input {\n    border-color: #7DC27D; }\n  .smart-form .state-success input:disabled {\n    background: #f0fff0; }\n  .smart-form .state-error input {\n    border-color: #A90329; }\n  .smart-form .state-error input:disabled {\n    background: #fff0f0; }\n\n.feedback .alert-success {\n  background-color: #f2fdee; }\n\n.feedback .alert-danger {\n  background-color: #fdeeee; }\n\n.fib2-dark .instruction,\n.fib2-dark .question-li {\n  color: #ffffff; }\n\n.fib2-dark .smart-form .state-success input {\n  background: #363636;\n  border-color: #7DC27D; }\n\n.fib2-dark .smart-form .state-error input {\n  background: #363636;\n  border-color: #A90329; }\n\n.fib2-dark .smart-form input {\n  background: #363636;\n  color: #ffffff; }\n\n.fib2-dark .smart-form input:disabled {\n  opacity: 0.6 !important;\n  background: #363636; }\n\n.fib2-dark .feedback .alert-success {\n  background-color: #363636;\n  color: #40fd21;\n  border: 1px solid #494949; }\n\n.fib2-dark .feedback .alert-danger {\n  background-color: #363636;\n  color: #e30e0e;\n  border: 1px solid #494949; }\n\n.fib2-light {\n  background-color: #f6f6f6; }\n  .fib2-light .instructions {\n    color: #535353; }\n", ""]);
 
 // exports
 

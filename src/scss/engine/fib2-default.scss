@@ -2,18 +2,26 @@
 
 main {
   font-size: $font_14;
+  font-family: 'Open Sans', Verdana, sans-serif;
 }
 
 .instructions {
+  font-size: 1.1em;
   color: $color_chicago_approx;
-  font-style: italic;
+  margin-bottom: 0.9em;
 }
 
 .smart-form {
   line-height: 0.8em;
 
+  ol {
+    padding: 0;
+  }
+
   .question-li {
     padding: .7em .4em .7em 1.8em;
+    margin-left: 2em;
+    color: #666;
 
     .wrong:before {
       content: "\f00d";
@@ -35,6 +43,7 @@ main {
   .question {
     font-weight: normal;
     margin: 0;
+    line-height: 1.5em;
 
     input {
       border-width: 0 0 1px 0;
@@ -44,24 +53,40 @@ main {
       border-radius: 0;
       display: inline;
     }
+
+    input:disabled {
+      opacity: 0.6;
+      background: #ffffff;
+    }
   }
 
   .state-success {
     input {
-      background: #f0fff0;
       border-color: #7DC27D;
+    }
+
+    input:disabled {
+      background: #f0fff0;
     }
   }
 
   .state-error {
     input {
-      background: #fff0f0;
       border-color: #A90329;
     }
+
+    input:disabled {
+      background: #fff0f0;
+    }
+  }
+}
+
+.feedback {
+  .alert-success {
+    background-color: $color_feta_approx;
   }
 
-  input:disabled {
-    opacity: 0.6 !important;
-    background-color: #ffffff;
+  .alert-danger {
+    background-color: $color_bridesmaid_approx;
   }
 }

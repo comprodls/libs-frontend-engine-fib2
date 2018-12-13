@@ -19,32 +19,57 @@
     <section class="feedback">
       <div class="row">
         <div class="col-sm-12 col-md-12">
-          <div class="alert alert-success align-2-item" role="alert" rv-show="showFeedback.feedbackState.correct">
+          <div class="alert alert-success align-2-item" role="alert" rv-show="content.feedbackState.correct">
             <span>
-              <i class="fa fa-2x fa-smile-o"></i>&nbsp;</span>
-            <span rv-text="feedback.global.correct"></span>
+              <i class="fa fa-2x fa-smile-o" style="vertical-align: middle"></i>&nbsp;</span>
+            <span rv-text="content.feedback.global.correct" style="vertical-align: middle"></span>
           </div>
         </div>
       </div>
+
       <div class="row">
         <div class="col-sm-12 col-md-12">
-          <div class="alert alert-danger align-2-item" role="alert" rv-show="showFeedback.feedbackState.incorrect">
+          <div class="alert alert-danger align-2-item" role="alert" rv-show="content.feedbackState.incorrect">
             <span>
-              <i class="fa fa-2x fa-meh-o"></i>
+              <i class="fa fa-2x fa-meh-o" style="vertical-align: middle"></i>
             </span>&nbsp;
-            <span rv-text="feedback.global.incorrect"></span>
+            <span rv-text="content.feedback.global.incorrect" style="vertical-align: middle"></span>
           </div>
         </div>
       </div>
+
+      <div class="row">
+        <div class="col-sm-12 col-md-12">
+          <div class="alert alert-danger align-2-item" role="alert" rv-show="content.feedbackState.partiallyCorrect">
+            <span>
+              <i class="fa fa-2x fa-meh-o" style="vertical-align: middle"></i>
+            </span>&nbsp;
+            <span rv-text="content.feedback.global.partiallyCorrect" style="vertical-align: middle"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12 col-md-12">
+          <div class="alert alert-danger align-2-item" role="alert" rv-show="content.feedbackState.partiallyIncorrect">
+            <span>
+              <i class="fa fa-2x fa-meh-o" style="vertical-align: middle"></i>
+            </span>&nbsp;
+            <span rv-text="content.feedback.global.partiallyIncorrect" style="vertical-align: middle"></span>
+          </div>
+        </div>
+      </div>
+
       <div class="row">
         <div class="col-sm-6 col-md-6">
-          <div class="alert alert-warning align-2-item" role="alert" rv-show="showFeedback.feedbackState.empty">
+          <div class="alert alert-warning align-2-item" role="alert" rv-show="content.feedbackState.empty">
             <span>
-              <i class="fa fa-2x fa-meh-o"></i>&nbsp;</span>
-            <span rv-text="feedback.global.empty"></span>
+              <i class="fa fa-2x fa-meh-o" style="vertical-align: middle"></i>&nbsp;</span>
+            <span rv-text="content.feedback.global.empty" style="vertical-align: middle"></span>
           </div>
         </div>
       </div>
+
     </section>
   </main>
 </div>

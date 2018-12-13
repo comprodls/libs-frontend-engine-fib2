@@ -4,6 +4,7 @@ import {Constants} from './constant';
 
 const buildModelandViewContent = Symbol('ModelandViewContent');
 const setTheme = Symbol('engine-theme');
+const setType = Symbol('setType');
 const setInteractions = Symbol('setInteractions');
 const setStimuli = Symbol('setStimuli');
 const setInstructions = Symbol('setInstructions');
@@ -25,7 +26,9 @@ class FIB2Transformer {
       feedback: {},
       feedbackState: {
         'correct': false,
+        'partiallyCorrect': false,
         'incorrect': false,
+        'partiallyIncorrect': false,
         'empty': false
       },
       responses: {},
@@ -43,6 +46,7 @@ class FIB2Transformer {
   [buildModelandViewContent]() {
     this[setTheme](this.themeObj);
     this[setInteractions]();
+    this[setType]();
     this[setStimuli]();
     this[setInstructions]();
     this[setFeedback]();
@@ -52,6 +56,10 @@ class FIB2Transformer {
 
   [setTheme](themeKey) {
     this.fib2Model.theme = Constants.THEMES[themeKey];
+  }
+
+  [setType]() {
+    this.fib2Model.type = this.entity.meta.type;
   }
 
   [setInstructions]() {

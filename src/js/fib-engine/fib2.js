@@ -44,7 +44,10 @@ class fib2 {
     this.userAnswers = {};
     this[load]();
     if (callback) {
-      callback({backgroundColor: Constants.LAYOUT_COLOR.BG[htmlLayout]});
+      callback({
+        backgroundColor: Constants.LAYOUT_COLOR.BG[htmlLayout],
+        fontFamily: 'open-sans-font'
+      });
     }
   }
 
@@ -108,18 +111,20 @@ class fib2 {
   }
 
   showGrades() {
-    let mcqResponseProcessor = new Fib2ResponseProcessor(this);
+    let fib2ResponseProcessor = new Fib2ResponseProcessor(this);
 
     $('label.question').addClass('state-disabled');
-    mcqResponseProcessor.markAnswers();
+    fib2ResponseProcessor.markAnswers();
   }
 
   showFeedback() {
+    let fib2ResponseProcessor = new Fib2ResponseProcessor(this);
 
+    fib2ResponseProcessor.feedbackProcessor();
   }
 
   clearGrades() {
-    Fib2ResponseProcessor.resetView();
+    Fib2ResponseProcessor.resetView(true);
     fib2ModelAndView.clearGrades();
   }
 }

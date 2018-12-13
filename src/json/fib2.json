@@ -3,7 +3,7 @@
     "type": "FIBSR",
     "score": {
       "default": 0,
-      "max": 3,
+      "max": 0.5,
       "min": 0
     }
   },
@@ -70,7 +70,9 @@
   "feedback": {
     "global": {
       "correct": "Perfect. You got it correct !!!",
-      "incorrect": "Sorry, Wrong response.",
+      "partiallyCorrect": "You are almost done. Try Again !!!",
+      "incorrect": "Sorry, Wrong Responses. Try Again After some time!!",
+      "partiallyIncorrect": "Sorry, Wrong responses",
       "empty": "You did not enter anything."
     }
   },
