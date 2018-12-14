@@ -2,7 +2,6 @@
 
 import generateStatement from '../utils';
 import {Constants} from './constant';
-import {Config} from './config';
 
 const getAnswersJSON = Symbol('getAnswersJSON');
 const getFibsrAnswersJSON = Symbol('getFibsrAnswersJSON');
@@ -22,7 +21,7 @@ class Fib2ResponseProcessor {
   }
 
   /**
-   * Function called to send result JSON to adaptor (partial save OR submit).
+   * Function called to send result JSON to adaptor (On Submit).
    */
   saveResults(bSubmit) {
     /*Getting answer in JSON format*/
@@ -46,7 +45,7 @@ class Fib2ResponseProcessor {
             __state.currentTries = 0;
           } else {
             /* There was an error during platform communication, so try again (till MAX_RETRIES) */
-            if (__state.currentTries < Config.MAX_RETRIES) {
+            if (__state.currentTries < Constants.MAX_RETRIES) {
               __state.currentTries++;
               this.saveResults(bSubmit);
             }
@@ -56,7 +55,10 @@ class Fib2ResponseProcessor {
     });
   }
 
-  savePartial(interactionId) {
+  /**
+   * Function called to send result JSON to adaptor (Partial Save ).
+   */
+  savePartial() {
     /*Getting answer in JSON format*/
     const answerJSONs = this[getAnswersJSON](false);
     const uniqueId = this.fib2Obj.adaptor.getId();
@@ -153,6 +155,9 @@ class Fib2ResponseProcessor {
     };
   }
 
+  /**
+   *  Function used to create User Answers stats.
+   */
   [getUserAnswersStats]() {
     const questions = this.fib2Obj.fib2Model.questionData;
     const totalInteractions = this.fib2Obj.fib2Model.interactionIds.length;
@@ -210,10 +215,16 @@ class Fib2ResponseProcessor {
     };
   }
 
+  /**
+   *  Static function to get User state.
+   */
   static getState() {
     return __state;
   }
 
+  /**
+   *  Static function to reset user answers.
+   */
   static resetView(persistUserAnswers = false) {
 
     $('label.question')
@@ -236,6 +247,9 @@ class Fib2ResponseProcessor {
     $('.grade').remove();
   }
 
+  /**
+   *  Function to mark User answers correct or wrong.
+   */
   markAnswers() {
     this[markInput]();
     this.fib2Obj.adaptor.autoResizeActivityIframe();
@@ -284,7 +298,7 @@ class Fib2ResponseProcessor {
   }
 
   [buildFeedbackResponse](id, status, content) {
-    var feedback = {};
+    const feedback = {};
 
     feedback.id = id;
     feedback.status = status;
@@ -292,6 +306,9 @@ class Fib2ResponseProcessor {
     return feedback;
   }
 
+  /**
+   *  Function to calculate feedback according to user Answers Stats.
+   */
   feedbackProcessor() {
     const type = this.fib2Obj.fib2Model.type;
     const stats = this[getUserAnswersStats]();
@@ -318,7 +335,6 @@ class Fib2ResponseProcessor {
 
     this.fib2Obj.adaptor.autoResizeActivityIframe();
   }
-
 }
 
 export {Fib2ResponseProcessor};

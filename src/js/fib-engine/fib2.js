@@ -6,7 +6,6 @@ import {Fib2Events} from './fib2.events';
 import {Fib2ResponseProcessor} from './fib2.responseProcess';
 import generateStatement from '../utils';
 import {Constants} from './constant';
-import {Config} from './config';
 
 const load = Symbol('loadMCQ');
 const transform = Symbol('transformMCQ');
@@ -18,6 +17,11 @@ let fib2ModelAndView;
  *  Engine initialization Class. Provides public functions
  *  -getConfig()
  *  -getStatus()
+ *  -handleSubmit()
+ *  -resetAnswers()
+ *  -showGrades()
+ *  -showFeedback()
+ *  -clearGrades()
  */
 
 class fib2 {
@@ -92,7 +96,9 @@ class fib2 {
    * @return {{MAX_RETRIES}} - Configuration
    */
   getConfig() {
-    return Config;
+    return {
+      MAX_RETRIES: Constants.MAX_RETRIES
+    };
   }
 
   /**
@@ -105,11 +111,17 @@ class fib2 {
     return state.activityPartiallySubmitted || state.activitySubmitted;
   }
 
+  /**
+   * Bound to click of Activity reset button.
+   */
   resetAnswers() {
     this.userAnswers = [];
     Fib2ResponseProcessor.resetView();
   }
 
+  /**
+   * Bound to click of Activity check-my-work button.
+   */
   showGrades() {
     let fib2ResponseProcessor = new Fib2ResponseProcessor(this);
 
@@ -117,6 +129,9 @@ class fib2 {
     fib2ResponseProcessor.markAnswers();
   }
 
+  /**
+   * Bound to click of Activity show-feedback button.
+   */
   showFeedback() {
     let fib2ResponseProcessor = new Fib2ResponseProcessor(this);
 

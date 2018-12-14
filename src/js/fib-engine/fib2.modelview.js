@@ -20,54 +20,33 @@ class Fib2ModelAndView {
     return Constants.THEMES;
   }
 
+  /**
+   * Function to clear grades and reset feedback state
+   */
   clearGrades() {
     this.model.feedbackState = {
       'correct': false,
+      'partiallyCorrect': false,
       'incorrect': false,
+      'partiallyIncorrect': false,
       'empty': false
     };
   }
 
+  /**
+   * Function to bind data with rivets
+   */
   bindData() {
-    this[initializeRivets]();
+    const data = this[initializeRivets]();
+
+    /*Bind the data to template using rivets*/
+    rivets.bind($('#fib2-engine'), data);
   }
 
+  /**
+   * Function to initialize rivets
+   */
   [initializeRivets]() {
-    rivets.formatters.propertyList = function (obj) {
-      return (function () {
-        let properties = [];
-
-        const keys = Object.keys(obj);
-
-        for (const key of keys) {
-          properties.push({key: key, value: obj[key]});
-        }
-
-        return properties;
-      })();
-    };
-
-    rivets.binders['src-strict'] = function (el, value) {
-      var img = new Image();
-
-      img.onload = function () {
-        $(el).attr('src', value);
-      };
-
-      img.src = value;
-    };
-
-    rivets.binders.addclass = function (el, value) {
-      if (el.addedClass) {
-        $(el).removeClass(el.addedClass);
-        delete el.addedClass;
-      }
-      if (value) {
-        $(el).addClass(value);
-        el.addedClass = value;
-      }
-    };
-
     rivets.binders['text-parse'] = function (el, value) {
       let innerHtml = $(`<div>${value}</div>`)[0].innerHTML;
 
@@ -78,12 +57,9 @@ class Fib2ModelAndView {
       el.id = 'answer' + value;
     };
 
-    let data = {
+    return {
       content: this.model
     };
-
-    /*Bind the data to template using rivets*/
-    rivets.bind($('#fib2-engine'), data);
   }
 }
 

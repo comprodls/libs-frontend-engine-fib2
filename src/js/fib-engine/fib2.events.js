@@ -9,7 +9,9 @@ class Fib2Events {
     this.fib2UserResponse = new Fib2ResponseProcessor(fib2Obj);
   }
 
-  /** Function to handle on input focus in*/
+  /**
+   * Function to handle on input focus in
+   */
   handleQuestionTextOnFocus(event) {
     if (Constants.PARTIAL_SAVE_TIMER) {
       clearInterval(Constants.PARTIAL_SAVE_TIMER);
@@ -24,7 +26,7 @@ class Fib2Events {
         return;
       }
 
-      /* Save new Answer back in __content. */
+      /* Save new Answer back in userAnswers. */
       this.fib2Obj.userAnswers[interactionId] = newAnswer;
 
       /* Soft save answers. */
@@ -33,7 +35,9 @@ class Fib2Events {
     }, 10000);
   }
 
-  /** Function to handle on focus out*/
+  /**
+   * Function to handle on focus out
+   */
   handleQuestionTextLostFocus(event) {
     /* Stop previous timer. */
     if (Constants.PARTIAL_SAVE_TIMER) {
@@ -48,13 +52,16 @@ class Fib2Events {
       return;
     }
 
-    /* Save new Answer back in __content. */
+    /* Save new Answer back in userAnswers. */
     this.fib2Obj.userAnswers[interactionId] = newAnswer;
 
     /* Soft save answers. */
     this.fib2UserResponse.savePartial();
   }
 
+  /**
+   * Function to bind focus in and focus out event handlers
+   */
   bindEvents() {
     $('.userAnswer')
       .focus((event) => {

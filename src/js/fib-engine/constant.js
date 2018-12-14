@@ -16,6 +16,7 @@ export const Constants = {
       'FIB2_DARK': '#222222'
     }
   },
+  MAX_RETRIES: 10, /* Maximum number of retries for sending results to platform for a particular activity. */
   INTERACTION_REFERENCE_STR: 'http://www.comprodls.com/m1.0/interaction/fib2',
   STATEMENT_STARTED: 'started',
   STATEMENT_ANSWERED: 'answered',
