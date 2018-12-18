@@ -84,7 +84,7 @@ class FIB2Transformer {
       obj.numberOfInteractions = 0;
       interactionsReferences.each(function (idx) {
         let currinteractionid = $(this).text().trim();
-        let newchild = $(`<span  class='input answer'><input type='text' id='${currinteractionid}' class='userAnswer'/></span>`)[0];
+        let newchild = $(`<span  class='input answer'><input type='text' id='${currinteractionid}' class='userAnswer' autocomplete="off" spellcheck="false"/></span>`)[0];
 
         $(this).replaceWith(newchild);
         obj.interactions.push(currinteractionid);

@@ -47,6 +47,18 @@ class Fib2ModelAndView {
    * Function to initialize rivets
    */
   [initializeRivets]() {
+    rivets.binders.addclass = function (el, value) {
+      if (el.addedClass) {
+        $(el).removeClass(el.addedClass);
+        delete el.addedClass;
+      }
+
+      if (value) {
+        $(el).addClass(value);
+        el.addedClass = value;
+      }
+    };
+
     rivets.binders['text-parse'] = function (el, value) {
       let innerHtml = $(`<div>${value}</div>`)[0].innerHTML;
 

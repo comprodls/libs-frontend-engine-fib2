@@ -70,7 +70,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 5);
+/******/ 	return __webpack_require__(__webpack_require__.s = 4);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -85,7 +85,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Constants = undefined;
 
-var _fib = __webpack_require__(8);
+var _fib = __webpack_require__(7);
 
 var _fib2 = _interopRequireDefault(_fib);
 
@@ -107,6 +107,7 @@ var Constants = exports.Constants = {
       'FIB2_DARK': '#222222'
     }
   },
+  MAX_RETRIES: 10, /* Maximum number of retries for sending results to platform for a particular activity. */
   INTERACTION_REFERENCE_STR: 'http://www.comprodls.com/m1.0/interaction/fib2',
   STATEMENT_STARTED: 'started',
   STATEMENT_ANSWERED: 'answered',
@@ -356,8 +357,6 @@ var _utils2 = _interopRequireDefault(_utils);
 
 var _constant = __webpack_require__(0);
 
-var _config = __webpack_require__(4);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -382,7 +381,7 @@ var Fib2ResponseProcessor = function () {
   }
 
   /**
-   * Function called to send result JSON to adaptor (partial save OR submit).
+   * Function called to send result JSON to adaptor (On Submit).
    */
 
 
@@ -412,7 +411,7 @@ var Fib2ResponseProcessor = function () {
               __state.currentTries = 0;
             } else {
               /* There was an error during platform communication, so try again (till MAX_RETRIES) */
-              if (__state.currentTries < _config.Config.MAX_RETRIES) {
+              if (__state.currentTries < _constant.Constants.MAX_RETRIES) {
                 __state.currentTries++;
                 _this.saveResults(bSubmit);
               }
@@ -421,9 +420,14 @@ var Fib2ResponseProcessor = function () {
         }
       });
     }
+
+    /**
+     * Function called to send result JSON to adaptor (Partial Save ).
+     */
+
   }, {
     key: 'savePartial',
-    value: function savePartial(interactionId) {
+    value: function savePartial() {
       var _this2 = this;
 
       /*Getting answer in JSON format*/
@@ -527,6 +531,11 @@ var Fib2ResponseProcessor = function () {
         }
       };
     }
+
+    /**
+     *  Function used to create User Answers stats.
+     */
+
   }, {
     key: getUserAnswersStats,
     value: function value() {
@@ -587,8 +596,18 @@ var Fib2ResponseProcessor = function () {
         isAllInteractionsEmpty: isAllInteractionsEmpty
       };
     }
+
+    /**
+     *  Static function to get User state.
+     */
+
   }, {
     key: 'markAnswers',
+
+
+    /**
+     *  Function to mark User answers correct or wrong.
+     */
     value: function markAnswers() {
       this[markInput]();
       this.fib2Obj.adaptor.autoResizeActivityIframe();
@@ -634,6 +653,11 @@ var Fib2ResponseProcessor = function () {
       feedback.content = content;
       return feedback;
     }
+
+    /**
+     *  Function to calculate feedback according to user Answers Stats.
+     */
+
   }, {
     key: 'feedbackProcessor',
     value: function feedbackProcessor() {
@@ -667,6 +691,11 @@ var Fib2ResponseProcessor = function () {
     value: function getState() {
       return __state;
     }
+
+    /**
+     *  Static function to reset user answers.
+     */
+
   }, {
     key: 'resetView',
     value: function resetView() {
@@ -727,9 +756,15 @@ module.exports = exports['default'];
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var Config = exports.Config = {
-  MAX_RETRIES: 10 /* Maximum number of retries for sending results to platform for a particular activity. */
-};
+exports.fib2 = undefined;
+
+var _fib = __webpack_require__(5);
+
+var _fib2 = _interopRequireDefault(_fib);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.fib2 = _fib2.default;
 
 /***/ }),
 /* 5 */
@@ -741,34 +776,14 @@ var Config = exports.Config = {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.fib2 = undefined;
-
-var _fib = __webpack_require__(6);
-
-var _fib2 = _interopRequireDefault(_fib);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.fib2 = _fib2.default;
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /* global $ */
 
-var _fib = __webpack_require__(7);
+var _fib = __webpack_require__(6);
 
-var _fib2 = __webpack_require__(9);
+var _fib2 = __webpack_require__(8);
 
-var _fib3 = __webpack_require__(17);
+var _fib3 = __webpack_require__(16);
 
 var _fib4 = __webpack_require__(2);
 
@@ -777,8 +792,6 @@ var _utils = __webpack_require__(3);
 var _utils2 = _interopRequireDefault(_utils);
 
 var _constant = __webpack_require__(0);
-
-var _config = __webpack_require__(4);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -794,6 +807,11 @@ var fib2ModelAndView = void 0;
  *  Engine initialization Class. Provides public functions
  *  -getConfig()
  *  -getStatus()
+ *  -handleSubmit()
+ *  -resetAnswers()
+ *  -showGrades()
+ *  -showFeedback()
+ *  -clearGrades()
  */
 
 var fib2 = function () {
@@ -881,7 +899,9 @@ var fib2 = function () {
   }, {
     key: 'getConfig',
     value: function getConfig() {
-      return _config.Config;
+      return {
+        MAX_RETRIES: _constant.Constants.MAX_RETRIES
+      };
     }
 
     /**
@@ -896,12 +916,22 @@ var fib2 = function () {
 
       return state.activityPartiallySubmitted || state.activitySubmitted;
     }
+
+    /**
+     * Bound to click of Activity reset button.
+     */
+
   }, {
     key: 'resetAnswers',
     value: function resetAnswers() {
       this.userAnswers = [];
       _fib4.Fib2ResponseProcessor.resetView();
     }
+
+    /**
+     * Bound to click of Activity check-my-work button.
+     */
+
   }, {
     key: 'showGrades',
     value: function showGrades() {
@@ -910,6 +940,11 @@ var fib2 = function () {
       $('label.question').addClass('state-disabled');
       fib2ResponseProcessor.markAnswers();
     }
+
+    /**
+     * Bound to click of Activity show-feedback button.
+     */
+
   }, {
     key: 'showFeedback',
     value: function showFeedback() {
@@ -932,7 +967,7 @@ exports.default = fib2;
 module.exports = exports['default'];
 
 /***/ }),
-/* 7 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1040,7 +1075,7 @@ var FIB2Transformer = function () {
         obj.numberOfInteractions = 0;
         interactionsReferences.each(function (idx) {
           var currinteractionid = $(this).text().trim();
-          var newchild = $('<span  class=\'input answer\'><input type=\'text\' id=\'' + currinteractionid + '\' class=\'userAnswer\'/></span>')[0];
+          var newchild = $('<span  class=\'input answer\'><input type=\'text\' id=\'' + currinteractionid + '\' class=\'userAnswer\' autocomplete="off" spellcheck="false"/></span>')[0];
 
           $(this).replaceWith(newchild);
           obj.interactions.push(currinteractionid);
@@ -1093,13 +1128,13 @@ var FIB2Transformer = function () {
 exports.FIB2Transformer = FIB2Transformer;
 
 /***/ }),
-/* 8 */
+/* 7 */
 /***/ (function(module, exports) {
 
-module.exports = "<!-- Engine Renderer Template -->\n<div class=\"fib2-body\" id=\"fib2-engine\">\n  <main rv-addclass='content.theme'>\n    <section class=\"instructions\">\n      <p class=\"instruction\" rv-each-instruction=\"content.instructions\" rv-text-parse=\"instruction.text\"></p>\n    </section>\n\n    <section class=\"smart-form inline-input\">\n      <ol>\n        <li rv-each-question=\"content.questionData\" class=\"question-li\">\n          <span class=\"invisible pull-left\" rv-answer-id=\"index\"></span>\n          <label class=\"question\">\n            <span rv-text-parse=\"question.questionText\"></span>\n          </label>\n        </li>\n      </ol>\n    </section>\n\n    <section class=\"feedback\">\n      <div class=\"row\">\n        <div class=\"col-sm-12 col-md-12\">\n          <div class=\"alert alert-success align-2-item\" role=\"alert\" rv-show=\"content.feedbackState.correct\">\n            <span>\n              <i class=\"fa fa-2x fa-smile-o\" style=\"vertical-align: middle\"></i>&nbsp;</span>\n            <span rv-text=\"content.feedback.global.correct\" style=\"vertical-align: middle\"></span>\n          </div>\n        </div>\n      </div>\n\n      <div class=\"row\">\n        <div class=\"col-sm-12 col-md-12\">\n          <div class=\"alert alert-danger align-2-item\" role=\"alert\" rv-show=\"content.feedbackState.incorrect\">\n            <span>\n              <i class=\"fa fa-2x fa-meh-o\" style=\"vertical-align: middle\"></i>\n            </span>&nbsp;\n            <span rv-text=\"content.feedback.global.incorrect\" style=\"vertical-align: middle\"></span>\n          </div>\n        </div>\n      </div>\n\n      <div class=\"row\">\n        <div class=\"col-sm-12 col-md-12\">\n          <div class=\"alert alert-danger align-2-item\" role=\"alert\" rv-show=\"content.feedbackState.partiallyCorrect\">\n            <span>\n              <i class=\"fa fa-2x fa-meh-o\" style=\"vertical-align: middle\"></i>\n            </span>&nbsp;\n            <span rv-text=\"content.feedback.global.partiallyCorrect\" style=\"vertical-align: middle\"></span>\n          </div>\n        </div>\n      </div>\n\n      <div class=\"row\">\n        <div class=\"col-sm-12 col-md-12\">\n          <div class=\"alert alert-danger align-2-item\" role=\"alert\" rv-show=\"content.feedbackState.partiallyIncorrect\">\n            <span>\n              <i class=\"fa fa-2x fa-meh-o\" style=\"vertical-align: middle\"></i>\n            </span>&nbsp;\n            <span rv-text=\"content.feedback.global.partiallyIncorrect\" style=\"vertical-align: middle\"></span>\n          </div>\n        </div>\n      </div>\n\n      <div class=\"row\">\n        <div class=\"col-sm-6 col-md-6\">\n          <div class=\"alert alert-warning align-2-item\" role=\"alert\" rv-show=\"content.feedbackState.empty\">\n            <span>\n              <i class=\"fa fa-2x fa-meh-o\" style=\"vertical-align: middle\"></i>&nbsp;</span>\n            <span rv-text=\"content.feedback.global.empty\" style=\"vertical-align: middle\"></span>\n          </div>\n        </div>\n      </div>\n\n    </section>\n  </main>\n</div>\n";
+module.exports = "<!-- Engine Renderer Template -->\r\n<div class=\"fib2-body\" id=\"fib2-engine\">\r\n  <main rv-addclass='content.theme'>\r\n    <section class=\"instructions\">\r\n      <p class=\"instruction\" rv-each-instruction=\"content.instructions\" rv-text-parse=\"instruction.text\"></p>\r\n    </section>\r\n\r\n    <section class=\"smart-form inline-input\">\r\n      <ol>\r\n        <li rv-each-question=\"content.questionData\" class=\"question-li\">\r\n          <span class=\"invisible pull-left\" rv-answer-id=\"index\"></span>\r\n          <label class=\"question\">\r\n            <span rv-text-parse=\"question.questionText\"></span>\r\n          </label>\r\n        </li>\r\n      </ol>\r\n    </section>\r\n\r\n    <section class=\"feedback\">\r\n      <div class=\"row\">\r\n        <div class=\"col-sm-12 col-md-12\">\r\n          <div class=\"alert alert-success align-2-item\" role=\"alert\" rv-show=\"content.feedbackState.correct\">\r\n            <span>\r\n              <i class=\"fa fa-2x fa-smile-o\" style=\"vertical-align: middle\"></i>&nbsp;</span>\r\n            <span rv-text=\"content.feedback.global.correct\" style=\"vertical-align: middle\"></span>\r\n          </div>\r\n        </div>\r\n      </div>\r\n      <div class=\"row\">\r\n        <div class=\"col-sm-12 col-md-12\">\r\n          <div class=\"alert alert-danger align-2-item\" role=\"alert\" rv-show=\"content.feedbackState.incorrect\">\r\n            <span>\r\n              <i class=\"fa fa-2x fa-meh-o\" style=\"vertical-align: middle\"></i>\r\n            </span>&nbsp;\r\n            <span rv-text=\"content.feedback.global.incorrect\" style=\"vertical-align: middle\"></span>\r\n          </div>\r\n        </div>\r\n      </div>\r\n      <div class=\"row\">\r\n        <div class=\"col-sm-12 col-md-12\">\r\n          <div class=\"alert alert-danger align-2-item\" role=\"alert\" rv-show=\"content.feedbackState.partiallyCorrect\">\r\n            <span>\r\n              <i class=\"fa fa-2x fa-meh-o\" style=\"vertical-align: middle\"></i>\r\n            </span>&nbsp;\r\n            <span rv-text=\"content.feedback.global.partiallyCorrect\" style=\"vertical-align: middle\"></span>\r\n          </div>\r\n        </div>\r\n      </div>\r\n      <div class=\"row\">\r\n        <div class=\"col-sm-12 col-md-12\">\r\n          <div class=\"alert alert-danger align-2-item\" role=\"alert\" rv-show=\"content.feedbackState.partiallyIncorrect\">\r\n            <span>\r\n              <i class=\"fa fa-2x fa-meh-o\" style=\"vertical-align: middle\"></i>\r\n            </span>&nbsp;\r\n            <span rv-text=\"content.feedback.global.partiallyIncorrect\" style=\"vertical-align: middle\"></span>\r\n          </div>\r\n        </div>\r\n      </div>\r\n      <div class=\"row\">\r\n        <div class=\"col-sm-12 col-md-12\">\r\n          <div class=\"alert alert-warning align-2-item\" role=\"alert\" rv-show=\"content.feedbackState.empty\">\r\n            <span>\r\n              <i class=\"fa fa-2x fa-meh-o\" style=\"vertical-align: middle\"></i>&nbsp;</span>\r\n            <span rv-text=\"content.feedback.global.empty\" style=\"vertical-align: middle\"></span>\r\n          </div>\r\n        </div>\r\n      </div>\r\n    </section>\r\n  </main>\r\n</div>\r\n";
 
 /***/ }),
-/* 9 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1114,11 +1149,11 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _constant = __webpack_require__(0);
 
-var _rivets = __webpack_require__(10);
+var _rivets = __webpack_require__(9);
 
 var _rivets2 = _interopRequireDefault(_rivets);
 
-__webpack_require__(12);
+__webpack_require__(11);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1135,71 +1170,47 @@ var Fib2ModelAndView = function () {
 
   _createClass(Fib2ModelAndView, [{
     key: 'clearGrades',
+
+
+    /**
+     * Function to clear grades and reset feedback state
+     */
     value: function clearGrades() {
       this.model.feedbackState = {
         'correct': false,
+        'partiallyCorrect': false,
         'incorrect': false,
+        'partiallyIncorrect': false,
         'empty': false
       };
     }
+
+    /**
+     * Function to bind data with rivets
+     */
+
   }, {
     key: 'bindData',
     value: function bindData() {
-      this[initializeRivets]();
+      var data = this[initializeRivets]();
+
+      /*Bind the data to template using rivets*/
+      _rivets2.default.bind($('#fib2-engine'), data);
     }
+
+    /**
+     * Function to initialize rivets
+     */
+
   }, {
     key: initializeRivets,
     value: function value() {
-      _rivets2.default.formatters.propertyList = function (obj) {
-        return function () {
-          var properties = [];
-
-          var keys = Object.keys(obj);
-
-          var _iteratorNormalCompletion = true;
-          var _didIteratorError = false;
-          var _iteratorError = undefined;
-
-          try {
-            for (var _iterator = keys[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-              var key = _step.value;
-
-              properties.push({ key: key, value: obj[key] });
-            }
-          } catch (err) {
-            _didIteratorError = true;
-            _iteratorError = err;
-          } finally {
-            try {
-              if (!_iteratorNormalCompletion && _iterator.return) {
-                _iterator.return();
-              }
-            } finally {
-              if (_didIteratorError) {
-                throw _iteratorError;
-              }
-            }
-          }
-
-          return properties;
-        }();
-      };
-
-      _rivets2.default.binders['src-strict'] = function (el, value) {
-        var img = new Image();
-
-        img.onload = function () {
-          $(el).attr('src', value);
-        };
-
-        img.src = value;
-      };
-
       _rivets2.default.binders.addclass = function (el, value) {
         if (el.addedClass) {
           $(el).removeClass(el.addedClass);
           delete el.addedClass;
         }
+
         if (value) {
           $(el).addClass(value);
           el.addedClass = value;
@@ -1216,12 +1227,9 @@ var Fib2ModelAndView = function () {
         el.id = 'answer' + value;
       };
 
-      var data = {
+      return {
         content: this.model
       };
-
-      /*Bind the data to template using rivets*/
-      _rivets2.default.bind($('#fib2-engine'), data);
     }
   }, {
     key: 'template',
@@ -1241,7 +1249,7 @@ var Fib2ModelAndView = function () {
 exports.Fib2ModelAndView = Fib2ModelAndView;
 
 /***/ }),
-/* 10 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(module) {var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Rivets.js
@@ -2653,10 +2661,10 @@ exports.Fib2ModelAndView = Fib2ModelAndView;
 
 }).call(this);
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)(module)))
 
 /***/ }),
-/* 11 */
+/* 10 */
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
@@ -2684,13 +2692,13 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 12 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(13);
+var content = __webpack_require__(12);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
@@ -2698,7 +2706,7 @@ var transform;
 var options = {"hmr":true}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(15)(content, options);
+var update = __webpack_require__(14)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -2715,21 +2723,21 @@ if(false) {
 }
 
 /***/ }),
-/* 13 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(14)(false);
+exports = module.exports = __webpack_require__(13)(false);
 // imports
 
 
 // module
-exports.push([module.i, "/*******************************************************\n *\n * ----------------------\n * Engine Renderer Styles\n * ----------------------\n *\n * These styles do not include any product-specific branding\n * and/or layout / design. They represent minimal structural\n * SCSS which is necessary for a default rendering of an\n * FIB2 activity\n *\n * The styles are linked/depending on the presence of\n * certain elements (classes / ids / tags) in the DOM (as would\n * be injected via a valid FIB2 layout HTML and/or dynamically\n * created by the FIB2 engine JS)\n *\n *\n *******************************************************/\nmain {\n  font-size: 14px;\n  font-family: 'Open Sans', Verdana, sans-serif; }\n\n.instructions {\n  font-size: 1.1em;\n  color: #5c5c5c;\n  margin-bottom: 0.9em; }\n\n.smart-form {\n  line-height: 0.8em; }\n  .smart-form ol {\n    padding: 0; }\n  .smart-form .question-li {\n    padding: .7em .4em .7em 1.8em;\n    margin-left: 2em;\n    color: #666; }\n    .smart-form .question-li .wrong:before {\n      content: \"\\F00D\";\n      color: red;\n      font-family: fontawesome;\n      display: block;\n      margin: .15em .36em auto -4.5em; }\n    .smart-form .question-li .correct:before {\n      content: \"\\F00C\";\n      color: green;\n      display: block;\n      font-family: fontawesome;\n      margin: .15em .36em auto -4.5em; }\n  .smart-form .question {\n    font-weight: normal;\n    margin: 0;\n    line-height: 1.5em; }\n    .smart-form .question input {\n      border-width: 0 0 1px 0;\n      outline: none;\n      width: 150px;\n      text-align: center;\n      border-radius: 0;\n      display: inline; }\n    .smart-form .question input:disabled {\n      opacity: 0.6;\n      background: #ffffff; }\n  .smart-form .state-success input {\n    border-color: #7DC27D; }\n  .smart-form .state-success input:disabled {\n    background: #f0fff0; }\n  .smart-form .state-error input {\n    border-color: #A90329; }\n  .smart-form .state-error input:disabled {\n    background: #fff0f0; }\n\n.feedback .alert-success {\n  background-color: #f2fdee; }\n\n.feedback .alert-danger {\n  background-color: #fdeeee; }\n\n.fib2-dark .instruction,\n.fib2-dark .question-li {\n  color: #ffffff; }\n\n.fib2-dark .smart-form .state-success input {\n  background: #363636;\n  border-color: #7DC27D; }\n\n.fib2-dark .smart-form .state-error input {\n  background: #363636;\n  border-color: #A90329; }\n\n.fib2-dark .smart-form input {\n  background: #363636;\n  color: #ffffff; }\n\n.fib2-dark .smart-form input:disabled {\n  opacity: 0.6 !important;\n  background: #363636; }\n\n.fib2-dark .feedback .alert-success {\n  background-color: #363636;\n  color: #40fd21;\n  border: 1px solid #494949; }\n\n.fib2-dark .feedback .alert-danger {\n  background-color: #363636;\n  color: #e30e0e;\n  border: 1px solid #494949; }\n\n.fib2-light {\n  background-color: #f6f6f6; }\n  .fib2-light .instructions {\n    color: #535353; }\n", ""]);
+exports.push([module.i, "/*******************************************************\r\n *\r\n * ----------------------\r\n * Engine Renderer Styles\r\n * ----------------------\r\n *\r\n * These styles do not include any product-specific branding\r\n * and/or layout / design. They represent minimal structural\r\n * SCSS which is necessary for a default rendering of an\r\n * FIB2 activity\r\n *\r\n * The styles are linked/depending on the presence of\r\n * certain elements (classes / ids / tags) in the DOM (as would\r\n * be injected via a valid FIB2 layout HTML and/or dynamically\r\n * created by the FIB2 engine JS)\r\n *\r\n *\r\n *******************************************************/\nmain {\n  font-size: 14px;\n  font-family: 'Open Sans', Verdana, sans-serif; }\n\n.instructions {\n  font-size: 1.1em;\n  color: #5c5c5c;\n  margin-bottom: 0.9em; }\n\n.smart-form {\n  line-height: 0.8em; }\n  .smart-form ol {\n    padding: 0; }\n  .smart-form .question-li {\n    padding: .7em .4em .7em 1.8em;\n    margin-left: 2em;\n    color: #666; }\n    .smart-form .question-li .wrong:before {\n      content: \"\\F00D\";\n      color: red;\n      font-family: fontawesome;\n      display: block;\n      margin: .15em .36em auto -4.5em; }\n    .smart-form .question-li .correct:before {\n      content: \"\\F00C\";\n      color: green;\n      display: block;\n      font-family: fontawesome;\n      margin: .15em .36em auto -4.5em; }\n  .smart-form .question {\n    font-weight: normal;\n    margin: 0;\n    line-height: 1.5em; }\n    .smart-form .question input {\n      border-width: 0 0 1px 0;\n      outline: none;\n      width: 150px;\n      text-align: center;\n      border-radius: 0;\n      display: inline; }\n    .smart-form .question input:disabled {\n      opacity: 0.6;\n      background: #ffffff; }\n  .smart-form .state-success input {\n    border-color: #7DC27D; }\n  .smart-form .state-success input:disabled {\n    background: #f0fff0; }\n  .smart-form .state-error input {\n    border-color: #A90329; }\n  .smart-form .state-error input:disabled {\n    background: #fff0f0; }\n\n.feedback .alert-success {\n  background-color: #f2fdee; }\n\n.feedback .alert-danger {\n  background-color: #fdeeee; }\n\n.fib2-dark .instruction,\n.fib2-dark .question-li {\n  color: #ffffff; }\n\n.fib2-dark .smart-form .state-success input {\n  background: #363636;\n  border-color: #7DC27D; }\n\n.fib2-dark .smart-form .state-error input {\n  background: #363636;\n  border-color: #A90329; }\n\n.fib2-dark .smart-form input {\n  background: #363636;\n  color: #ffffff; }\n\n.fib2-dark .smart-form input:disabled {\n  opacity: 0.6 !important;\n  background: #363636; }\n\n.fib2-dark .feedback .alert-success {\n  background-color: #363636;\n  color: #40fd21;\n  border: 1px solid #494949; }\n\n.fib2-dark .feedback .alert-danger {\n  background-color: #363636;\n  color: #e30e0e;\n  border: 1px solid #494949; }\n\n.fib2-light {\n  background-color: #f6f6f6; }\n  .fib2-light .instructions {\n    color: #535353; }\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 14 */
+/* 13 */
 /***/ (function(module, exports) {
 
 /*
@@ -2811,7 +2819,7 @@ function toComment(sourceMap) {
 
 
 /***/ }),
-/* 15 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -2867,7 +2875,7 @@ var singleton = null;
 var	singletonCounter = 0;
 var	stylesInsertedAtTop = [];
 
-var	fixUrls = __webpack_require__(16);
+var	fixUrls = __webpack_require__(15);
 
 module.exports = function(list, options) {
 	if (typeof DEBUG !== "undefined" && DEBUG) {
@@ -3183,7 +3191,7 @@ function updateLink (link, options, obj) {
 
 
 /***/ }),
-/* 16 */
+/* 15 */
 /***/ (function(module, exports) {
 
 
@@ -3278,7 +3286,7 @@ module.exports = function (css) {
 
 
 /***/ }),
-/* 17 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3305,7 +3313,9 @@ var Fib2Events = function () {
     this.fib2UserResponse = new _fib.Fib2ResponseProcessor(fib2Obj);
   }
 
-  /** Function to handle on input focus in*/
+  /**
+   * Function to handle on input focus in
+   */
 
 
   _createClass(Fib2Events, [{
@@ -3326,7 +3336,7 @@ var Fib2Events = function () {
           return;
         }
 
-        /* Save new Answer back in __content. */
+        /* Save new Answer back in userAnswers. */
         _this.fib2Obj.userAnswers[interactionId] = newAnswer;
 
         /* Soft save answers. */
@@ -3334,7 +3344,9 @@ var Fib2Events = function () {
       }, 10000);
     }
 
-    /** Function to handle on focus out*/
+    /**
+     * Function to handle on focus out
+     */
 
   }, {
     key: 'handleQuestionTextLostFocus',
@@ -3352,12 +3364,17 @@ var Fib2Events = function () {
         return;
       }
 
-      /* Save new Answer back in __content. */
+      /* Save new Answer back in userAnswers. */
       this.fib2Obj.userAnswers[interactionId] = newAnswer;
 
       /* Soft save answers. */
       this.fib2UserResponse.savePartial();
     }
+
+    /**
+     * Function to bind focus in and focus out event handlers
+     */
+
   }, {
     key: 'bindEvents',
     value: function bindEvents() {
