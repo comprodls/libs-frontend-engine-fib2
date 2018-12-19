@@ -82,7 +82,7 @@ class Fib2ResponseProcessor {
    *   3. Divide the maximum marks among interaction.
    *   4. Returns result objects.  [{ id: interactionId,  answer: answer,   score: score, maxscore: maximumScore }]
    */
-  [getAnswersJSON](skipQuestion, interactionId) {
+  [getAnswersJSON](skipQuestion) {
     let response = [];
     let fibsrAns;
 

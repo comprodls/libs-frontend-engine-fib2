@@ -72,7 +72,6 @@ class FIB2Transformer {
 
   [setInteractions]() {
     let entity = this.entity;
-    let _self = this;
 
     this.fib2Model.questionData = entity.content.canvas.data.questiondata.map((element, index) => {
       let obj = {};
@@ -82,15 +81,15 @@ class FIB2Transformer {
       obj.interactions = [];
       obj.types = [];
       obj.numberOfInteractions = 0;
-      interactionsReferences.each(function (idx) {
-        let currinteractionid = $(this).text().trim();
+      interactionsReferences.each((idx, el) => {
+        let currinteractionid = $(el).text().trim();
         let newchild = $(`<span  class='input answer'><input type='text' id='${currinteractionid}' class='userAnswer' autocomplete="off" spellcheck="false"/></span>`)[0];
 
-        $(this).replaceWith(newchild);
+        $(el).replaceWith(newchild);
         obj.interactions.push(currinteractionid);
         obj.numberOfInteractions += 1;
         obj.types.push(entity.content.interactions[currinteractionid]);
-        _self.fib2Model.interactionIds.push(currinteractionid);
+        this.fib2Model.interactionIds.push(currinteractionid);
       });
 
       obj.questionText = parsedQuestionArray[0].innerHTML;
