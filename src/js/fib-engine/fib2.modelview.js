@@ -60,9 +60,7 @@ class Fib2ModelAndView {
     };
 
     rivets.binders['text-parse'] = function (el, value) {
-      let innerHtml = $(`<div>${value}</div>`)[0].innerHTML;
-
-      $(el).html(innerHtml);
+      $(el).html(value);
     };
 
     rivets.binders['answer-id'] = function (el, value) {

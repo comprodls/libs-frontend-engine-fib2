@@ -62,9 +62,9 @@ class fib2 {
   }
 
   [transform]() {
-    let mcqTransformer = new FIB2Transformer(this.jsonContent, this.params, this.theme);
+    let fib2Transformer = new FIB2Transformer(this.jsonContent, this.params, this.theme);
 
-    this.fib2Model = mcqTransformer.transform();
+    this.fib2Model = fib2Transformer.transform();
   }
 
   [renderView]() {
@@ -87,7 +87,7 @@ class fib2 {
     let fib2ResponseProcessor = new Fib2ResponseProcessor(this);
 
     /* Saving Answers. */
-    fib2ResponseProcessor.saveResults(true);
+    fib2ResponseProcessor.saveResults();
     this.adaptor.sendStatement(this.adaptor.getId(), generateStatement(Constants.STATEMENT_SUBMITTED));
   }
 

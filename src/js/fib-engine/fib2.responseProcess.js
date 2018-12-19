@@ -23,7 +23,7 @@ class Fib2ResponseProcessor {
   /**
    * Function called to send result JSON to adaptor (On Submit).
    */
-  saveResults(bSubmit) {
+  saveResults() {
     /*Getting answer in JSON format*/
     const answerJSONs = this[getAnswersJSON](false);
     const uniqueId = this.fib2Obj.adaptor.getId();
@@ -34,24 +34,22 @@ class Fib2ResponseProcessor {
 
     answerJSONs.forEach((answerJSON, idx) => {
       /* User clicked the Submit button*/
-      if (bSubmit === true) {
-        answerJSON.statusProgress = 'attempted';
-        /*Send Results to platform*/
-        this.fib2Obj.adaptor.submitResults(answerJSON, uniqueId, (data, status) => {
-          if (status === Constants.STATUS_NOERROR) {
-            __state.activitySubmitted = true;
-            /*Close platform's session*/
-            this.fib2Obj.adaptor.closeActivity();
-            __state.currentTries = 0;
-          } else {
-            /* There was an error during platform communication, so try again (till MAX_RETRIES) */
-            if (__state.currentTries < Constants.MAX_RETRIES) {
-              __state.currentTries++;
-              this.saveResults(bSubmit);
-            }
+      answerJSON.statusProgress = 'attempted';
+      /*Send Results to platform*/
+      this.fib2Obj.adaptor.submitResults(answerJSON, uniqueId, (data, status) => {
+        if (status === Constants.STATUS_NOERROR) {
+          __state.activitySubmitted = true;
+          /*Close platform's session*/
+          this.fib2Obj.adaptor.closeActivity();
+          __state.currentTries = 0;
+        } else {
+          /* There was an error during platform communication, so try again (till MAX_RETRIES) */
+          if (__state.currentTries < Constants.MAX_RETRIES) {
+            __state.currentTries++;
+            this.saveResults();
           }
-        });
-      }
+        }
+      });
     });
   }
 
@@ -114,11 +112,11 @@ class Fib2ResponseProcessor {
 
           if (userAnswer === correctAnswer) {
             score = perInteractionScore;
+            countCorrectInteractionAttempt++;
             isAllInteractionsEmpty = false;
           } else if (userAnswer !== undefined && userAnswer !== '') {
             isAllInteractionsEmpty = false;
           }
-          countCorrectInteractionAttempt++;
           isUserAnswerCorrect = true;
         }
       }
@@ -190,7 +188,7 @@ class Fib2ResponseProcessor {
           if (userAnswer !== undefined && userAnswer !== '') {
             isAllInteractionsEmpty = false;
           }
-          countIncorrectQuestionAttempt += 1;
+          countIncorrectInteractionsAttempt += 1;
         } else {
           isAllInteractionsEmpty = false;
           countCorrectInteractionsAttempt += 1;
