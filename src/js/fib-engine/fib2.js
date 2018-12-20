@@ -7,9 +7,9 @@ import {Fib2ResponseProcessor} from './fib2.responseProcess';
 import generateStatement from '../utils';
 import {Constants} from './constant';
 
-const load = Symbol('loadMCQ');
-const transform = Symbol('transformMCQ');
-const renderView = Symbol('renderMCQ');
+const load = Symbol('loadFib2');
+const transform = Symbol('transformFib2');
+const renderView = Symbol('renderFib2');
 const bindEvents = Symbol('bindEvents');
 let fib2ModelAndView;
 
