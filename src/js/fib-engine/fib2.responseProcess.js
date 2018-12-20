@@ -95,59 +95,43 @@ class Fib2ResponseProcessor {
   [getFibsrAnswersJSON]() {
     const maxScore = this.fib2Obj.jsonContent.meta.score.max;
     const perInteractionScore = maxScore / this.fib2Obj.fib2Model.interactionIds.length;
+    const stats = this[getUserAnswersStats]();
     let resultArray = [];
     let feedback;
-    let statusEvaluation = 'empty';
-    let isUserAnswerCorrect = false;
-    let countCorrectInteractionAttempt = 0;
-    let isAllInteractionsEmpty = true;
+    let statusEvaluation;
 
-    this.fib2Obj.fib2Model.interactionIds.forEach((id, index) => {
-      let score = 0;
-
-      if (this.fib2Obj.userAnswers.hasOwnProperty(id)) {
-        if (this.fib2Obj.userAnswers[id].length === this.fib2Obj.fib2Model.responses[id]['correct'].length) {
-          let correctAnswer = this.fib2Obj.fib2Model.responses[id]['correct'];
-          let userAnswer = this.fib2Obj.userAnswers[id];
-
-          if (userAnswer === correctAnswer) {
-            score = perInteractionScore;
-            countCorrectInteractionAttempt++;
-            isAllInteractionsEmpty = false;
-          } else if (userAnswer !== undefined && userAnswer !== '') {
-            isAllInteractionsEmpty = false;
-          }
-          isUserAnswerCorrect = true;
-        }
-      }
+    this.fib2Obj.fib2Model.interactionIds.forEach((interactionId) => {
+      let score = (stats.userAnswersResult[interactionId] ? perInteractionScore : 0);
 
       resultArray.push({
-        id,
+        interactionId,
         score,
-        answer: this.fib2Obj.userAnswers[id] || '',
+        answer: this.fib2Obj.userAnswers[interactionId] || '',
         maxScore: perInteractionScore
       });
     });
 
-    if (isUserAnswerCorrect) {
+    if (stats.isAllInteractionsEmpty) {
+      statusEvaluation = 'empty';
+      feedback = this[buildFeedbackResponse]('global.empty', statusEvaluation, this.fib2Obj.fib2Model.feedback.global.empty);
+    } else if (stats.totalQuestions === stats.countCorrectQuestionAttempt && stats.totalInteractions === stats.countCorrectInteractionsAttempt) {
       statusEvaluation = 'correct';
-      feedback = this[buildFeedbackResponse]('global.correct', 'correct', this.fib2Obj.fib2Model.feedback.global.correct);
-    } else if (countCorrectInteractionAttempt === 0) {
-      statusEvaluation = 'incorrect';
-      if (isAllInteractionsEmpty) {
-        feedback = this[buildFeedbackResponse]('global.empty', statusEvaluation, this.fib2Obj.fib2Model.feedback.global.empty);
-      } else {
-        feedback = this[buildFeedbackResponse]('global.incorrect', statusEvaluation, this.fib2Obj.fib2Model.feedback.global.incorrect);
-      }
-    } else {
+      feedback = this[buildFeedbackResponse]('global.correct', statusEvaluation, this.fib2Obj.fib2Model.feedback.global.correct);
+    } else if (stats.countCorrectQuestionAttempt >= (Math.floor(stats.totalQuestions / 2))) {
       statusEvaluation = 'partially_correct';
-      feedback = this[buildFeedbackResponse]('global.incorrect', 'incorrect', this.fib2Obj.fib2Model.global.incorrect);
+      feedback = this[buildFeedbackResponse]('global.partiallyCorrect', statusEvaluation, this.fib2Obj.fib2Model.feedback.global.partiallyCorrect);
+    } else if (stats.countIncorrectQuestionAttempt >= (Math.floor(stats.totalQuestions / 2))) {
+      statusEvaluation = 'partially_incorrect';
+      feedback = this[buildFeedbackResponse]('global.partiallyIncorrect', statusEvaluation, this.fib2Obj.fib2Model.feedback.global.partiallyIncorrect);
+    } else if (stats.countCorrectQuestionAttempt === 0) {
+      statusEvaluation = 'incorrect';
+      feedback = this[buildFeedbackResponse]('global.incorrect', statusEvaluation, this.fib2Obj.fib2Model.feedback.global.incorrect);
     }
 
     return {
       response: {
         'interactions': resultArray,
-        'statusEvaluation': statusEvaluation,
+        statusEvaluation,
         feedback
       }
     };
@@ -160,6 +144,7 @@ class Fib2ResponseProcessor {
     const questions = this.fib2Obj.fib2Model.questionData;
     const totalInteractions = this.fib2Obj.fib2Model.interactionIds.length;
     const totalQuestions = this.fib2Obj.fib2Model.questionData.length;
+    const userAnswersResult = {};
     let countCorrectQuestionAttempt = 0;
     let countIncorrectQuestionAttempt = 0;
     let countCorrectInteractionsAttempt = 0;
@@ -172,6 +157,10 @@ class Fib2ResponseProcessor {
       question.interactions.forEach((interactionId) => {
         let correctAnswer = this.fib2Obj.fib2Model.responses[interactionId].correct;
         let userAnswer = this.fib2Obj.userAnswers[interactionId];
+
+        userAnswersResult[interactionId] = {
+          correct: false
+        };
 
         if (this.fib2Obj.fib2Model.responses[interactionId].ignorecase) {
           correctAnswer = correctAnswer.toLowerCase();
@@ -191,6 +180,7 @@ class Fib2ResponseProcessor {
           countIncorrectInteractionsAttempt += 1;
         } else {
           isAllInteractionsEmpty = false;
+          userAnswersResult[interactionId].correct = true;
           countCorrectInteractionsAttempt += 1;
         }
       });
@@ -203,6 +193,7 @@ class Fib2ResponseProcessor {
     });
 
     return {
+      userAnswersResult,
       totalInteractions,
       countIncorrectInteractionsAttempt,
       countCorrectInteractionsAttempt,
