@@ -1,16 +1,14 @@
 /* global $ */
 
+import rivets from 'rivets';
 import {feedbackPresets} from './fib2editor-constants';
 
 let fib2TemplateRef = require('../../html/fib2Editor.html');
 
 require('../../scss/fib2-editor.scss');
 
-import rivets from 'rivets';
-
 const initializeRivets = Symbol('initializeRivets');
 const bindEvents = Symbol('bindEvents');
-
 const constantTemplateRef = {
   TEMPLATES: {
     /* Regular fib2 Layout */
@@ -32,11 +30,14 @@ class Fib2ModelAndView {
   }
 
   bindData() {
-    this[initializeRivets]();
+    const data = this[initializeRivets]();
+
+    rivets.bind($('#fib-editor'), data);
     this[bindEvents]();
   }
 
   [initializeRivets]() {
+    let _self = this;
     /*
      * Formatters for rivets
      */
@@ -72,11 +73,20 @@ class Fib2ModelAndView {
 
     rivets.binders['content-editable'] = {
       bind: function (el) {
-        let that = this;
+        if (el.className === 'question-data mb-sm') {
+          el.addEventListener('paste', _self.utils.questionDataEventListener.bind(_self.utils));
+          $(el)
+            .on('mouseenter', '.drag', function () {
+              $(this).next().css('color', 'dodgerblue');
+            })
+            .on('mouseleave', '.drag', function () {
+              $(this).next().css('color', '');
+            });
+        }
 
         el.setAttribute('contenteditable', true);
-        this.callback = function (e) {
-          that.publish();
+        this.callback = (e) => {
+          this.publish();
         };
         el.addEventListener('blur', this.callback);
       },
@@ -110,7 +120,7 @@ class Fib2ModelAndView {
       }
     };
 
-    let data = {
+    return {
       editorContent: this.editedJsonContent,
       feedback: this.editedJsonContent.feedback,
       isInstructionEmpty: this.editedJsonContent.isInstructionEmpty,
@@ -120,61 +130,14 @@ class Fib2ModelAndView {
       removeQuestion: this.utils.removeQuestion.bind(this.utils),
       feedbackPresets: feedbackPresets
     };
-
-    rivets.bind($('#fib-editor'), data);
   }
 
   [bindEvents]() {
     $(document).ready(() => {
       this.sendItemChangeNotification = true;
-
-      let questionContainer = $('.question-data');
-
-      for (let i = 0; i < questionContainer.length; i++) {
-        questionContainer[i].addEventListener('paste', (e) => {
-          // Get the clipboard data
-          let paste = (e.clipboardData || window.clipboardData).getData('text');
-
-          if (paste.indexOf('Response') !== 0) {
-
-            // Prevent the default pasting event and stop bubbling
-            e.preventDefault();
-            e.stopPropagation();
-
-            const selection = window.getSelection();
-
-            // Cancel the paste operation if the cursor or highlighted area isn't found
-            if (!selection.rangeCount) return false;
-
-            let interactionId = this.utils.getInteractionId();
-            let questionBlank = document.createElement('span');
-
-            questionBlank.setAttribute('class', 'response-blank');
-
-            let dragNode = document.createElement('span');
-            let newNode = document.createElement('span');
-
-            dragNode.setAttribute('class', 'drag');
-            dragNode.textContent = interactionId.substr(1);
-
-            newNode.setAttribute('id', interactionId);
-            newNode.setAttribute('contenteditable', false);
-            newNode.setAttribute('class', 'answer');
-            newNode.textContent = 'Response';
-
-            questionBlank.appendChild(dragNode);
-            questionBlank.appendChild(newNode);
-            selection.getRangeAt(0).insertNode(questionBlank);
-            return true;
-          }
-          return false;
-        });
-      }
-
-      this.utils.addInputEventListner();
+      this.utils.addInputEventListener();
     });
   }
-
 }
 
 export default Fib2ModelAndView;

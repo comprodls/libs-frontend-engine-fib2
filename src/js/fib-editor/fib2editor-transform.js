@@ -130,7 +130,7 @@ class Fib2Transformer {
     });
 
     question.forEach((el, index) => {
-      let splitCharacterPos = 0;
+      let splitCharacterPos;
       let blankPrefix = '<span class="input">';
       let blankSuffix = '</span>';
 
@@ -156,7 +156,7 @@ class Fib2Transformer {
             interactionId = interactionId[i++];
           }
 
-          let questionBlank = `
+          const questionBlank = `
             <span class="response-blank"><span class="drag">${interactionId.substring(1)}</span><span contenteditable="false" id="${interactionId}" class="answer">Response</span></span>
           `;
 

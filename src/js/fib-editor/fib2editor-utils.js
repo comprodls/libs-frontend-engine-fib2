@@ -19,6 +19,45 @@ class Fib2EditorUtils {
     };
   }
 
+  questionDataEventListener(e) {
+    // Get the clipboard data
+    let paste = (e.clipboardData || window.clipboardData).getData('text');
+
+    if (paste.indexOf('Response') !== 0) {
+
+      // Prevent the default pasting event and stop bubbling
+      e.preventDefault();
+      e.stopPropagation();
+
+      const selection = window.getSelection();
+
+      // Cancel the paste operation if the cursor or highlighted area isn't found
+      if (!selection.rangeCount) return false;
+
+      let interactionId = this.getInteractionId();
+      let questionBlank = document.createElement('span');
+
+      questionBlank.setAttribute('class', 'response-blank');
+
+      let dragNode = document.createElement('span');
+      let newNode = document.createElement('span');
+
+      dragNode.setAttribute('class', 'drag');
+      dragNode.textContent = interactionId.substr(1);
+
+      newNode.setAttribute('id', interactionId);
+      newNode.setAttribute('contenteditable', false);
+      newNode.setAttribute('class', 'answer');
+      newNode.textContent = 'Response';
+
+      questionBlank.appendChild(dragNode);
+      questionBlank.appendChild(newNode);
+      selection.getRangeAt(0).insertNode(questionBlank);
+      return true;
+    }
+    return false;
+  }
+
   /* Function to get next interaction id and create the corresponding response node. */
   getInteractionId() {
     let id = 'i' + (this.interactionIds.length + 1);
@@ -28,8 +67,8 @@ class Fib2EditorUtils {
     return id;
   }
 
-  /* Function to add event listner to input box - update the correct response corresponding to the input entered */
-  addInputEventListner() {
+  /* Function to add event listener to input box - update the correct response corresponding to the input entered */
+  addInputEventListener() {
     let answerContainer = $('.userAnswer');
 
     for (let i = 0; i < answerContainer.length; i++) {
@@ -45,7 +84,7 @@ class Fib2EditorUtils {
   /* Transform the processedJSON to originally received form so that the platform
   * can use it to repaint the updated json.
   */
-  transformJSONtoOriginialForm() {
+  transformJSONtoOriginalForm() {
 
     let JSONContent = $.extend(true, {}, this.editedJsonContent);
     let finalJSONContent = {};
@@ -107,7 +146,7 @@ class Fib2EditorUtils {
     $('#instructionLabel').show();
     this.state.hasUnsavedChanges = true;
     this.activityAdaptor.autoResizeActivityIframe();
-    this.activityAdaptor.itemChangedInEditor(this.transformJSONtoOriginialForm(), this.uniqueId);
+    this.activityAdaptor.itemChangedInEditor(this.transformJSONtoOriginalForm(), this.uniqueId);
   }
 
   /* Handles the remove Instruction item text from the editor */
@@ -124,7 +163,7 @@ class Fib2EditorUtils {
 
     this.state.hasUnsavedChanges = true;
     this.activityAdaptor.autoResizeActivityIframe();
-    this.activityAdaptor.itemChangedInEditor(this.transformJSONtoOriginialForm(), this.uniqueId);
+    this.activityAdaptor.itemChangedInEditor(this.transformJSONtoOriginalForm(), this.uniqueId);
   }
 
   /** Handles the add question button click from the editor */
@@ -134,25 +173,23 @@ class Fib2EditorUtils {
     let interactionId = this.getInteractionId();
 
     let questionBlank = `
-      <span class="response-blank">
-        <span class="drag">${interactionId.substring(1)}</span><span contenteditable="false" id="${interactionId}" class="answer">Response</span>
-      </span>
+      <span class="response-blank"><span class="drag">${interactionId.substring(1)}</span><span contenteditable="false" id="${interactionId}" class="answer">Response</span></span>
     `;
-    let questionText = 'Placeholder Question text. Update "Me" with a valid' + questionBlank + 'text for this question';
+    let questionText = 'Placeholder question text. update "Me" with a valid' + questionBlank + 'text for this question';
 
     let answerBlank = blankPrefix + '<input type="text" value="answer" class="' + interactionId + ' input-sm ' + constantInputClass.DOM_SEL_INPUT_BOX + '"/>' + blankSuffix;
-    let answerText = 'Placeholder Question text. Update "Me" with a valid' + answerBlank + 'text for this question';
+    let answerText = 'Placeholder question text. update "Me" with a valid' + answerBlank + 'text for this question';
 
     this.editedJsonContent.content.questiondata.push({
-      questionText: questionText,
-      answerText: answerText,
+      questionText,
+      answerText,
       'correctanswer': '',
-      'interactionId': interactionId
+      interactionId
     });
 
     this.state.hasUnsavedChanges = true;
     this.activityAdaptor.autoResizeActivityIframe();
-    this.activityAdaptor.itemChangedInEditor(this.transformJSONtoOriginialForm(), this.uniqueId);
+    this.activityAdaptor.itemChangedInEditor(this.transformJSONtoOriginalForm(), this.uniqueId);
   }
 
   /* Handles the remove question item text from the editor */
@@ -165,12 +202,11 @@ class Fib2EditorUtils {
 
     this.state.hasUnsavedChanges = true;
     this.activityAdaptor.autoResizeActivityIframe();
-    this.activityAdaptor.itemChangedInEditor(this.transformJSONtoOriginialForm(), this.uniqueId);
+    this.activityAdaptor.itemChangedInEditor(this.transformJSONtoOriginalForm(), this.uniqueId);
   }
 
   updateAnswerTextJSON() {
     this.editedJsonContent.content.questiondata.forEach((el, index) => {
-      console.log(index);
       let splitCharacterPosStart, splitCharacterPosEnd;
       let blankPrefix = '<span class="input">';
       let blankSuffix = '</span>';
@@ -188,8 +224,8 @@ class Fib2EditorUtils {
         } else {
 
           let questionBlank = el.answerText.slice(splitCharacterPosStart, splitCharacterPosEnd + suffix.length);
-
           let span = $.parseHTML(questionBlank);
+
           let interactionId = 'i' + ($.parseHTML(span[0].innerHTML))[0].innerHTML;
           let answer = (this.editedJsonContent.responses[interactionId]) ? this.editedJsonContent.responses[interactionId].correct : '';
 
@@ -204,16 +240,16 @@ class Fib2EditorUtils {
 
     });
 
-    this.addInputEventListner();
+    this.addInputEventListener();
     this.state.hasUnsavedChanges = true;
   }
 
   handleItemChangedInEditor() {
-    this.activityAdaptor.itemChangedInEditor(this.transformJSONtoOriginialForm(), this.uniqueId);
+    this.activityAdaptor.itemChangedInEditor(this.transformJSONtoOriginalForm(), this.uniqueId);
   }
 
   saveItemInEditor() {
-    this.activityAdaptor.submitEditChanges(this.transformJSONtoOriginialForm(), this.uniqueId);
+    this.activityAdaptor.submitEditChanges(this.transformJSONtoOriginalForm(), this.uniqueId);
   }
 
   getConfig() {
@@ -223,7 +259,6 @@ class Fib2EditorUtils {
   getStatus() {
     return this.state.hasUnsavedChanges;
   }
-
 }
 
 export default Fib2EditorUtils;
