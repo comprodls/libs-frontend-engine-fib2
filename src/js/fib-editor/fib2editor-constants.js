@@ -5,7 +5,9 @@ export const constantInputClass = {
 };
 
 export const feedbackPresets = [
-  {key: 'correct', value: 'Show when Correct', showDropdown: true, order: 1},
-  {key: 'incorrect', value: 'Show when Incorrect', showDropdown: true, order: 2},
-  {key: 'generic', value: 'Show Always', showDropdown: true, order: 100}
+  {key: 'correct', value: 'Perfect. You got it correct !!!', showDropdown: true, order: 1},
+  {key: 'incorrect', value: 'Sorry, Wrong Responses. Try Again After some time !!!', showDropdown: true, order: 2},
+  {key: 'partiallyCorrect', value: 'You are almost done. Try Again !!!', showDropdown: true, order: 3},
+  {key: 'partiallyIncorrect', value: 'Sorry, Wrong responses', showDropdown: true, order: 4},
+  {key: 'empty', value: 'You did not enter anything.', showDropdown: true, order: 5}
 ];

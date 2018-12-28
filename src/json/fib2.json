@@ -1,16 +1,17 @@
 {
   "meta": {
-    "type": "FIB2",
+    "type": "FIBSR",
     "score": {
       "default": 0,
-      "max": 2,
+      "max": 0.5,
       "min": 0
     }
   },
   "content": {
     "instructions": [
       {
-        "tag": "Directions for fib2"
+        "tag": "html",
+        "html": "<b>Completar </b>Fill in the blanks with the appropriate forms of ir. (6 x 0.5 pt. each = 3 pts.)"
       }
     ],
     "stimulus": [
@@ -23,10 +24,22 @@
       "data": {
         "questiondata": [
           {
-            "text": "Hello ES6 and Webpack <a href='http://www.comprodls.com/m1.0/interaction/fib2'>i1</a>"
+            "text": "El sábado tío Luis y tía Tere <a href='http://www.comprodls.com/m1.0/interaction/fib2'>i1</a> de excursión a las montañas."
           },
           {
-            "text": "Hello FIB2 Engine <a href='http://www.comprodls.com/m1.0/interaction/fib2'>i1</a> "
+            "text": "Mi hermana Perla <a href='http://www.comprodls.com/m1.0/interaction/fib2'>i2</a> con unas amigas al cine."
+          },
+          {
+            "text": "Ustedes <a href='http://www.comprodls.com/m1.0/interaction/fib2'>i3</a> a un restaurante muy elegante."
+          },
+          {
+            "text": "Tú <a href='http://www.comprodls.com/m1.0/interaction/fib2'>i4</a> a casa de tu amigo Manuel."
+          },
+          {
+            "text": "Nosotros <a href='http://www.comprodls.com/m1.0/interaction/fib2'>i5</a> al centro."
+          },
+          {
+            "text": "Yo <a href='http://www.comprodls.com/m1.0/interaction/fib2'>i6</a> a un partido de fútbol americano con mi hermano mayor."
           }
         ]
       },
@@ -34,27 +47,69 @@
     },
     "interactions": {
       "i1": {
-        "type": "FIB2"
+        "type": "FIBSR"
       },
       "i2": {
-        "type": "FIB2"
+        "type": "FIBSR"
+      },
+      "i3": {
+        "type": "FIBSR"
+      },
+      "i4": {
+        "type": "FIBSR"
+      },
+      "i5": {
+        "type": "FIBSR"
+      },
+      "i6": {
+        "type": "FIBSR"
       }
     },
     "hint": {}
   },
   "feedback": {
     "global": {
-      "correct": "You have answered it correctly",
-      "incorrect": "Your answer is incorrect",
-      "empty": "You did not answer anything"
+      "correct": "Perfect. You got it correct !!!",
+      "partiallyCorrect": "You are almost done. Try Again !!!",
+      "incorrect": "Sorry, Wrong Responses. Try Again After some time !!!",
+      "partiallyIncorrect": "Sorry, Wrong responses",
+      "empty": "You did not enter anything."
     }
   },
   "responses": {
     "i1": {
-      "correct": "Hello"
+      "correct": "van",
+      "ignorecase": false,
+      "ignorewhitespace": false
     },
     "i2": {
-      "correct": "Hello"
+      "correct": "va",
+      "ignorecase": false,
+      "ignorewhitespace": false
+    },
+    "i3": {
+      "correct": "van",
+      "ignorecase": false,
+      "ignorewhitespace": false
+    },
+    "i4": {
+      "correct": "vas",
+      "ignorecase": false,
+      "ignorewhitespace": false
+    },
+    "i5": {
+      "correct": "vamos",
+      "ignorecase": false,
+      "ignorewhitespace": false
+    },
+    "i6": {
+      "correct": "voy",
+      "ignorecase": false,
+      "ignorewhitespace": false
     }
-  }
+  },
+  "learning-objectives": [],
+  "tags": [
+    "test"
+  ]
 }

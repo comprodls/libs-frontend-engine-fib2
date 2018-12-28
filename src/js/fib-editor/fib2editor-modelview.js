@@ -53,10 +53,8 @@ class Fib2ModelAndView {
 
     rivets.binders['content'] = {
       bind: function (el) {
-        let that = this;
-
-        this.callback = function (e) {
-          that.publish();
+        this.callback = (e) => {
+          this.publish();
         };
         el.addEventListener('blur', this.callback);
       },

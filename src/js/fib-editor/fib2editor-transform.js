@@ -12,6 +12,9 @@ const parseGlobalFeedbackJSONForRivets = Symbol('parseGlobalFeedbackJSONForRivet
 const icon = {
   correct: 'thumbs-o-up',
   incorrect: 'thumbs-o-down',
+  partiallyIncorrect: 'thumbs-o-down',
+  partiallyCorrect: 'thumbs-o-up',
+  empty: 'hand-o-right',
   generic: 'hand-o-right'
 };
 
@@ -199,17 +202,23 @@ class Fib2Transformer {
         processedObj.customAttribs.key = key;
         processedObj.customAttribs.value = tempObj[key];
         processedObj.customAttribs.index = index;
-        if (key !== 'correct' || key !== 'incorrect') {
-          processedObj.customAttribs.order = 100;
-          processedObj.customAttribs.icon = icon['generic'];
-        }
         if (key === 'correct') {
           processedObj.customAttribs.order = 1;
           feedbackPresets[0].showDropdown = false;
-        }
-        if (key === 'incorrect') {
-          processedObj.customAttribs.order = 2;
+        } else if (key === 'incorrect') {
+          processedObj.customAttribs.order = 4;
           feedbackPresets[1].showDropdown = false;
+        } else if (key === 'partiallyCorrect') {
+          processedObj.customAttribs.order = 2;
+          feedbackPresets[2].showDropdown = false;
+        } else if (key === 'partiallyIncorrect') {
+          processedObj.customAttribs.order = 3;
+          feedbackPresets[3].showDropdown = false;
+        } else if (key === 'empty') {
+          processedObj.customAttribs.order = 50;
+          feedbackPresets[4].showDropdown = false;
+        } else {
+          processedObj.customAttribs.order = 100;
         }
         processedObj.customAttribs.icon = icon[key];
         tempArr.push(processedObj);
@@ -217,6 +226,7 @@ class Fib2Transformer {
       tempArr.sort(function (a, b) {
         return a.customAttribs.order - b.customAttribs.order;
       });
+      console.log(tempArr);
       this.editedJsonContent.feedback.global = tempArr;
       this.editedJsonContent.enableFeedBack = true;
     }
