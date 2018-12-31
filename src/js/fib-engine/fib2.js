@@ -115,7 +115,7 @@ class fib2 {
    * Bound to click of Activity reset button.
    */
   resetAnswers() {
-    this.userAnswers = [];
+    this.userAnswers = {};
     Fib2ResponseProcessor.resetView();
   }
 
