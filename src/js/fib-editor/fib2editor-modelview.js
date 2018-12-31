@@ -79,6 +79,12 @@ class Fib2ModelAndView {
             })
             .on('mouseleave', '.drag', function () {
               $(this).next().css('color', '');
+            })
+            .on('mouseenter', '.answer', function () {
+              $(this).prev().css('background-color', 'dodgerblue');
+            })
+            .on('mouseleave', '.answer', function () {
+              $(this).prev().css('background-color', '');
             });
         }
 

@@ -38,6 +38,7 @@ class Fib2EditorUtils {
       let questionBlank = document.createElement('span');
 
       questionBlank.setAttribute('class', 'response-blank');
+      questionBlank.setAttribute('contenteditable', 'false');
 
       let dragNode = document.createElement('span');
       let newNode = document.createElement('span');
@@ -46,7 +47,6 @@ class Fib2EditorUtils {
       dragNode.textContent = interactionId.substr(1);
 
       newNode.setAttribute('id', interactionId);
-      newNode.setAttribute('contenteditable', false);
       newNode.setAttribute('class', 'answer');
       newNode.textContent = 'Response';
 
@@ -173,7 +173,7 @@ class Fib2EditorUtils {
     let interactionId = this.getInteractionId();
 
     let questionBlank = `
-      <span class="response-blank"><span class="drag">${interactionId.substring(1)}</span><span contenteditable="false" id="${interactionId}" class="answer">Response</span></span>
+      <span class="response-blank" contenteditable="false"><span class="drag">${interactionId.substring(1)}</span><span id="${interactionId}" class="answer">Response</span></span>
     `;
     let questionText = 'Placeholder question text. update "Me" with a valid' + questionBlank + 'text for this question';
 
@@ -211,7 +211,7 @@ class Fib2EditorUtils {
       let blankPrefix = '<span class="input">';
       let blankSuffix = '</span>';
 
-      let prefix = new RegExp('<span class=(\'|")response-blank(\'|")>');
+      let prefix = new RegExp('<span class=(\'|")response-blank(\'|") contenteditable=(\'|")false(\'|")>');
       let suffix = '</span></span>';
 
       el.answerText = el.questionText;

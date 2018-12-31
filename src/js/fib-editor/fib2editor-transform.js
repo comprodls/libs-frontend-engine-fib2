@@ -160,7 +160,7 @@ class Fib2Transformer {
           }
 
           const questionBlank = `
-            <span class="response-blank"><span class="drag">${interactionId.substring(1)}</span><span contenteditable="false" id="${interactionId}" class="answer">Response</span></span>
+            <span class="response-blank" contenteditable="false"><span class="drag">${interactionId.substring(1)}</span><span id="${interactionId}" class="answer">Response</span></span>
           `;
 
           el.questionText = el.questionText.replace(splitCharacter, questionBlank);
@@ -226,7 +226,6 @@ class Fib2Transformer {
       tempArr.sort(function (a, b) {
         return a.customAttribs.order - b.customAttribs.order;
       });
-      console.log(tempArr);
       this.editedJsonContent.feedback.global = tempArr;
       this.editedJsonContent.enableFeedBack = true;
     }
