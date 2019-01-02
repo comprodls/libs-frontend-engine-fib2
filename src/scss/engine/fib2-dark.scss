@@ -1,0 +1,48 @@
+@import "../generic/index";
+
+.fib2-dark {
+  .instruction,
+  .question-li {
+    color: $white;
+  }
+
+  .smart-form {
+    .state-success {
+      input {
+        background: $color_tuatara_approx;
+        border-color: #7DC27D;
+      }
+    }
+
+    .state-error {
+      input {
+        background: $color_tuatara_approx;
+        border-color: #A90329;
+      }
+    }
+
+    input {
+      background: $color_tuatara_approx;
+      color: $white;
+    }
+
+    input:disabled {
+      opacity: 0.6 !important;
+      background: $color_tuatara_approx;
+    }
+  }
+
+  .feedback {
+    .alert-success {
+      background-color: $color_tuatara_approx;
+      color: $color_harlequin_approx;
+      border: 1px solid $color_gravel_approx;
+    }
+
+    .alert-danger {
+      background-color: $color_tuatara_approx;
+      color: $color_monza_approx;
+      border: 1px solid $color_gravel_approx;
+    }
+  }
+}

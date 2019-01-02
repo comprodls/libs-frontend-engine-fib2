@@ -25,6 +25,7 @@
     "handlebars": "~1.0.0",
     "html-loader": "^0.5.1",
     "node-sass": "^4.5.3",
+    "rivets": "0.9.6",
     "sass-loader": "^6.0.6",
     "style-loader": "^0.19.0",
     "webpack": "^3.5.5",
