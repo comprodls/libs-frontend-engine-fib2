@@ -6,6 +6,7 @@ require('../../scss/fib2-editor.scss');
 
 let fib2TemplateRef = require('../../html/fib2Editor.html');
 const initializeRivets = Symbol('initializeRivets');
+const bindEvents = Symbol('bindEvents');
 const constantTemplateRef = {
   TEMPLATES: {
     /* Regular fib2 Layout */
@@ -30,6 +31,7 @@ class Fib2ModelAndView {
     const data = this[initializeRivets]();
 
     rivets.bind($('#fib-editor'), data);
+    this[bindEvents]();
   }
 
   [initializeRivets]() {
@@ -131,6 +133,12 @@ class Fib2ModelAndView {
       removeQuestion: this.utils.removeQuestion.bind(this.utils),
       feedbackPresets: feedbackPresets
     };
+  }
+
+  [bindEvents]() {
+    $(document).ready(() => {
+      this.sendItemChangeNotification = true;
+    });
   }
 }
 
