@@ -2,11 +2,9 @@
 
 import rivets from 'rivets';
 import {feedbackPresets} from './fib2editor-constants';
-
-let fib2TemplateRef = require('../../html/fib2Editor.html');
-
 require('../../scss/fib2-editor.scss');
 
+let fib2TemplateRef = require('../../html/fib2Editor.html');
 const initializeRivets = Symbol('initializeRivets');
 const constantTemplateRef = {
   TEMPLATES: {

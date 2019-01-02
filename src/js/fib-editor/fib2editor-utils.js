@@ -88,6 +88,8 @@ class Fib2EditorUtils {
     finalJSONContent.content.interactions = {};
     finalJSONContent.content.canvas.data.questiondata = [];
     finalJSONContent.responses = {};
+    finalJSONContent['learning-objectives'] = JSONContent['learning-objectives'];
+    finalJSONContent['tags'] = JSONContent['tags'];
     finalJSONContent.feedback = {
       global: {}
     };
@@ -115,10 +117,11 @@ class Fib2EditorUtils {
           question = question.replace(questionBlank, interactionTag);
           finalJSONContent.content.interactions[interactionId] = {type: 'FIBSR'};
 
-          let span = $.parseHTML(questionBlank);
-          let answer = ($.parseHTML(span[0].innerHTML))[0].value;
-
-          finalJSONContent.responses[interactionId] = {correct: answer};
+          finalJSONContent.responses[interactionId] = {
+            correct: this.editedJsonContent.responses[interactionId].correct,
+            ignorecase: this.editedJsonContent.responses[interactionId].ignorecase || false,
+            ignorewhitespace: this.editedJsonContent.responses[interactionId].ignorewhitespace || false
+          };
 
         }
 
@@ -126,7 +129,7 @@ class Fib2EditorUtils {
       finalJSONContent.content.canvas.data.questiondata.push({text: question});
     });
 
-    JSONContent.feedback.global.forEach((el) => {
+    this.editedJsonContent.feedback.global.forEach((el) => {
       const key = el.customAttribs.key;
 
       finalJSONContent.feedback.global[key] = el.customAttribs.value;
