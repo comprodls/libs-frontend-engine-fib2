@@ -8,7 +8,6 @@ const parseAndUpdateJSONForRivets = Symbol('parseAndUpdateJSONForRivets');
 const parseQuestionTextJSONForRivets = Symbol('parseQuestionTextJSONForRivets');
 const parseInstructionTextJSONForRivets = Symbol('parseInstructionTextJSONForRivets');
 const parseGlobalFeedbackJSONForRivets = Symbol('parseGlobalFeedbackJSONForRivets');
-
 const icon = {
   correct: 'thumbs-o-up',
   incorrect: 'thumbs-o-down',
@@ -17,7 +16,6 @@ const icon = {
   empty: 'hand-o-right',
   generic: 'hand-o-right'
 };
-
 const splitCharacter = '___';
 
 class Fib2Transformer {
@@ -185,13 +183,12 @@ class Fib2Transformer {
     this.editedJsonContent.isInstructionEmpty = this.editedJsonContent.content.instructions.length <= 0;
   }
 
-  //TODO
   [parseGlobalFeedbackJSONForRivets]() {
     if (this.editedJsonContent.feedback.global === undefined) {
       this.editedJsonContent.feedback.global = [];
       return;
     }
-    let tempObj = this.editedJsonContent.feedback.global;
+    const tempObj = this.editedJsonContent.feedback.global;
     let tempArr = [];
 
     if (tempObj && Object.keys(tempObj).length > 0) {
@@ -215,7 +212,7 @@ class Fib2Transformer {
           processedObj.customAttribs.order = 3;
           feedbackPresets[3].showDropdown = false;
         } else if (key === 'empty') {
-          processedObj.customAttribs.order = 50;
+          processedObj.customAttribs.order = 5;
           feedbackPresets[4].showDropdown = false;
         } else {
           processedObj.customAttribs.order = 100;
@@ -230,7 +227,6 @@ class Fib2Transformer {
       this.editedJsonContent.enableFeedBack = true;
     }
   }
-
 }
 
 export default Fib2Transformer;

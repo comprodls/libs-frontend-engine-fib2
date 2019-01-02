@@ -68,17 +68,11 @@ class Fib2EditorUtils {
   }
 
   /* Function to add event listener to input box - update the correct response corresponding to the input entered */
-  addInputEventListener() {
-    let answerContainer = $('.userAnswer');
+  userAnswerInputEventListener(e) {
+    const answer = e.currentTarget.value;
+    const interactionId = e.currentTarget.classList[0];
 
-    for (let i = 0; i < answerContainer.length; i++) {
-      answerContainer[i].addEventListener('blur', (e) => {
-        let answer = e.currentTarget.value;
-        let interactionId = e.currentTarget.classList[0];
-
-        this.editedJsonContent.responses[interactionId].correct = answer;
-      });
-    }
+    this.editedJsonContent.responses[interactionId].correct = answer;
   }
 
   /* Transform the processedJSON to originally received form so that the platform
@@ -94,13 +88,14 @@ class Fib2EditorUtils {
     finalJSONContent.content.interactions = {};
     finalJSONContent.content.canvas.data.questiondata = [];
     finalJSONContent.responses = {};
+    finalJSONContent.feedback = {
+      global: {}
+    };
 
-    //TODO
-    finalJSONContent.feedback = JSONContent.feedback;
-
-    let splitCharacterPosStart = 0, splitCharacterPosEnd = 0;
-    let prefix = new RegExp('<span class=(\'|")input(\'|")><input');
-    let suffix = '</span>';
+    let splitCharacterPosStart;
+    let splitCharacterPosEnd;
+    const prefix = new RegExp('<span class=(\'|")input(\'|")><input');
+    const suffix = '</span>';
 
     let i = 1;
 
@@ -131,8 +126,13 @@ class Fib2EditorUtils {
       finalJSONContent.content.canvas.data.questiondata.push({text: question});
     });
 
-    delete finalJSONContent.content.questiondata;
+    JSONContent.feedback.global.forEach((el) => {
+      const key = el.customAttribs.key;
 
+      finalJSONContent.feedback.global[key] = el.customAttribs.value;
+    });
+
+    delete finalJSONContent.content.questiondata;
     return finalJSONContent;
   }
 
@@ -208,11 +208,10 @@ class Fib2EditorUtils {
   updateAnswerTextJSON() {
     this.editedJsonContent.content.questiondata.forEach((el, index) => {
       let splitCharacterPosStart, splitCharacterPosEnd;
-      let blankPrefix = '<span class="input">';
-      let blankSuffix = '</span>';
-
-      let prefix = new RegExp('<span class=(\'|")response-blank(\'|") contenteditable=(\'|")false(\'|")>');
-      let suffix = '</span></span>';
+      const blankPrefix = '<span class="input">';
+      const blankSuffix = '</span>';
+      const prefix = new RegExp('<span class=(\'|")response-blank(\'|") contenteditable=(\'|")false(\'|")>');
+      const suffix = '</span></span>';
 
       el.answerText = el.questionText;
 
@@ -240,7 +239,6 @@ class Fib2EditorUtils {
 
     });
 
-    this.addInputEventListener();
     this.state.hasUnsavedChanges = true;
   }
 
