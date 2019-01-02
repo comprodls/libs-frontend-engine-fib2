@@ -3,7 +3,7 @@
 const webpack = require('webpack');
 const UglifyJsPlugin = webpack.optimize.UglifyJsPlugin;
 const path = require('path');
-const env = require('yargs').argv.env; 
+const env = require('yargs').argv.env;
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 // contains externals function that ignores node_modules when bundling in Webpack
 const nodeExternals = require('webpack-node-externals');
@@ -17,7 +17,7 @@ let pathsToClean = [
 let plugins = [];
 
 if (env === 'build') {
-  plugins.push(new UglifyJsPlugin({ minimize: true }));
+  plugins.push(new UglifyJsPlugin({minimize: true}));
   fib2 = fib2 + '.min';
   fib2editor = fib2editor + '.min';
 } else if (env === 'dev') {
@@ -26,8 +26,8 @@ if (env === 'build') {
 
 const config = {
   entry: {
-    [fib2] : __dirname + '/src/js/index.js',
-    [fib2editor] : __dirname + '/src/js/fib-editor/fib2editor.js',
+    [fib2]: __dirname + '/src/js/index.js',
+    [fib2editor]: __dirname + '/src/js/fib-editor/fib2editor.js'
   },
   devtool: 'source-map',
   output: {
@@ -59,7 +59,7 @@ const config = {
         use: [
           { loader: "style-loader" },
           { loader: "css-loader" }
-        ] 
+        ]
       },
       {
         test: /\.scss$/,
@@ -68,8 +68,8 @@ const config = {
           { loader: "style-loader" },
           { loader: "css-loader" },
           { loader: "sass-loader" }
-        ] 
-      }            
+        ]
+      }
     ]
   },
   resolve: {
@@ -77,7 +77,6 @@ const config = {
     extensions: ['.json', '.js']
   },
   plugins: plugins,
-  externals: nodeExternals(), // in order to avoid bundling of modules in node_modules folder 
   devServer: {
     port: 9000
   }
