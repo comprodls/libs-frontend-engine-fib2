@@ -67,7 +67,7 @@ class Fib2EditorUtils {
     return id;
   }
 
-  /* Function to add event listener to input box - update the correct response corresponding to the input entered */
+  /* Event listener to input box - update the correct response corresponding to the input entered */
   userAnswerInputEventListener(e) {
     const answer = e.currentTarget.value;
     const interactionId = e.currentTarget.classList[0];
@@ -198,7 +198,7 @@ class Fib2EditorUtils {
   /* Handles the remove question item text from the editor */
   removeQuestion(event, question, index) {
     if (this.editedJsonContent.content.questiondata.length === 1) {
-      alert('Minimum one question required.');
+      this.editedJsonContent.content.questiondata[0].alert = 'Minimum one question required';
       return;
     }
     this.editedJsonContent.content.questiondata.splice(index, 1);
@@ -211,12 +211,14 @@ class Fib2EditorUtils {
   updateAnswerTextJSON() {
     this.editedJsonContent.content.questiondata.forEach((el, index) => {
       let splitCharacterPosStart, splitCharacterPosEnd;
+      let numOfInteractions = 0;
       const blankPrefix = '<span class="input">';
       const blankSuffix = '</span>';
       const prefix = new RegExp('<span class=(\'|")response-blank(\'|") contenteditable=(\'|")false(\'|")>');
       const suffix = '</span></span>';
 
       el.answerText = el.questionText;
+      el.alert = '';
 
       while (true) {
         splitCharacterPosStart = el.answerText.search(prefix);
@@ -224,6 +226,8 @@ class Fib2EditorUtils {
         if (splitCharacterPosStart === -1) {
           break;
         } else {
+
+          numOfInteractions += 1;
 
           let questionBlank = el.answerText.slice(splitCharacterPosStart, splitCharacterPosEnd + suffix.length);
           let span = $.parseHTML(questionBlank);
@@ -240,6 +244,9 @@ class Fib2EditorUtils {
         }
       }
 
+      if (numOfInteractions === 0) {
+        el.alert = 'Minimum one blank required';
+      }
     });
 
     this.state.hasUnsavedChanges = true;

@@ -132,7 +132,7 @@ $font_1: fontawesome;
     margin-right: 1em;
   }
 
-  .pl-0{
+  .pl-0 {
     padding-left: 0;
   }
 
@@ -654,9 +654,14 @@ $font_1: fontawesome;
     }
   }
 
-
   .answer-data {
     color: #666666;
     user-select: none;
+  }
+
+  .question-alert {
+    padding: 10px;
+    margin-bottom: 10px;
+    border: none;
   }
 }

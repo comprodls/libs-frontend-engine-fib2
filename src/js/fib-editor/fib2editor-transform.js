@@ -110,17 +110,19 @@ class Fib2Transformer {
           answer = answer.substring(0, answer.length - 1);
           id = id.substring(0, id.length - 1);
           question.push({
-            'text': element.text,
-            'correctanswer': answer,
-            'type': 'multianswer_question',
-            'interactionId': id
+            text: element.text,
+            correctanswer: answer,
+            type: 'multianswer_question',
+            interactionId: id,
+            alert: ''
           });
         } else {
           k++;
           question.push({
-            'text': element.text,
-            'correctanswer': this.editedJsonContent.responses[interactionId].correct,
-            'interactionId': interactionId
+            text: element.text,
+            correctanswer: this.editedJsonContent.responses[interactionId].correct,
+            interactionId: interactionId,
+            alert: ''
           });
         }
 

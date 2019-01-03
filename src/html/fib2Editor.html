@@ -56,8 +56,7 @@
           <!-- Loop over all question data text -->
           <div class="col-sm-12 mt-sm smart-form inline-input">
             <ol class="list-unstyled nested-list">
-              <li class="text-box vertical-top-align mt-md mb-add-offset"
-                  rv-each-qdata="editorContent.content.questiondata">
+              <li class="text-box vertical-top-align mt-md mb-add-offset" rv-each-qdata="editorContent.content.questiondata">
                 <span class="pull-left icon-pencil">
                   <i class="fa fa-pencil" aria-hidden="true"></i>
                 </span>
@@ -65,6 +64,7 @@
                      class="question-container pl-md border-bottom-dashed" role="button">
                   <div class="question-data mb-sm" rv-content-editable="qdata.questionText"></div>
                   <div class="answer-data mb-sm" rv-content="qdata.answerText"></div>
+                  <div class="alert alert-danger question-alert" role="alert" rv-show="qdata.alert" rv-text="qdata.alert"></div>
                 </div>
                 <span class="pull-right icon-horizontal-align">
                   <a class="color-lightgray fa fa-times outline-none" data-toggle="tooltip"
