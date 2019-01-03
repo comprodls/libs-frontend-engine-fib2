@@ -71,7 +71,7 @@
     "global": {
       "correct": "Perfect. You got it correct !!!",
       "partiallyCorrect": "You are almost done. Try Again !!!",
-      "incorrect": "Sorry, Wrong Responses. Try Again After some time!!",
+      "incorrect": "Sorry, Wrong Responses. Try Again After some time !!!",
       "partiallyIncorrect": "Sorry, Wrong responses",
       "empty": "You did not enter anything."
     }
