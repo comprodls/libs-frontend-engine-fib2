@@ -3,7 +3,6 @@
 import {feedbackPresets, constantInputClass, interactionReferenceString} from './fib2editor-constants';
 
 const buildModelandViewContent = Symbol('ModelandViewContent');
-const parseAndUpdateJSONForInteractions = Symbol('parseAndUpdateJSONForInteractions');
 const parseAndUpdateJSONForRivets = Symbol('parseAndUpdateJSONForRivets');
 const parseQuestionTextJSONForRivets = Symbol('parseQuestionTextJSONForRivets');
 const parseInstructionTextJSONForRivets = Symbol('parseInstructionTextJSONForRivets');
@@ -16,7 +15,6 @@ const icon = {
   empty: 'hand-o-right',
   generic: 'hand-o-right'
 };
-const splitCharacter = '___';
 
 class Fib2Transformer {
 
@@ -34,29 +32,8 @@ class Fib2Transformer {
   }
 
   [buildModelandViewContent]() {
-
-    // Process JSON to remove interaction tags and initiate __interactionIds
-    this[parseAndUpdateJSONForInteractions]();
-
     //Process JSON for easy iteration in template
     this[parseAndUpdateJSONForRivets]();
-  }
-
-  [parseAndUpdateJSONForInteractions]() {
-    let interactionTag;
-
-    for (let i = 0; i < this.editedJsonContent.content.canvas.data.questiondata.length; i++) {
-      this.parsedQuestionArray = $.parseHTML(this.editedJsonContent.content.canvas.data.questiondata[i].text);
-
-      $.each(this.parsedQuestionArray, (index, el) => {
-        if (el.href === interactionReferenceString) {
-          this.interactionIds.push(el.childNodes[0].nodeValue.trim());
-          interactionTag = el.outerHTML;
-          interactionTag = interactionTag.replace(/"/g, '\'');
-          this.editedJsonContent.content.canvas.data.questiondata[i].text = this.editedJsonContent.content.canvas.data.questiondata[i].text.replace(interactionTag, splitCharacter);
-        }
-      });
-    }
   }
 
   /*
@@ -67,119 +44,67 @@ class Fib2Transformer {
     this.editedJsonContent.isInstructionEmpty = true;
     this.editedJsonContent.enableFeedBack = false;
 
-    for (let i = 0; i < this.interactionIds.length; i++) {
-      let interaction = this.editedJsonContent.content.interactions[this.interactionIds[i]];
-      let type = interaction.type;
-
-      this.editedJsonContent[type] = true;
-    }
-
+    // Process JSON to initiate interactionIds and parse questionText
     this[parseQuestionTextJSONForRivets]();
     this[parseInstructionTextJSONForRivets]();
     this[parseGlobalFeedbackJSONForRivets]();
+
+    for (let i = 0; i < this.interactionIds.length; i++) {
+        let interaction = this.editedJsonContent.content.interactions[this.interactionIds[i]];
+        let type = interaction.type;
+
+        this.editedJsonContent[type] = true;
+    }
   }
 
   [parseQuestionTextJSONForRivets]() {
+    this.editedJsonContent.content.questiondata = [];
 
-    let question = [];
-    let k = 0;
-
-    this.editedJsonContent.content.canvas.data.questiondata.forEach((element) => {
-      let counter = 0;
-      let answer = '';
-      let id = '';
-
+    this.editedJsonContent.content.canvas.data.questiondata.forEach((element, index) => {
       if (element.text !== '') {
-        /* Count no of blanks in a question */
-        let interactionId = this.interactionIds[k];
+        element.questionText = element.text;
+        element.answerText = element.text;
 
-        element.text.replace(/(__)/g, function (a) {
-          counter++;
-        });
+        let parsedQuestionArray = $('<div>' + element['text'] + '</div>');
+        let interactionsReferences = $(parsedQuestionArray).find('a[href=\'' + interactionReferenceString + '\']');
 
-        /**
-         * If there are more than one blank in single question then add type "multianswer_question"
-         * and join answer and interaction id of each blank separated by comma.
-         */
-        if (counter > 1) {
-          for (let i = 0; i < counter; i++) {
-            interactionId = this.interactionIds[k++];
-            answer = answer + this.editedJsonContent.responses[interactionId].correct + ',';
-            id = id + interactionId + ',';
-          }
-          answer = answer.substring(0, answer.length - 1);
-          id = id.substring(0, id.length - 1);
-          question.push({
-            text: element.text,
-            correctanswer: answer,
-            type: 'multianswer_question',
-            interactionId: id,
-            alert: ''
-          });
-        } else {
-          k++;
-          question.push({
-            text: element.text,
-            correctanswer: this.editedJsonContent.responses[interactionId].correct,
-            interactionId: interactionId,
-            alert: ''
-          });
-        }
+        interactionsReferences.each((id, el) => {
+          let interactionId = $(el).text().trim();
 
-      } else {
-        element.text = 'Placeholder Question text. Update "Me" with a valid Question text';
-      }
+          this.interactionIds.push(interactionId);
 
-    });
+          let interactionTag = el.outerHTML;
 
-    question.forEach((el, index) => {
-      let splitCharacterPos;
-      let blankPrefix = '<span class="input">';
-      let blankSuffix = '</span>';
+          interactionTag = interactionTag.replace(/"/g, '\'');
 
-      el.questionText = el.text;
-      el.answerText = el.text;
-
-      let i = 0;
-
-      while (true) {
-        splitCharacterPos = el.questionText.indexOf(splitCharacter);
-
-        if (splitCharacterPos === -1) {
-          break;
-        } else {
-          let interactionId = el.interactionId;
-          let answer = el.correctanswer;
-
-          if (el.type === 'multianswer_question') {
-            /* In multianswer question split interaction id and correctanswer and then map them with their corresponding interaction */
-            interactionId = el.interactionId.split(',');
-            answer = el.correctanswer.split(',');
-            answer = answer[i];
-            interactionId = interactionId[i++];
-          }
+          const answer = this.editedJsonContent.responses[interactionId].correct;
 
           const questionBlank = `
             <span class="response-blank" contenteditable="false"><span class="drag">${interactionId.substring(1)}</span><span id="${interactionId}" class="answer">Response</span></span>
           `;
 
-          el.questionText = el.questionText.replace(splitCharacter, questionBlank);
+          element.questionText = element.questionText.replace(interactionTag, questionBlank);
 
-          let answerBlank = blankPrefix + '<input type="text" value="' + answer + '" class=" ' + interactionId + ' input-sm ' + constantInputClass.DOM_SEL_INPUT_BOX + '"/>' + blankSuffix;
+          const answerBlank = '<span class="input">' + '<input type="text" value="' + answer + '" class=" ' + interactionId + ' input-sm ' + constantInputClass.DOM_SEL_INPUT_BOX + '"/>' + '</span>';
 
-          el.answerText = el.answerText.replace(splitCharacter, answerBlank);
-        }
+          element.answerText = element.answerText.replace(interactionTag, answerBlank);
+        });
+        this.editedJsonContent.content.questiondata.push(element);
       }
     });
-
-    this.editedJsonContent.content.questiondata = question;
   }
 
   [parseInstructionTextJSONForRivets]() {
-    this.editedJsonContent.content.instructions.forEach((element) => {
-      if (element.text === '' || element.tag === '') {
-        element.text = 'Placeholder Instruction text. Update "Me" with a valid Instruction text for this question';
-      }
+    this.editedJsonContent.content.instructions = this.editedJsonContent.content.instructions.map((element) => {
+        let text = 'Placeholder Instruction text. Update "Me" with a valid Instruction text for this question';
+
+        if (element.text !== '' || element.tag === 'html') {
+            text = element.text || element[element['tag']];
+        }
+        return {
+          text,
+          tag: element.tag
+        };
     });
 
     this.editedJsonContent.isInstructionEmpty = this.editedJsonContent.content.instructions.length <= 0;
