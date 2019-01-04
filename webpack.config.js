@@ -17,7 +17,7 @@ let pathsToClean = [
 let plugins = [];
 
 if (env === 'build') {
-  plugins.push(new UglifyJsPlugin({ minimize: true }));
+  plugins.push(new UglifyJsPlugin({minimize: true}));
   fib2 = fib2 + '.min';
   fib2editor = fib2editor + '.min';
 } else if (env === 'dev') {
@@ -26,8 +26,8 @@ if (env === 'build') {
 
 const config = {
   entry: {
-    [fib2] : __dirname + '/src/js/index.js',
-    [fib2editor] : __dirname + '/src/js/fib-editor/fib2editor.js',
+    [fib2]: __dirname + '/src/js/index.js',
+    [fib2editor]: __dirname + '/src/js/fib-editor/fib2editor.js'
   },
   devtool: 'source-map',
   output: {

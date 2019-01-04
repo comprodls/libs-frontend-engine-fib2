@@ -104,7 +104,6 @@ class Fib2ModelAndView {
           if (el.className === 'question-data mb-sm') {
             this.utils.updateAnswerTextJSON();
           }
-          this.activityAdaptor.autoResizeActivityIframe();
           this.utils.handleItemChangedInEditor();
         }
         el.innerHTML = value;

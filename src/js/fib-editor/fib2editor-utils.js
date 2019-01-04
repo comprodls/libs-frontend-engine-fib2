@@ -10,9 +10,9 @@ const config = {
 class Fib2EditorUtils {
 
   constructor(jsonContent, interactionIds, activityAdaptor) {
-    this.uniqueId;
     this.editedJsonContent = jsonContent;
     this.activityAdaptor = activityAdaptor;
+    this.uniqueId = this.activityAdaptor.getId();
     this.interactionIds = interactionIds;
     this.state = {
       'hasUnsavedChanges': false
@@ -99,6 +99,13 @@ class Fib2EditorUtils {
     const prefix = new RegExp('<span class=(\'|")input(\'|")><input');
     const suffix = '</span>';
 
+    finalJSONContent.content.instructions = finalJSONContent.content.instructions.map((el) => {
+        if (el.tag === 'html') {
+            el[el.tag] = el.text;
+        }
+        return el;
+    });
+
     let i = 1;
 
     finalJSONContent.content.questiondata.forEach((el, index) => {
@@ -112,7 +119,7 @@ class Fib2EditorUtils {
         } else {
           let questionBlank = question.slice(splitCharacterPosStart, splitCharacterPosEnd + suffix.length);
           let interactionId = 'i' + i++;
-          let interactionTag = '<a href="' + interactionReferenceString + '">' + interactionId + '</a>';
+          let interactionTag = `<a href='${interactionReferenceString}'>${interactionId}</a>`;
 
           question = question.replace(questionBlank, interactionTag);
           finalJSONContent.content.interactions[interactionId] = {type: 'FIBSR'};
@@ -129,7 +136,7 @@ class Fib2EditorUtils {
       finalJSONContent.content.canvas.data.questiondata.push({text: question});
     });
 
-    this.editedJsonContent.feedback.global.forEach((el) => {
+    JSONContent.feedback.global.forEach((el) => {
       const key = el.customAttribs.key;
 
       finalJSONContent.feedback.global[key] = el.customAttribs.value;
@@ -148,8 +155,7 @@ class Fib2EditorUtils {
     this.editedJsonContent.isInstructionEmpty = false;
     $('#instructionLabel').show();
     this.state.hasUnsavedChanges = true;
-    this.activityAdaptor.autoResizeActivityIframe();
-    this.activityAdaptor.itemChangedInEditor(this.transformJSONtoOriginalForm(), this.uniqueId);
+    this.handleItemChangedInEditor();
   }
 
   /* Handles the remove Instruction item text from the editor */
@@ -165,34 +171,28 @@ class Fib2EditorUtils {
     }
 
     this.state.hasUnsavedChanges = true;
-    this.activityAdaptor.autoResizeActivityIframe();
-    this.activityAdaptor.itemChangedInEditor(this.transformJSONtoOriginalForm(), this.uniqueId);
+    this.handleItemChangedInEditor();
   }
 
   /** Handles the add question button click from the editor */
   addQuestion() {
-    let blankPrefix = '<span class="input">';
-    let blankSuffix = '</span>';
-    let interactionId = this.getInteractionId();
+    const interactionId = this.getInteractionId();
 
-    let questionBlank = `
+    const questionBlank = `
       <span class="response-blank" contenteditable="false"><span class="drag">${interactionId.substring(1)}</span><span id="${interactionId}" class="answer">Response</span></span>
     `;
-    let questionText = 'Placeholder question text. update "Me" with a valid' + questionBlank + 'text for this question';
+    const questionText = 'Placeholder question text. update "Me" with a valid' + questionBlank + 'text for this question';
 
-    let answerBlank = blankPrefix + '<input type="text" value="answer" class="' + interactionId + ' input-sm ' + constantInputClass.DOM_SEL_INPUT_BOX + '"/>' + blankSuffix;
-    let answerText = 'Placeholder question text. update "Me" with a valid' + answerBlank + 'text for this question';
+    const answerBlank = '<span class="input">' + '<input type="text" value="answer" class="' + interactionId + ' input-sm ' + constantInputClass.DOM_SEL_INPUT_BOX + '"/>' + '</span>';
+    const answerText = 'Placeholder question text. update "Me" with a valid' + answerBlank + 'text for this question';
 
     this.editedJsonContent.content.questiondata.push({
       questionText,
-      answerText,
-      'correctanswer': '',
-      interactionId
+      answerText
     });
 
     this.state.hasUnsavedChanges = true;
-    this.activityAdaptor.autoResizeActivityIframe();
-    this.activityAdaptor.itemChangedInEditor(this.transformJSONtoOriginalForm(), this.uniqueId);
+    this.handleItemChangedInEditor();
   }
 
   /* Handles the remove question item text from the editor */
@@ -204,16 +204,13 @@ class Fib2EditorUtils {
     this.editedJsonContent.content.questiondata.splice(index, 1);
 
     this.state.hasUnsavedChanges = true;
-    this.activityAdaptor.autoResizeActivityIframe();
-    this.activityAdaptor.itemChangedInEditor(this.transformJSONtoOriginalForm(), this.uniqueId);
+    this.handleItemChangedInEditor();
   }
 
   updateAnswerTextJSON() {
     this.editedJsonContent.content.questiondata.forEach((el, index) => {
       let splitCharacterPosStart, splitCharacterPosEnd;
       let numOfInteractions = 0;
-      const blankPrefix = '<span class="input">';
-      const blankSuffix = '</span>';
       const prefix = new RegExp('<span class=(\'|")response-blank(\'|") contenteditable=(\'|")false(\'|")>');
       const suffix = '</span></span>';
 
@@ -238,7 +235,7 @@ class Fib2EditorUtils {
           if (answer === undefined) {
             answer = '';
           }
-          let answerBlank = blankPrefix + '<input type="text" value="' + answer + '" class="' + interactionId + ' input-sm ' + constantInputClass.DOM_SEL_INPUT_BOX + '"/>' + blankSuffix;
+          const answerBlank = '<span class="input">' + '<input type="text" value="' + answer + '" class="' + interactionId + ' input-sm ' + constantInputClass.DOM_SEL_INPUT_BOX + '"/>' + '</span>';
 
           el.answerText = el.answerText.replace(questionBlank, answerBlank);
         }
@@ -253,6 +250,7 @@ class Fib2EditorUtils {
   }
 
   handleItemChangedInEditor() {
+    this.activityAdaptor.autoResizeActivityIframe();
     this.activityAdaptor.itemChangedInEditor(this.transformJSONtoOriginalForm(), this.uniqueId);
   }
 
