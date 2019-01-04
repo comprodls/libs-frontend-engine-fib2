@@ -100,10 +100,10 @@ class Fib2EditorUtils {
     const suffix = '</span>';
 
     finalJSONContent.content.instructions = finalJSONContent.content.instructions.map((el) => {
-        if (el.tag === 'html') {
-            el[el.tag] = el.text;
-        }
-        return el;
+      if (el.tag === 'html') {
+        el[el.tag] = el.text;
+      }
+      return el;
     });
 
     let i = 1;
@@ -254,8 +254,39 @@ class Fib2EditorUtils {
     this.activityAdaptor.itemChangedInEditor(this.transformJSONtoOriginalForm(), this.uniqueId);
   }
 
+  validateEditedJsonContent() {
+    /*
+    *  Minimum one question required
+    */
+    if (this.editedJsonContent.content.questiondata.length !== 0) {
+      /*
+      *  Minimum one blank required in each question
+      */
+      return this.editedJsonContent.content.questiondata.every((el) => {
+        let splitCharacterPosStart, splitCharacterPosEnd;
+        let isAtLeastOneInteractionExist = false;
+        const prefix = new RegExp('<span class=(\'|")response-blank(\'|") contenteditable=(\'|")false(\'|")>');
+        const suffix = '</span></span>';
+
+        splitCharacterPosStart = el.questionText.search(prefix);
+        splitCharacterPosEnd = el.questionText.indexOf(suffix);
+        if (splitCharacterPosStart !== -1 && splitCharacterPosEnd !== -1 && splitCharacterPosEnd > splitCharacterPosStart) {
+          isAtLeastOneInteractionExist = true;
+        }
+
+        return isAtLeastOneInteractionExist;
+      });
+    }
+
+    return false;
+  }
+
   saveItemInEditor() {
-    this.activityAdaptor.submitEditChanges(this.transformJSONtoOriginalForm(), this.uniqueId);
+    if (this.validateEditedJsonContent()) {
+      this.activityAdaptor.submitEditChanges(this.transformJSONtoOriginalForm(), this.uniqueId);
+    } else {
+      // Validation Failed
+    }
   }
 
   getConfig() {
