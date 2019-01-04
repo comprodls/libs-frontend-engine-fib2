@@ -51,7 +51,7 @@ class fib2Editor {
     }
 
     [transform]() {
-        this.fib2Transformer = new Fib2Transformer(this.jsonContent, this.params);
+        this.fib2Transformer = new Fib2Transformer(this.jsonContent);
         [this.fib2EditedJSONContent, this.interactionIds] = this.fib2Transformer.transform();
     }
 

@@ -18,12 +18,9 @@ const icon = {
 
 class Fib2Transformer {
 
-  constructor(jsonContent, params) {
+  constructor(jsonContent) {
     this.editedJsonContent = jsonContent;
-    this.params = params;
-    this.parsedQuestionArray = [];
     this.interactionIds = [];
-    this.finalJSONContent = {};
   }
 
   transform() {
