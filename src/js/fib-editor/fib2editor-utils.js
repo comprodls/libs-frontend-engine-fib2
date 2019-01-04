@@ -199,10 +199,10 @@ class Fib2EditorUtils {
   removeQuestion(event, question, index) {
     if (this.editedJsonContent.content.questiondata.length === 1) {
       this.editedJsonContent.content.questiondata[0].alert = 'Minimum one question required';
+      this.activityAdaptor.autoResizeActivityIframe();
       return;
     }
     this.editedJsonContent.content.questiondata.splice(index, 1);
-
     this.state.hasUnsavedChanges = true;
     this.handleItemChangedInEditor();
   }
