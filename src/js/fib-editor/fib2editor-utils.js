@@ -21,9 +21,10 @@ class Fib2EditorUtils {
 
   questionDataEventListener(e) {
     // Get the clipboard data
-    let paste = (e.clipboardData || window.clipboardData).getData('text');
+    const pattern = new RegExp('^[0-9]*Response$', 'i');
+    const paste = (e.clipboardData || window.clipboardData).getData('text');
 
-    if (paste.indexOf('Response') !== 0) {
+    if (paste.search(pattern) !== -1) {
 
       // Prevent the default pasting event and stop bubbling
       e.preventDefault();
