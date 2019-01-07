@@ -8,12 +8,12 @@ const parseQuestionTextJSONForRivets = Symbol('parseQuestionTextJSONForRivets');
 const parseInstructionTextJSONForRivets = Symbol('parseInstructionTextJSONForRivets');
 const parseGlobalFeedbackJSONForRivets = Symbol('parseGlobalFeedbackJSONForRivets');
 const icon = {
-  correct: 'thumbs-o-up',
-  incorrect: 'thumbs-o-down',
-  partiallyIncorrect: 'thumbs-o-down',
-  partiallyCorrect: 'thumbs-o-up',
-  empty: 'hand-o-right',
-  generic: 'hand-o-right'
+  correct: 'fa-smile-o',
+  incorrect: 'fa-frown-o',
+  partiallyIncorrect: 'fa-frown-o',
+  partiallyCorrect: 'fa-smile-o',
+  empty: 'fa-meh-o',
+  generic: 'fa-comment-o'
 };
 
 class Fib2Transformer {

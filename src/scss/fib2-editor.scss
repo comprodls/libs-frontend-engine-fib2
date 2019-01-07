@@ -144,6 +144,10 @@ $font_1: fontawesome;
     padding-left: 15px;
   }
 
+  .pr-0 {
+    padding-right: 0;
+  }
+
   .pr-3pc {
     padding-right: 3%;
   }
@@ -165,6 +169,10 @@ $font_1: fontawesome;
   .ptb-sm {
     padding-top: 10px;
     padding-bottom: 10px;
+  }
+
+  .pb-1pc {
+    padding-bottom: 1%;
   }
 
   .border-bottom-dashed {
@@ -249,119 +257,19 @@ $font_1: fontawesome;
     left: -9999px;
   }
 
-  i {
-    &.choices {
-      height: 2.35em;
-      width: 2.35em;
-      position: absolute;
-      top: -30px;
-      left: 0;
-      display: block;
-      outline: 0;
-      border: 1px solid $color_silver_approx;
-      background: $white;
-      padding: 10px;
 
-      &:after {
-        opacity: 0;
-        background-color: $white;
-        content: "\f00c";
-        color: $color_japanese_laurel_approx;
-        font-family: $font_1;
-        font-size: 1.6em;
-        position: relative;
-        left: -4px;
-        top: -10px;
-        font-weight: 400;
-        font-style: normal;
-      }
-
-      &:hover {
-        cursor: pointer;
-      }
-    }
-
-    &.thumbs-o-down {
-      height: 2.35em;
-      width: 2.35em;
-      position: absolute;
-      top: -30px;
-      left: 0;
-      display: block;
-      outline: 0;
-      border: 1px solid $red;
-      background: $color_white_linen_approx;
-      padding: 10px;
-
-      &:after {
-        opacity: 0.7;
-        background-color: $color_white_linen_approx;
-        color: $red;
-        content: "\f088";
-        font-family: $font_1;
-        font-size: 1.3em;
-        position: relative;
-        left: 0;
-        top: -6px;
-        font-weight: 400;
-        font-style: normal;
-      }
-    }
-
-    &.thumbs-o-up {
-      height: 2.35em;
-      width: 2.35em;
-      position: absolute;
-      top: -30px;
-      left: 0;
-      display: block;
-      outline: 0;
-      border: 1px solid $color_japanese_laurel_approx;
-      background: $color_peppermint_approx;
-      padding: 10px;
-
-      &:after {
-        opacity: 0.7;
-        background-color: $color_peppermint_approx;
-        color: $color_japanese_laurel_approx;
-        content: "\f087";
-        font-family: $font_1;
-        font-size: 1.3em;
-        position: relative;
-        left: 0;
-        top: -6px;
-        font-weight: 400;
-        font-style: normal;
-      }
-    }
-
-    &.hand-o-right {
-      height: 2.35em;
-      width: 2.35em;
-      position: absolute;
-      top: -30px;
-      left: 0;
-      display: block;
-      outline: 0;
-      border: 1px solid $gray;
-      background-color: $white;
-      padding: 10px;
-
-      &:after {
-        opacity: 0.7;
-        background-color: $white;
-        color: $gray;
-        content: "\f0e5";
-        font-family: $font_1;
-        font-size: 1.3em;
-        position: relative;
-        left: -1px;
-        top: -7px;
-        font-weight: 400;
-        font-style: normal;
-      }
-    }
+  .fa-frown-o {
+    color: #a94442;
   }
+
+  .fa-smile-o {
+    color: #3c763d;
+  }
+
+  .fa-meh-o {
+    color: #8a6d3b;
+  }
+
 
   .round-icon {
     //Instead of the line below you could use @include border-radius($radius, $vertical-radius)
