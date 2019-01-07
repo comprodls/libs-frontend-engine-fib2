@@ -70,7 +70,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 4);
+/******/ 	return __webpack_require__(__webpack_require__.s = 10);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -85,7 +85,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Constants = undefined;
 
-var _fib = __webpack_require__(7);
+var _fib = __webpack_require__(13);
 
 var _fib2 = _interopRequireDefault(_fib);
 
@@ -339,917 +339,6 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;(function() {
 
 /***/ }),
 /* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.Fib2ResponseProcessor = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /* global $ */
-
-var _utils = __webpack_require__(3);
-
-var _utils2 = _interopRequireDefault(_utils);
-
-var _constant = __webpack_require__(0);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var getAnswersJSON = Symbol('getAnswersJSON');
-var getFibsrAnswersJSON = Symbol('getFibsrAnswersJSON');
-var getUserAnswersStats = Symbol('getUserAnswersStats');
-var markInput = Symbol('markInput');
-var buildFeedbackResponse = Symbol('buildFeedbackResponse');
-
-var __state = {
-  currentTries: 0, /* Current try of sending results to platform */
-  activityPartiallySubmitted: false, /* State whether activity has been partially submitted. Possible Values: true/false(Boolean) */
-  activitySubmitted: false /* State whether activity has been submitted. Possible Values: true/false(Boolean) */
-};
-
-var Fib2ResponseProcessor = function () {
-  function Fib2ResponseProcessor(fib2Obj) {
-    _classCallCheck(this, Fib2ResponseProcessor);
-
-    this.fib2Obj = fib2Obj;
-  }
-
-  /**
-   * Function called to send result JSON to adaptor (On Submit).
-   */
-
-
-  _createClass(Fib2ResponseProcessor, [{
-    key: 'saveResults',
-    value: function saveResults(bSubmit) {
-      var _this = this;
-
-      /*Getting answer in JSON format*/
-      var answerJSONs = this[getAnswersJSON](false);
-      var uniqueId = this.fib2Obj.adaptor.getId();
-
-      /* Disabling entry(input) boxes on click of Submit. */
-      $('.userAnswer').attr('disabled', true);
-      $('label.input').addClass('state-disabled');
-
-      answerJSONs.forEach(function (answerJSON, idx) {
-        /* User clicked the Submit button*/
-        if (bSubmit === true) {
-          answerJSON.statusProgress = 'attempted';
-          /*Send Results to platform*/
-          _this.fib2Obj.adaptor.submitResults(answerJSON, uniqueId, function (data, status) {
-            if (status === _constant.Constants.STATUS_NOERROR) {
-              __state.activitySubmitted = true;
-              /*Close platform's session*/
-              _this.fib2Obj.adaptor.closeActivity();
-              __state.currentTries = 0;
-            } else {
-              /* There was an error during platform communication, so try again (till MAX_RETRIES) */
-              if (__state.currentTries < _constant.Constants.MAX_RETRIES) {
-                __state.currentTries++;
-                _this.saveResults(bSubmit);
-              }
-            }
-          });
-        }
-      });
-    }
-
-    /**
-     * Function called to send result JSON to adaptor (Partial Save ).
-     */
-
-  }, {
-    key: 'savePartial',
-    value: function savePartial() {
-      var _this2 = this;
-
-      /*Getting answer in JSON format*/
-      var answerJSONs = this[getAnswersJSON](false);
-      var uniqueId = this.fib2Obj.adaptor.getId();
-
-      this.fib2Obj.adaptor.sendStatement(uniqueId, (0, _utils2.default)(_constant.Constants.STATEMENT_INTERACTED));
-
-      answerJSONs.forEach(function (answerJSON, idx) {
-        _this2.fib2Obj.adaptor.savePartialResults(answerJSON, uniqueId, function (data, status) {
-          if (status === _constant.Constants.STATUS_NOERROR) {
-            __state.activityPariallySubmitted = true;
-          } else {
-            // There was an error during platform communication, do nothing for partial saves
-          }
-        });
-      });
-    }
-
-    /**
-     *  Function used to create JSON from user Answers for submit(soft/hard).
-     *  Called by :-
-     *   1. saveResult or savePartial (internal).
-     *   2. Multi-item-handler (external).
-     *   3. Divide the maximum marks among interaction.
-     *   4. Returns result objects.  [{ id: interactionId,  answer: answer,   score: score, maxscore: maximumScore }]
-     */
-
-  }, {
-    key: getAnswersJSON,
-    value: function value(skipQuestion, interactionId) {
-      var response = [];
-      var fibsrAns = void 0;
-
-      fibsrAns = this[getFibsrAnswersJSON]();
-      response.push(fibsrAns);
-
-      return response;
-    }
-  }, {
-    key: getFibsrAnswersJSON,
-    value: function value() {
-      var _this3 = this;
-
-      var maxScore = this.fib2Obj.jsonContent.meta.score.max;
-      var perInteractionScore = maxScore / this.fib2Obj.fib2Model.interactionIds.length;
-      var resultArray = [];
-      var feedback = void 0;
-      var statusEvaluation = 'empty';
-      var isUserAnswerCorrect = false;
-      var countCorrectInteractionAttempt = 0;
-      var isAllInteractionsEmpty = true;
-
-      this.fib2Obj.fib2Model.interactionIds.forEach(function (id, index) {
-        var score = 0;
-
-        if (_this3.fib2Obj.userAnswers.hasOwnProperty(id)) {
-          if (_this3.fib2Obj.userAnswers[id].length === _this3.fib2Obj.fib2Model.responses[id]['correct'].length) {
-            var correctAnswer = _this3.fib2Obj.fib2Model.responses[id]['correct'];
-            var userAnswer = _this3.fib2Obj.userAnswers[id];
-
-            if (userAnswer === correctAnswer) {
-              score = perInteractionScore;
-              isAllInteractionsEmpty = false;
-            } else if (userAnswer !== undefined && userAnswer !== '') {
-              isAllInteractionsEmpty = false;
-            }
-            countCorrectInteractionAttempt++;
-            isUserAnswerCorrect = true;
-          }
-        }
-
-        resultArray.push({
-          id: id,
-          score: score,
-          answer: _this3.fib2Obj.userAnswers[id] || '',
-          maxScore: perInteractionScore
-        });
-      });
-
-      if (isUserAnswerCorrect) {
-        statusEvaluation = 'correct';
-        feedback = this[buildFeedbackResponse]('global.correct', 'correct', this.fib2Obj.fib2Model.feedback.global.correct);
-      } else if (countCorrectInteractionAttempt === 0) {
-        statusEvaluation = 'incorrect';
-        if (isAllInteractionsEmpty) {
-          feedback = this[buildFeedbackResponse]('global.empty', statusEvaluation, this.fib2Obj.fib2Model.feedback.global.empty);
-        } else {
-          feedback = this[buildFeedbackResponse]('global.incorrect', statusEvaluation, this.fib2Obj.fib2Model.feedback.global.incorrect);
-        }
-      } else {
-        statusEvaluation = 'partially_correct';
-        feedback = this[buildFeedbackResponse]('global.incorrect', 'incorrect', this.fib2Obj.fib2Model.global.incorrect);
-      }
-
-      return {
-        response: {
-          'interactions': resultArray,
-          'statusEvaluation': statusEvaluation,
-          feedback: feedback
-        }
-      };
-    }
-
-    /**
-     *  Function used to create User Answers stats.
-     */
-
-  }, {
-    key: getUserAnswersStats,
-    value: function value() {
-      var _this4 = this;
-
-      var questions = this.fib2Obj.fib2Model.questionData;
-      var totalInteractions = this.fib2Obj.fib2Model.interactionIds.length;
-      var totalQuestions = this.fib2Obj.fib2Model.questionData.length;
-      var countCorrectQuestionAttempt = 0;
-      var countIncorrectQuestionAttempt = 0;
-      var countCorrectInteractionsAttempt = 0;
-      var countIncorrectInteractionsAttempt = 0;
-      var isAllInteractionsEmpty = true;
-
-      questions.forEach(function (question, index) {
-        var isQuestionCorrect = true;
-
-        question.interactions.forEach(function (interactionId) {
-          var correctAnswer = _this4.fib2Obj.fib2Model.responses[interactionId].correct;
-          var userAnswer = _this4.fib2Obj.userAnswers[interactionId];
-
-          if (_this4.fib2Obj.fib2Model.responses[interactionId].ignorecase) {
-            correctAnswer = correctAnswer.toLowerCase();
-            userAnswer = correctAnswer.toLowerCase();
-          }
-
-          if (_this4.fib2Obj.fib2Model.responses[interactionId].ignorewhitespace) {
-            correctAnswer = correctAnswer.replace(/ /g, '')();
-            userAnswer = correctAnswer.replace(/ /g, '')();
-          }
-
-          if (userAnswer !== correctAnswer) {
-            isQuestionCorrect = false;
-            if (userAnswer !== undefined && userAnswer !== '') {
-              isAllInteractionsEmpty = false;
-            }
-            countIncorrectQuestionAttempt += 1;
-          } else {
-            isAllInteractionsEmpty = false;
-            countCorrectInteractionsAttempt += 1;
-          }
-        });
-
-        if (isQuestionCorrect) {
-          countCorrectQuestionAttempt += 1;
-        } else {
-          countIncorrectQuestionAttempt += 1;
-        }
-      });
-
-      return {
-        totalInteractions: totalInteractions,
-        countIncorrectInteractionsAttempt: countIncorrectInteractionsAttempt,
-        countCorrectInteractionsAttempt: countCorrectInteractionsAttempt,
-        totalQuestions: totalQuestions,
-        countCorrectQuestionAttempt: countCorrectQuestionAttempt,
-        countIncorrectQuestionAttempt: countIncorrectQuestionAttempt,
-        isAllInteractionsEmpty: isAllInteractionsEmpty
-      };
-    }
-
-    /**
-     *  Static function to get User state.
-     */
-
-  }, {
-    key: 'markAnswers',
-
-
-    /**
-     *  Function to mark User answers correct or wrong.
-     */
-    value: function markAnswers() {
-      this[markInput]();
-      this.fib2Obj.adaptor.autoResizeActivityIframe();
-    }
-  }, {
-    key: markInput,
-    value: function value() {
-      var _this5 = this;
-
-      var questions = this.fib2Obj.fib2Model.questionData;
-
-      questions.forEach(function (question, index) {
-        var isQuestionCorrect = true;
-
-        question.interactions.forEach(function (interactionId) {
-          var userAnswer = _this5.fib2Obj.userAnswers[interactionId];
-          var correctAnswer = _this5.fib2Obj.fib2Model.responses[interactionId].correct;
-
-          if (userAnswer !== correctAnswer) {
-            isQuestionCorrect = false;
-            $('#' + interactionId).addClass('wrongAnswer').removeClass('correctAnswer').attr('disabled', true).parent().after('<span class="grade" style="color:green;font-weight: bold"> (' + correctAnswer + ')</span>');
-          } else {
-            $('#' + interactionId).addClass('correctAnswer').removeClass('wrongAnswer').attr('disabled', true);
-          }
-        });
-
-        if (isQuestionCorrect) {
-          $('#answer' + index).next('label').addClass('state-success');
-          $('#answer' + index).addClass('correct').removeClass('wrong').removeClass('invisible');
-        } else {
-          $('#answer' + index).next('label').addClass('state-error');
-          $('#answer' + index).addClass('wrong').removeClass('correct').removeClass('invisible');
-        }
-      });
-    }
-  }, {
-    key: buildFeedbackResponse,
-    value: function value(id, status, content) {
-      var feedback = {};
-
-      feedback.id = id;
-      feedback.status = status;
-      feedback.content = content;
-      return feedback;
-    }
-
-    /**
-     *  Function to calculate feedback according to user Answers Stats.
-     */
-
-  }, {
-    key: 'feedbackProcessor',
-    value: function feedbackProcessor() {
-      var type = this.fib2Obj.fib2Model.type;
-      var stats = this[getUserAnswersStats]();
-
-      this.fib2Obj.fib2Model.feedbackState.correct = false;
-      this.fib2Obj.fib2Model.feedbackState.incorrect = false;
-      this.fib2Obj.fib2Model.feedbackState.partiallyCorrect = false;
-      this.fib2Obj.fib2Model.feedbackState.partiallyIncorrect = false;
-      this.fib2Obj.fib2Model.feedbackState.empty = false;
-
-      if (type === 'FIBSR') {
-        if (stats.isAllInteractionsEmpty) {
-          this.fib2Obj.fib2Model.feedbackState.empty = true;
-        } else if (stats.totalQuestions === stats.countCorrectQuestionAttempt && stats.totalInteractions === stats.countCorrectInteractionsAttempt) {
-          this.fib2Obj.fib2Model.feedbackState.correct = true;
-        } else if (stats.countCorrectQuestionAttempt >= Math.floor(stats.totalQuestions / 2)) {
-          this.fib2Obj.fib2Model.feedbackState.partiallyCorrect = true;
-        } else if (stats.countIncorrectQuestionAttempt >= Math.floor(stats.totalQuestions / 2)) {
-          this.fib2Obj.fib2Model.feedbackState.partiallyIncorrect = true;
-        } else if (stats.countCorrectQuestionAttempt === 0) {
-          this.fib2Obj.fib2Model.feedbackState.incorrect = true;
-        }
-      }
-
-      this.fib2Obj.adaptor.autoResizeActivityIframe();
-    }
-  }], [{
-    key: 'getState',
-    value: function getState() {
-      return __state;
-    }
-
-    /**
-     *  Static function to reset user answers.
-     */
-
-  }, {
-    key: 'resetView',
-    value: function resetView() {
-      var persistUserAnswers = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-
-
-      $('label.question').removeClass('state-disabled');
-
-      $('.userAnswer').each(function () {
-        if (!persistUserAnswers) {
-          $(this).val('');
-        }
-        $(this).removeClass('wrongAnswer correctAnswer').attr('disabled', false);
-      });
-
-      $('[id^="answer"]').removeClass('correct wrong').addClass('invisible').next('label').removeClass('state-success state-error');
-
-      $('.grade').remove();
-    }
-  }]);
-
-  return Fib2ResponseProcessor;
-}();
-
-exports.Fib2ResponseProcessor = Fib2ResponseProcessor;
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = generateStatement;
-/**
- * Function to generate XAPI statements.
- */
-function generateStatement(verb) {
-  return {
-    'timestamp': new Date(),
-    'verb': {
-      'id': verb
-    }
-  };
-}
-module.exports = exports['default'];
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.fib2 = undefined;
-
-var _fib = __webpack_require__(5);
-
-var _fib2 = _interopRequireDefault(_fib);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.fib2 = _fib2.default;
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /* global $ */
-
-var _fib = __webpack_require__(6);
-
-var _fib2 = __webpack_require__(8);
-
-var _fib3 = __webpack_require__(16);
-
-var _fib4 = __webpack_require__(2);
-
-var _utils = __webpack_require__(3);
-
-var _utils2 = _interopRequireDefault(_utils);
-
-var _constant = __webpack_require__(0);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var load = Symbol('loadMCQ');
-var transform = Symbol('transformMCQ');
-var renderView = Symbol('renderMCQ');
-var bindEvents = Symbol('bindEvents');
-var fib2ModelAndView = void 0;
-
-/**
- *  Engine initialization Class. Provides public functions
- *  -getConfig()
- *  -getStatus()
- *  -handleSubmit()
- *  -resetAnswers()
- *  -showGrades()
- *  -showFeedback()
- *  -clearGrades()
- */
-
-var fib2 = function () {
-
-  /**  ENGINE-SHELL CONSTRUCTOR FUNCTION
-   *   @constructor
-   *   @param {String} elRoot - DOM Element reference where the engine should paint itself.
-   *   @param {Object} params - Startup params passed by platform. Include the following sets of parameters:
-   *                                      (a) State (Initial launch / Resume / Gradebook mode ).
-   *                   (b) TOC parameters (contentFile, layout, etc.).
-   *   @param {Object} adaptor - An adaptor interface for communication with platform (__saveResults, closeActivity, savePartialResults, getLastResults, etc.).
-   *   @param {String} htmlLayout - Activity HTML layout (as defined in the TOC LINK paramter).
-   *   @param {Object} jsonContentObj - Activity JSON content (as defined in the TOC LINK paramter).
-   *   @param {Function} callback - To inform the shell that init is complete.
-   */
-
-  function fib2(elRoot, params, adaptor, htmlLayout, jsonContentObj, callback) {
-    _classCallCheck(this, fib2);
-
-    adaptor.sendStatement(adaptor.getId(), (0, _utils2.default)(_constant.Constants.STATEMENT_STARTED));
-    this.elRoot = elRoot;
-    this.params = params;
-    this.adaptor = adaptor;
-    this.theme = htmlLayout;
-    this.jsonContent = jsonContentObj;
-    this.userAnswers = {};
-    this[load]();
-    if (callback) {
-      callback({
-        backgroundColor: _constant.Constants.LAYOUT_COLOR.BG[htmlLayout],
-        fontFamily: 'open-sans-font'
-      });
-    }
-  }
-
-  _createClass(fib2, [{
-    key: load,
-    value: function value() {
-      this[transform]();
-      this[renderView]();
-      this[bindEvents]();
-    }
-  }, {
-    key: transform,
-    value: function value() {
-      var mcqTransformer = new _fib.FIB2Transformer(this.jsonContent, this.params, this.theme);
-
-      this.fib2Model = mcqTransformer.transform();
-    }
-  }, {
-    key: renderView,
-    value: function value() {
-      fib2ModelAndView = new _fib2.Fib2ModelAndView(this.fib2Model);
-
-      $(this.elRoot).html(fib2ModelAndView.template);
-      fib2ModelAndView.bindData();
-    }
-  }, {
-    key: bindEvents,
-    value: function value() {
-      var fib2Events = new _fib3.Fib2Events(this);
-
-      fib2Events.bindEvents();
-    }
-
-    /**
-     * Bound to click of Activity submit button.
-     */
-
-  }, {
-    key: 'handleSubmit',
-    value: function handleSubmit() {
-      var fib2ResponseProcessor = new _fib4.Fib2ResponseProcessor(this);
-
-      /* Saving Answers. */
-      fib2ResponseProcessor.saveResults(true);
-      this.adaptor.sendStatement(this.adaptor.getId(), (0, _utils2.default)(_constant.Constants.STATEMENT_SUBMITTED));
-    }
-
-    /**
-     * ENGINE-SHELL Interface
-     * @return {{MAX_RETRIES}} - Configuration
-     */
-
-  }, {
-    key: 'getConfig',
-    value: function getConfig() {
-      return {
-        MAX_RETRIES: _constant.Constants.MAX_RETRIES
-      };
-    }
-
-    /**
-     * ENGINE-SHELL Interface
-     * @return {Boolean} - The current state (Activity Submitted/ Partial Save State.) of activity.
-     */
-
-  }, {
-    key: 'getStatus',
-    value: function getStatus() {
-      var state = _fib4.Fib2ResponseProcessor.getState();
-
-      return state.activityPartiallySubmitted || state.activitySubmitted;
-    }
-
-    /**
-     * Bound to click of Activity reset button.
-     */
-
-  }, {
-    key: 'resetAnswers',
-    value: function resetAnswers() {
-      this.userAnswers = [];
-      _fib4.Fib2ResponseProcessor.resetView();
-    }
-
-    /**
-     * Bound to click of Activity check-my-work button.
-     */
-
-  }, {
-    key: 'showGrades',
-    value: function showGrades() {
-      var fib2ResponseProcessor = new _fib4.Fib2ResponseProcessor(this);
-
-      $('label.question').addClass('state-disabled');
-      fib2ResponseProcessor.markAnswers();
-    }
-
-    /**
-     * Bound to click of Activity show-feedback button.
-     */
-
-  }, {
-    key: 'showFeedback',
-    value: function showFeedback() {
-      var fib2ResponseProcessor = new _fib4.Fib2ResponseProcessor(this);
-
-      fib2ResponseProcessor.feedbackProcessor();
-    }
-  }, {
-    key: 'clearGrades',
-    value: function clearGrades() {
-      _fib4.Fib2ResponseProcessor.resetView(true);
-      fib2ModelAndView.clearGrades();
-    }
-  }]);
-
-  return fib2;
-}();
-
-exports.default = fib2;
-module.exports = exports['default'];
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.FIB2Transformer = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /* global $ */
-
-var _constant = __webpack_require__(0);
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var buildModelandViewContent = Symbol('ModelandViewContent');
-var setTheme = Symbol('engine-theme');
-var setType = Symbol('setType');
-var setInteractions = Symbol('setInteractions');
-var setStimuli = Symbol('setStimuli');
-var setInstructions = Symbol('setInstructions');
-var setFeedback = Symbol('setFeedback');
-var setScoring = Symbol('setScoring');
-var setResponses = Symbol('setResponses');
-
-var INTERACTION_REFERENCE_STR = _constant.Constants.INTERACTION_REFERENCE_STR;
-
-var FIB2Transformer = function () {
-  function FIB2Transformer(entity, params, themeObj) {
-    _classCallCheck(this, FIB2Transformer);
-
-    this.entity = entity;
-    this.themeObj = themeObj;
-    this.fib2Model = {
-      instructions: [],
-      questionData: [],
-      stimuli: [],
-      scoring: {},
-      feedback: {},
-      feedbackState: {
-        'correct': false,
-        'partiallyCorrect': false,
-        'incorrect': false,
-        'partiallyIncorrect': false,
-        'empty': false
-      },
-      responses: {},
-      type: '',
-      theme: '',
-      interactionIds: []
-    };
-  }
-
-  _createClass(FIB2Transformer, [{
-    key: 'transform',
-    value: function transform() {
-      this[buildModelandViewContent]();
-      return this.fib2Model;
-    }
-  }, {
-    key: buildModelandViewContent,
-    value: function value() {
-      this[setTheme](this.themeObj);
-      this[setInteractions]();
-      this[setType]();
-      this[setStimuli]();
-      this[setInstructions]();
-      this[setFeedback]();
-      this[setScoring]();
-      this[setResponses]();
-    }
-  }, {
-    key: setTheme,
-    value: function value(themeKey) {
-      this.fib2Model.theme = _constant.Constants.THEMES[themeKey];
-    }
-  }, {
-    key: setType,
-    value: function value() {
-      this.fib2Model.type = this.entity.meta.type;
-    }
-  }, {
-    key: setInstructions,
-    value: function value() {
-      this.fib2Model.instructions = this.entity.content.instructions.map(function (element) {
-        return {
-          text: element[element['tag']]
-        };
-      });
-    }
-  }, {
-    key: setInteractions,
-    value: function value() {
-      var entity = this.entity;
-      var _self = this;
-
-      this.fib2Model.questionData = entity.content.canvas.data.questiondata.map(function (element, index) {
-        var obj = {};
-        var parsedQuestionArray = $('<div>' + element['text'] + '</div>');
-        var interactionsReferences = $(parsedQuestionArray).find('a[href=\'' + INTERACTION_REFERENCE_STR + '\']');
-
-        obj.interactions = [];
-        obj.types = [];
-        obj.numberOfInteractions = 0;
-        interactionsReferences.each(function (idx) {
-          var currinteractionid = $(this).text().trim();
-          var newchild = $('<span  class=\'input answer\'><input type=\'text\' id=\'' + currinteractionid + '\' class=\'userAnswer\' autocomplete="off" spellcheck="false"/></span>')[0];
-
-          $(this).replaceWith(newchild);
-          obj.interactions.push(currinteractionid);
-          obj.numberOfInteractions += 1;
-          obj.types.push(entity.content.interactions[currinteractionid]);
-          _self.fib2Model.interactionIds.push(currinteractionid);
-        });
-
-        obj.questionText = parsedQuestionArray[0].innerHTML;
-        return obj;
-      });
-    }
-  }, {
-    key: setResponses,
-    value: function value() {
-      this.fib2Model.responses = this.entity.responses;
-    }
-  }, {
-    key: setStimuli,
-    value: function value() {
-      this.fib2Model.stimuli = this.entity.content.stimulus.map(function (element) {
-        var tagtype = element['tag'];
-        var obj = void 0;
-
-        if (tagtype) {
-          obj = { 'src': element[tagtype] };
-          obj[tagtype] = true;
-        }
-        if (!obj) {
-          obj = element;
-        }
-        return obj;
-      });
-    }
-  }, {
-    key: setFeedback,
-    value: function value() {
-      this.fib2Model.feedback = this.entity.feedback;
-    }
-  }, {
-    key: setScoring,
-    value: function value() {
-      this.fib2Model.scoring = this.entity.meta.score;
-    }
-  }]);
-
-  return FIB2Transformer;
-}();
-
-exports.FIB2Transformer = FIB2Transformer;
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports) {
-
-module.exports = "<!-- Engine Renderer Template -->\r\n<div class=\"fib2-body\" id=\"fib2-engine\">\r\n  <main rv-addclass='content.theme'>\r\n    <section class=\"instructions\">\r\n      <p class=\"instruction\" rv-each-instruction=\"content.instructions\" rv-text-parse=\"instruction.text\"></p>\r\n    </section>\r\n\r\n    <section class=\"smart-form inline-input\">\r\n      <ol>\r\n        <li rv-each-question=\"content.questionData\" class=\"question-li\">\r\n          <span class=\"invisible pull-left\" rv-answer-id=\"index\"></span>\r\n          <label class=\"question\">\r\n            <span rv-text-parse=\"question.questionText\"></span>\r\n          </label>\r\n        </li>\r\n      </ol>\r\n    </section>\r\n\r\n    <section class=\"feedback\">\r\n      <div class=\"row\">\r\n        <div class=\"col-sm-12 col-md-12\">\r\n          <div class=\"alert alert-success align-2-item\" role=\"alert\" rv-show=\"content.feedbackState.correct\">\r\n            <span>\r\n              <i class=\"fa fa-2x fa-smile-o\" style=\"vertical-align: middle\"></i>&nbsp;</span>\r\n            <span rv-text=\"content.feedback.global.correct\" style=\"vertical-align: middle\"></span>\r\n          </div>\r\n        </div>\r\n      </div>\r\n      <div class=\"row\">\r\n        <div class=\"col-sm-12 col-md-12\">\r\n          <div class=\"alert alert-danger align-2-item\" role=\"alert\" rv-show=\"content.feedbackState.incorrect\">\r\n            <span>\r\n              <i class=\"fa fa-2x fa-meh-o\" style=\"vertical-align: middle\"></i>\r\n            </span>&nbsp;\r\n            <span rv-text=\"content.feedback.global.incorrect\" style=\"vertical-align: middle\"></span>\r\n          </div>\r\n        </div>\r\n      </div>\r\n      <div class=\"row\">\r\n        <div class=\"col-sm-12 col-md-12\">\r\n          <div class=\"alert alert-danger align-2-item\" role=\"alert\" rv-show=\"content.feedbackState.partiallyCorrect\">\r\n            <span>\r\n              <i class=\"fa fa-2x fa-meh-o\" style=\"vertical-align: middle\"></i>\r\n            </span>&nbsp;\r\n            <span rv-text=\"content.feedback.global.partiallyCorrect\" style=\"vertical-align: middle\"></span>\r\n          </div>\r\n        </div>\r\n      </div>\r\n      <div class=\"row\">\r\n        <div class=\"col-sm-12 col-md-12\">\r\n          <div class=\"alert alert-danger align-2-item\" role=\"alert\" rv-show=\"content.feedbackState.partiallyIncorrect\">\r\n            <span>\r\n              <i class=\"fa fa-2x fa-meh-o\" style=\"vertical-align: middle\"></i>\r\n            </span>&nbsp;\r\n            <span rv-text=\"content.feedback.global.partiallyIncorrect\" style=\"vertical-align: middle\"></span>\r\n          </div>\r\n        </div>\r\n      </div>\r\n      <div class=\"row\">\r\n        <div class=\"col-sm-12 col-md-12\">\r\n          <div class=\"alert alert-warning align-2-item\" role=\"alert\" rv-show=\"content.feedbackState.empty\">\r\n            <span>\r\n              <i class=\"fa fa-2x fa-meh-o\" style=\"vertical-align: middle\"></i>&nbsp;</span>\r\n            <span rv-text=\"content.feedback.global.empty\" style=\"vertical-align: middle\"></span>\r\n          </div>\r\n        </div>\r\n      </div>\r\n    </section>\r\n  </main>\r\n</div>\r\n";
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.Fib2ModelAndView = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /* global $ */
-
-var _constant = __webpack_require__(0);
-
-var _rivets = __webpack_require__(9);
-
-var _rivets2 = _interopRequireDefault(_rivets);
-
-__webpack_require__(11);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var initializeRivets = Symbol('initializeRivets');
-
-var Fib2ModelAndView = function () {
-  function Fib2ModelAndView(fib2Model) {
-    _classCallCheck(this, Fib2ModelAndView);
-
-    this.model = fib2Model;
-  }
-
-  _createClass(Fib2ModelAndView, [{
-    key: 'clearGrades',
-
-
-    /**
-     * Function to clear grades and reset feedback state
-     */
-    value: function clearGrades() {
-      this.model.feedbackState = {
-        'correct': false,
-        'partiallyCorrect': false,
-        'incorrect': false,
-        'partiallyIncorrect': false,
-        'empty': false
-      };
-    }
-
-    /**
-     * Function to bind data with rivets
-     */
-
-  }, {
-    key: 'bindData',
-    value: function bindData() {
-      var data = this[initializeRivets]();
-
-      /*Bind the data to template using rivets*/
-      _rivets2.default.bind($('#fib2-engine'), data);
-    }
-
-    /**
-     * Function to initialize rivets
-     */
-
-  }, {
-    key: initializeRivets,
-    value: function value() {
-      _rivets2.default.binders.addclass = function (el, value) {
-        if (el.addedClass) {
-          $(el).removeClass(el.addedClass);
-          delete el.addedClass;
-        }
-
-        if (value) {
-          $(el).addClass(value);
-          el.addedClass = value;
-        }
-      };
-
-      _rivets2.default.binders['text-parse'] = function (el, value) {
-        var innerHtml = $('<div>' + value + '</div>')[0].innerHTML;
-
-        $(el).html(innerHtml);
-      };
-
-      _rivets2.default.binders['answer-id'] = function (el, value) {
-        el.id = 'answer' + value;
-      };
-
-      return {
-        content: this.model
-      };
-    }
-  }, {
-    key: 'template',
-    get: function get() {
-      return _constant.Constants.TEMPLATES.FIB2;
-    }
-  }, {
-    key: 'themes',
-    get: function get() {
-      return _constant.Constants.THEMES;
-    }
-  }]);
-
-  return Fib2ModelAndView;
-}();
-
-exports.Fib2ModelAndView = Fib2ModelAndView;
-
-/***/ }),
-/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(module) {var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Rivets.js
@@ -2661,10 +1750,10 @@ exports.Fib2ModelAndView = Fib2ModelAndView;
 
 }).call(this);
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)(module)))
 
 /***/ }),
-/* 10 */
+/* 3 */
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
@@ -2692,52 +1781,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(12);
-if(typeof content === 'string') content = [[module.i, content, '']];
-// Prepare cssTransformation
-var transform;
-
-var options = {"hmr":true}
-options.transform = transform
-// add the styles to the DOM
-var update = __webpack_require__(14)(content, options);
-if(content.locals) module.exports = content.locals;
-// Hot Module Replacement
-if(false) {
-	// When the styles change, update the <style> tags
-	if(!content.locals) {
-		module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./index.scss", function() {
-			var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./index.scss");
-			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-			update(newContent);
-		});
-	}
-	// When the module is disposed, remove the <style> tags
-	module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 12 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(13)(false);
-// imports
-
-
-// module
-exports.push([module.i, "/*******************************************************\r\n *\r\n * ----------------------\r\n * Engine Renderer Styles\r\n * ----------------------\r\n *\r\n * These styles do not include any product-specific branding\r\n * and/or layout / design. They represent minimal structural\r\n * SCSS which is necessary for a default rendering of an\r\n * FIB2 activity\r\n *\r\n * The styles are linked/depending on the presence of\r\n * certain elements (classes / ids / tags) in the DOM (as would\r\n * be injected via a valid FIB2 layout HTML and/or dynamically\r\n * created by the FIB2 engine JS)\r\n *\r\n *\r\n *******************************************************/\nmain {\n  font-size: 14px;\n  font-family: 'Open Sans', Verdana, sans-serif; }\n\n.instructions {\n  font-size: 1.1em;\n  color: #5c5c5c;\n  margin-bottom: 0.9em; }\n\n.smart-form {\n  line-height: 0.8em; }\n  .smart-form ol {\n    padding: 0; }\n  .smart-form .question-li {\n    padding: .7em .4em .7em 1.8em;\n    margin-left: 2em;\n    color: #666; }\n    .smart-form .question-li .wrong:before {\n      content: \"\\F00D\";\n      color: red;\n      font-family: fontawesome;\n      display: block;\n      margin: .15em .36em auto -4.5em; }\n    .smart-form .question-li .correct:before {\n      content: \"\\F00C\";\n      color: green;\n      display: block;\n      font-family: fontawesome;\n      margin: .15em .36em auto -4.5em; }\n  .smart-form .question {\n    font-weight: normal;\n    margin: 0;\n    line-height: 1.5em; }\n    .smart-form .question input {\n      border-width: 0 0 1px 0;\n      outline: none;\n      width: 150px;\n      text-align: center;\n      border-radius: 0;\n      display: inline; }\n    .smart-form .question input:disabled {\n      opacity: 0.6;\n      background: #ffffff; }\n  .smart-form .state-success input {\n    border-color: #7DC27D; }\n  .smart-form .state-success input:disabled {\n    background: #f0fff0; }\n  .smart-form .state-error input {\n    border-color: #A90329; }\n  .smart-form .state-error input:disabled {\n    background: #fff0f0; }\n\n.feedback .alert-success {\n  background-color: #f2fdee; }\n\n.feedback .alert-danger {\n  background-color: #fdeeee; }\n\n.fib2-dark .instruction,\n.fib2-dark .question-li {\n  color: #ffffff; }\n\n.fib2-dark .smart-form .state-success input {\n  background: #363636;\n  border-color: #7DC27D; }\n\n.fib2-dark .smart-form .state-error input {\n  background: #363636;\n  border-color: #A90329; }\n\n.fib2-dark .smart-form input {\n  background: #363636;\n  color: #ffffff; }\n\n.fib2-dark .smart-form input:disabled {\n  opacity: 0.6 !important;\n  background: #363636; }\n\n.fib2-dark .feedback .alert-success {\n  background-color: #363636;\n  color: #40fd21;\n  border: 1px solid #494949; }\n\n.fib2-dark .feedback .alert-danger {\n  background-color: #363636;\n  color: #e30e0e;\n  border: 1px solid #494949; }\n\n.fib2-light {\n  background-color: #f6f6f6; }\n  .fib2-light .instructions {\n    color: #535353; }\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 13 */
+/* 4 */
 /***/ (function(module, exports) {
 
 /*
@@ -2819,7 +1863,7 @@ function toComment(sourceMap) {
 
 
 /***/ }),
-/* 14 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -2875,7 +1919,7 @@ var singleton = null;
 var	singletonCounter = 0;
 var	stylesInsertedAtTop = [];
 
-var	fixUrls = __webpack_require__(15);
+var	fixUrls = __webpack_require__(6);
 
 module.exports = function(list, options) {
 	if (typeof DEBUG !== "undefined" && DEBUG) {
@@ -3191,7 +2235,7 @@ function updateLink (link, options, obj) {
 
 
 /***/ }),
-/* 15 */
+/* 6 */
 /***/ (function(module, exports) {
 
 
@@ -3286,7 +2330,952 @@ module.exports = function (css) {
 
 
 /***/ }),
+/* 7 */,
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Fib2ResponseProcessor = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /* global $ */
+
+var _utils = __webpack_require__(9);
+
+var _utils2 = _interopRequireDefault(_utils);
+
+var _constant = __webpack_require__(0);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var getAnswersJSON = Symbol('getAnswersJSON');
+var getFibsrAnswersJSON = Symbol('getFibsrAnswersJSON');
+var getUserAnswersStats = Symbol('getUserAnswersStats');
+var markInput = Symbol('markInput');
+var buildFeedbackResponse = Symbol('buildFeedbackResponse');
+
+var __state = {
+  currentTries: 0, /* Current try of sending results to platform */
+  activityPartiallySubmitted: false, /* State whether activity has been partially submitted. Possible Values: true/false(Boolean) */
+  activitySubmitted: false /* State whether activity has been submitted. Possible Values: true/false(Boolean) */
+};
+
+var Fib2ResponseProcessor = function () {
+  function Fib2ResponseProcessor(fib2Obj) {
+    _classCallCheck(this, Fib2ResponseProcessor);
+
+    this.fib2Obj = fib2Obj;
+  }
+
+  /**
+   * Function called to send result JSON to adaptor (On Submit).
+   */
+
+
+  _createClass(Fib2ResponseProcessor, [{
+    key: 'saveResults',
+    value: function saveResults() {
+      var _this = this;
+
+      /*Getting answer in JSON format*/
+      var answerJSONs = this[getAnswersJSON](false);
+      var uniqueId = this.fib2Obj.adaptor.getId();
+
+      /* Disabling entry(input) boxes on click of Submit. */
+      $('.userAnswer').attr('disabled', true);
+      $('label.input').addClass('state-disabled');
+
+      answerJSONs.forEach(function (answerJSON, idx) {
+        /* User clicked the Submit button*/
+        answerJSON.statusProgress = 'attempted';
+        /*Send Results to platform*/
+        _this.fib2Obj.adaptor.submitResults(answerJSON, uniqueId, function (data, status) {
+          if (status === _constant.Constants.STATUS_NOERROR) {
+            __state.activitySubmitted = true;
+            /*Close platform's session*/
+            _this.fib2Obj.adaptor.closeActivity();
+            __state.currentTries = 0;
+          } else {
+            /* There was an error during platform communication, so try again (till MAX_RETRIES) */
+            if (__state.currentTries < _constant.Constants.MAX_RETRIES) {
+              __state.currentTries++;
+              _this.saveResults();
+            }
+          }
+        });
+      });
+    }
+
+    /**
+     * Function called to send result JSON to adaptor (Partial Save ).
+     */
+
+  }, {
+    key: 'savePartial',
+    value: function savePartial() {
+      var _this2 = this;
+
+      /*Getting answer in JSON format*/
+      var answerJSONs = this[getAnswersJSON](false);
+      var uniqueId = this.fib2Obj.adaptor.getId();
+
+      this.fib2Obj.adaptor.sendStatement(uniqueId, (0, _utils2.default)(_constant.Constants.STATEMENT_INTERACTED));
+
+      answerJSONs.forEach(function (answerJSON, idx) {
+        _this2.fib2Obj.adaptor.savePartialResults(answerJSON, uniqueId, function (data, status) {
+          if (status === _constant.Constants.STATUS_NOERROR) {
+            __state.activityPariallySubmitted = true;
+          } else {
+            // There was an error during platform communication, do nothing for partial saves
+          }
+        });
+      });
+    }
+
+    /**
+     *  Function used to create JSON from user Answers for submit(soft/hard).
+     *  Called by :-
+     *   1. saveResult or savePartial (internal).
+     *   2. Multi-item-handler (external).
+     *   3. Divide the maximum marks among interaction.
+     *   4. Returns result objects.  [{ id: interactionId,  answer: answer,   score: score, maxscore: maximumScore }]
+     */
+
+  }, {
+    key: getAnswersJSON,
+    value: function value(skipQuestion) {
+      var response = [];
+      var fibsrAns = void 0;
+
+      fibsrAns = this[getFibsrAnswersJSON]();
+      response.push(fibsrAns);
+
+      return response;
+    }
+  }, {
+    key: getFibsrAnswersJSON,
+    value: function value() {
+      var _this3 = this;
+
+      var maxScore = this.fib2Obj.jsonContent.meta.score.max;
+      var perInteractionScore = maxScore / this.fib2Obj.fib2Model.interactionIds.length;
+      var stats = this[getUserAnswersStats]();
+      var resultArray = [];
+      var feedback = void 0;
+      var statusEvaluation = void 0;
+
+      this.fib2Obj.fib2Model.interactionIds.forEach(function (interactionId) {
+        var score = stats.userAnswersResult[interactionId] ? perInteractionScore : 0;
+
+        resultArray.push({
+          interactionId: interactionId,
+          score: score,
+          answer: _this3.fib2Obj.userAnswers[interactionId] || '',
+          maxScore: perInteractionScore
+        });
+      });
+
+      if (stats.isAllInteractionsEmpty) {
+        statusEvaluation = 'empty';
+        feedback = this[buildFeedbackResponse]('global.empty', statusEvaluation, this.fib2Obj.fib2Model.feedback.global.empty);
+      } else if (stats.totalQuestions === stats.countCorrectQuestionAttempt && stats.totalInteractions === stats.countCorrectInteractionsAttempt) {
+        statusEvaluation = 'correct';
+        feedback = this[buildFeedbackResponse]('global.correct', statusEvaluation, this.fib2Obj.fib2Model.feedback.global.correct);
+      } else if (stats.countCorrectQuestionAttempt >= Math.floor(stats.totalQuestions / 2)) {
+        statusEvaluation = 'partially_correct';
+        feedback = this[buildFeedbackResponse]('global.partiallyCorrect', statusEvaluation, this.fib2Obj.fib2Model.feedback.global.partiallyCorrect);
+      } else if (stats.countIncorrectQuestionAttempt >= Math.floor(stats.totalQuestions / 2)) {
+        statusEvaluation = 'partially_incorrect';
+        feedback = this[buildFeedbackResponse]('global.partiallyIncorrect', statusEvaluation, this.fib2Obj.fib2Model.feedback.global.partiallyIncorrect);
+      } else if (stats.countCorrectQuestionAttempt === 0) {
+        statusEvaluation = 'incorrect';
+        feedback = this[buildFeedbackResponse]('global.incorrect', statusEvaluation, this.fib2Obj.fib2Model.feedback.global.incorrect);
+      }
+
+      return {
+        response: {
+          'interactions': resultArray,
+          statusEvaluation: statusEvaluation,
+          feedback: feedback
+        }
+      };
+    }
+
+    /**
+     *  Function used to create User Answers stats.
+     */
+
+  }, {
+    key: getUserAnswersStats,
+    value: function value() {
+      var _this4 = this;
+
+      var questions = this.fib2Obj.fib2Model.questionData;
+      var totalInteractions = this.fib2Obj.fib2Model.interactionIds.length;
+      var totalQuestions = this.fib2Obj.fib2Model.questionData.length;
+      var userAnswersResult = {};
+      var countCorrectQuestionAttempt = 0;
+      var countIncorrectQuestionAttempt = 0;
+      var countCorrectInteractionsAttempt = 0;
+      var countIncorrectInteractionsAttempt = 0;
+      var isAllInteractionsEmpty = true;
+
+      questions.forEach(function (question, index) {
+        var isQuestionCorrect = true;
+
+        question.interactions.forEach(function (interactionId) {
+          var correctAnswer = _this4.fib2Obj.fib2Model.responses[interactionId].correct;
+          var userAnswer = _this4.fib2Obj.userAnswers[interactionId];
+
+          userAnswersResult[interactionId] = {
+            correct: false
+          };
+
+          if (_this4.fib2Obj.fib2Model.responses[interactionId].ignorecase) {
+            correctAnswer = correctAnswer.toLowerCase();
+            userAnswer = correctAnswer.toLowerCase();
+          }
+
+          if (_this4.fib2Obj.fib2Model.responses[interactionId].ignorewhitespace) {
+            correctAnswer = correctAnswer.replace(/ /g, '')();
+            userAnswer = correctAnswer.replace(/ /g, '')();
+          }
+
+          if (userAnswer !== correctAnswer) {
+            isQuestionCorrect = false;
+            if (userAnswer !== undefined && userAnswer !== '') {
+              isAllInteractionsEmpty = false;
+            }
+            countIncorrectInteractionsAttempt += 1;
+          } else {
+            isAllInteractionsEmpty = false;
+            userAnswersResult[interactionId].correct = true;
+            countCorrectInteractionsAttempt += 1;
+          }
+        });
+
+        if (isQuestionCorrect) {
+          countCorrectQuestionAttempt += 1;
+        } else {
+          countIncorrectQuestionAttempt += 1;
+        }
+      });
+
+      return {
+        userAnswersResult: userAnswersResult,
+        totalInteractions: totalInteractions,
+        countIncorrectInteractionsAttempt: countIncorrectInteractionsAttempt,
+        countCorrectInteractionsAttempt: countCorrectInteractionsAttempt,
+        totalQuestions: totalQuestions,
+        countCorrectQuestionAttempt: countCorrectQuestionAttempt,
+        countIncorrectQuestionAttempt: countIncorrectQuestionAttempt,
+        isAllInteractionsEmpty: isAllInteractionsEmpty
+      };
+    }
+
+    /**
+     *  Static function to get User state.
+     */
+
+  }, {
+    key: 'markAnswers',
+
+
+    /**
+     *  Function to mark User answers correct or wrong.
+     */
+    value: function markAnswers() {
+      this[markInput]();
+      this.fib2Obj.adaptor.autoResizeActivityIframe();
+    }
+  }, {
+    key: markInput,
+    value: function value() {
+      var _this5 = this;
+
+      var questions = this.fib2Obj.fib2Model.questionData;
+
+      questions.forEach(function (question, index) {
+        var isQuestionCorrect = true;
+
+        question.interactions.forEach(function (interactionId) {
+          var userAnswer = _this5.fib2Obj.userAnswers[interactionId];
+          var correctAnswer = _this5.fib2Obj.fib2Model.responses[interactionId].correct;
+
+          if (userAnswer !== correctAnswer) {
+            isQuestionCorrect = false;
+            $('#' + interactionId).addClass('wrongAnswer').removeClass('correctAnswer').attr('disabled', true).parent().after('<span class="grade" style="color:green;font-weight: bold"> (' + correctAnswer + ')</span>');
+          } else {
+            $('#' + interactionId).addClass('correctAnswer').removeClass('wrongAnswer').attr('disabled', true);
+          }
+        });
+
+        if (isQuestionCorrect) {
+          $('#answer' + index).next('label').addClass('state-success');
+          $('#answer' + index).addClass('correct').removeClass('wrong').removeClass('invisible');
+        } else {
+          $('#answer' + index).next('label').addClass('state-error');
+          $('#answer' + index).addClass('wrong').removeClass('correct').removeClass('invisible');
+        }
+      });
+    }
+  }, {
+    key: buildFeedbackResponse,
+    value: function value(id, status, content) {
+      var feedback = {};
+
+      feedback.id = id;
+      feedback.status = status;
+      feedback.content = content;
+      return feedback;
+    }
+
+    /**
+     *  Function to calculate feedback according to user Answers Stats.
+     */
+
+  }, {
+    key: 'feedbackProcessor',
+    value: function feedbackProcessor() {
+      var type = this.fib2Obj.fib2Model.type;
+      var stats = this[getUserAnswersStats]();
+
+      this.fib2Obj.fib2Model.feedbackState.correct = false;
+      this.fib2Obj.fib2Model.feedbackState.incorrect = false;
+      this.fib2Obj.fib2Model.feedbackState.partiallyCorrect = false;
+      this.fib2Obj.fib2Model.feedbackState.partiallyIncorrect = false;
+      this.fib2Obj.fib2Model.feedbackState.empty = false;
+
+      if (type === 'FIBSR') {
+        if (stats.isAllInteractionsEmpty) {
+          this.fib2Obj.fib2Model.feedbackState.empty = true;
+        } else if (stats.totalQuestions === stats.countCorrectQuestionAttempt && stats.totalInteractions === stats.countCorrectInteractionsAttempt) {
+          this.fib2Obj.fib2Model.feedbackState.correct = true;
+        } else if (stats.countCorrectQuestionAttempt >= Math.floor(stats.totalQuestions / 2)) {
+          this.fib2Obj.fib2Model.feedbackState.partiallyCorrect = true;
+        } else if (stats.countIncorrectQuestionAttempt >= Math.floor(stats.totalQuestions / 2)) {
+          this.fib2Obj.fib2Model.feedbackState.partiallyIncorrect = true;
+        } else if (stats.countCorrectQuestionAttempt === 0) {
+          this.fib2Obj.fib2Model.feedbackState.incorrect = true;
+        }
+      }
+
+      this.fib2Obj.adaptor.autoResizeActivityIframe();
+    }
+  }], [{
+    key: 'getState',
+    value: function getState() {
+      return __state;
+    }
+
+    /**
+     *  Static function to reset user answers.
+     */
+
+  }, {
+    key: 'resetView',
+    value: function resetView() {
+      var persistUserAnswers = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+
+      $('label.question').removeClass('state-disabled');
+
+      $('.userAnswer').each(function () {
+        if (!persistUserAnswers) {
+          $(this).val('');
+        }
+        $(this).removeClass('wrongAnswer correctAnswer').attr('disabled', false);
+      });
+
+      $('[id^="answer"]').removeClass('correct wrong').addClass('invisible').next('label').removeClass('state-success state-error');
+
+      $('.grade').remove();
+    }
+  }]);
+
+  return Fib2ResponseProcessor;
+}();
+
+exports.Fib2ResponseProcessor = Fib2ResponseProcessor;
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = generateStatement;
+/**
+ * Function to generate XAPI statements.
+ */
+function generateStatement(verb) {
+  return {
+    'timestamp': new Date(),
+    'verb': {
+      'id': verb
+    }
+  };
+}
+module.exports = exports['default'];
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.fib2 = undefined;
+
+var _fib = __webpack_require__(11);
+
+var _fib2 = _interopRequireDefault(_fib);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.fib2 = _fib2.default;
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /* global $ */
+
+var _fib = __webpack_require__(12);
+
+var _fib2 = __webpack_require__(14);
+
+var _fib3 = __webpack_require__(17);
+
+var _fib4 = __webpack_require__(8);
+
+var _utils = __webpack_require__(9);
+
+var _utils2 = _interopRequireDefault(_utils);
+
+var _constant = __webpack_require__(0);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var load = Symbol('loadFib2');
+var transform = Symbol('transformFib2');
+var renderView = Symbol('renderFib2');
+var bindEvents = Symbol('bindEvents');
+var fib2ModelAndView = void 0;
+
+/**
+ *  Engine initialization Class. Provides public functions
+ *  -getConfig()
+ *  -getStatus()
+ *  -handleSubmit()
+ *  -resetAnswers()
+ *  -showGrades()
+ *  -showFeedback()
+ *  -clearGrades()
+ */
+
+var fib2 = function () {
+
+  /**  ENGINE-SHELL CONSTRUCTOR FUNCTION
+   *   @constructor
+   *   @param {String} elRoot - DOM Element reference where the engine should paint itself.
+   *   @param {Object} params - Startup params passed by platform. Include the following sets of parameters:
+   *                                      (a) State (Initial launch / Resume / Gradebook mode ).
+   *                   (b) TOC parameters (contentFile, layout, etc.).
+   *   @param {Object} adaptor - An adaptor interface for communication with platform (__saveResults, closeActivity, savePartialResults, getLastResults, etc.).
+   *   @param {String} htmlLayout - Activity HTML layout (as defined in the TOC LINK paramter).
+   *   @param {Object} jsonContentObj - Activity JSON content (as defined in the TOC LINK paramter).
+   *   @param {Function} callback - To inform the shell that init is complete.
+   */
+
+  function fib2(elRoot, params, adaptor, htmlLayout, jsonContentObj, callback) {
+    _classCallCheck(this, fib2);
+
+    adaptor.sendStatement(adaptor.getId(), (0, _utils2.default)(_constant.Constants.STATEMENT_STARTED));
+    this.elRoot = elRoot;
+    this.params = params;
+    this.adaptor = adaptor;
+    this.theme = htmlLayout;
+    this.jsonContent = jsonContentObj;
+    this.userAnswers = {};
+    this[load]();
+    if (callback) {
+      callback({
+        backgroundColor: _constant.Constants.LAYOUT_COLOR.BG[htmlLayout],
+        fontFamily: 'open-sans-font'
+      });
+    }
+  }
+
+  _createClass(fib2, [{
+    key: load,
+    value: function value() {
+      this[transform]();
+      this[renderView]();
+      this[bindEvents]();
+    }
+  }, {
+    key: transform,
+    value: function value() {
+      var fib2Transformer = new _fib.FIB2Transformer(this.jsonContent, this.params, this.theme);
+
+      this.fib2Model = fib2Transformer.transform();
+    }
+  }, {
+    key: renderView,
+    value: function value() {
+      fib2ModelAndView = new _fib2.Fib2ModelAndView(this.fib2Model);
+
+      $(this.elRoot).html(fib2ModelAndView.template);
+      fib2ModelAndView.bindData();
+    }
+  }, {
+    key: bindEvents,
+    value: function value() {
+      var fib2Events = new _fib3.Fib2Events(this);
+
+      fib2Events.bindEvents();
+    }
+
+    /**
+     * Bound to click of Activity submit button.
+     */
+
+  }, {
+    key: 'handleSubmit',
+    value: function handleSubmit() {
+      var fib2ResponseProcessor = new _fib4.Fib2ResponseProcessor(this);
+
+      /* Saving Answers. */
+      fib2ResponseProcessor.saveResults();
+      this.adaptor.sendStatement(this.adaptor.getId(), (0, _utils2.default)(_constant.Constants.STATEMENT_SUBMITTED));
+    }
+
+    /**
+     * ENGINE-SHELL Interface
+     * @return {{MAX_RETRIES}} - Configuration
+     */
+
+  }, {
+    key: 'getConfig',
+    value: function getConfig() {
+      return {
+        MAX_RETRIES: _constant.Constants.MAX_RETRIES
+      };
+    }
+
+    /**
+     * ENGINE-SHELL Interface
+     * @return {Boolean} - The current state (Activity Submitted/ Partial Save State.) of activity.
+     */
+
+  }, {
+    key: 'getStatus',
+    value: function getStatus() {
+      var state = _fib4.Fib2ResponseProcessor.getState();
+
+      return state.activityPartiallySubmitted || state.activitySubmitted;
+    }
+
+    /**
+     * Bound to click of Activity reset button.
+     */
+
+  }, {
+    key: 'resetAnswers',
+    value: function resetAnswers() {
+      this.userAnswers = {};
+      _fib4.Fib2ResponseProcessor.resetView();
+    }
+
+    /**
+     * Bound to click of Activity check-my-work button.
+     */
+
+  }, {
+    key: 'showGrades',
+    value: function showGrades() {
+      var fib2ResponseProcessor = new _fib4.Fib2ResponseProcessor(this);
+
+      $('label.question').addClass('state-disabled');
+      fib2ResponseProcessor.markAnswers();
+    }
+
+    /**
+     * Bound to click of Activity show-feedback button.
+     */
+
+  }, {
+    key: 'showFeedback',
+    value: function showFeedback() {
+      var fib2ResponseProcessor = new _fib4.Fib2ResponseProcessor(this);
+
+      fib2ResponseProcessor.feedbackProcessor();
+    }
+  }, {
+    key: 'clearGrades',
+    value: function clearGrades() {
+      _fib4.Fib2ResponseProcessor.resetView(true);
+      fib2ModelAndView.clearGrades();
+    }
+  }]);
+
+  return fib2;
+}();
+
+exports.default = fib2;
+module.exports = exports['default'];
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.FIB2Transformer = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /* global $ */
+
+var _constant = __webpack_require__(0);
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var buildModelandViewContent = Symbol('ModelandViewContent');
+var setTheme = Symbol('engine-theme');
+var setType = Symbol('setType');
+var setInteractions = Symbol('setInteractions');
+var setStimuli = Symbol('setStimuli');
+var setInstructions = Symbol('setInstructions');
+var setFeedback = Symbol('setFeedback');
+var setScoring = Symbol('setScoring');
+var setResponses = Symbol('setResponses');
+
+var INTERACTION_REFERENCE_STR = _constant.Constants.INTERACTION_REFERENCE_STR;
+
+var FIB2Transformer = function () {
+  function FIB2Transformer(entity, params, themeObj) {
+    _classCallCheck(this, FIB2Transformer);
+
+    this.entity = entity;
+    this.themeObj = themeObj;
+    this.fib2Model = {
+      instructions: [],
+      questionData: [],
+      stimuli: [],
+      scoring: {},
+      feedback: {},
+      feedbackState: {
+        'correct': false,
+        'partiallyCorrect': false,
+        'incorrect': false,
+        'partiallyIncorrect': false,
+        'empty': false
+      },
+      responses: {},
+      type: '',
+      theme: '',
+      interactionIds: []
+    };
+  }
+
+  _createClass(FIB2Transformer, [{
+    key: 'transform',
+    value: function transform() {
+      this[buildModelandViewContent]();
+      return this.fib2Model;
+    }
+  }, {
+    key: buildModelandViewContent,
+    value: function value() {
+      this[setTheme](this.themeObj);
+      this[setInteractions]();
+      this[setType]();
+      this[setStimuli]();
+      this[setInstructions]();
+      this[setFeedback]();
+      this[setScoring]();
+      this[setResponses]();
+    }
+  }, {
+    key: setTheme,
+    value: function value(themeKey) {
+      this.fib2Model.theme = _constant.Constants.THEMES[themeKey];
+    }
+  }, {
+    key: setType,
+    value: function value() {
+      this.fib2Model.type = this.entity.meta.type;
+    }
+  }, {
+    key: setInstructions,
+    value: function value() {
+      this.fib2Model.instructions = this.entity.content.instructions.map(function (element) {
+        return {
+          text: element[element['tag']]
+        };
+      });
+    }
+  }, {
+    key: setInteractions,
+    value: function value() {
+      var _this = this;
+
+      var entity = this.entity;
+
+      this.fib2Model.questionData = entity.content.canvas.data.questiondata.map(function (element, index) {
+        var obj = {};
+        var parsedQuestionArray = $('<div>' + element['text'] + '</div>');
+        var interactionsReferences = $(parsedQuestionArray).find('a[href=\'' + INTERACTION_REFERENCE_STR + '\']');
+
+        obj.interactions = [];
+        obj.types = [];
+        obj.numberOfInteractions = 0;
+        interactionsReferences.each(function (idx, el) {
+          var currinteractionid = $(el).text().trim();
+          var newchild = $('<span  class=\'input answer\'><input type=\'text\' id=\'' + currinteractionid + '\' class=\'userAnswer\' autocomplete="off" spellcheck="false"/></span>')[0];
+
+          $(el).replaceWith(newchild);
+          obj.interactions.push(currinteractionid);
+          obj.numberOfInteractions += 1;
+          obj.types.push(entity.content.interactions[currinteractionid]);
+          _this.fib2Model.interactionIds.push(currinteractionid);
+        });
+
+        obj.questionText = parsedQuestionArray[0].innerHTML;
+        return obj;
+      });
+    }
+  }, {
+    key: setResponses,
+    value: function value() {
+      this.fib2Model.responses = this.entity.responses;
+    }
+  }, {
+    key: setStimuli,
+    value: function value() {
+      this.fib2Model.stimuli = this.entity.content.stimulus.map(function (element) {
+        var tagtype = element['tag'];
+        var obj = void 0;
+
+        if (tagtype) {
+          obj = { 'src': element[tagtype] };
+          obj[tagtype] = true;
+        }
+        if (!obj) {
+          obj = element;
+        }
+        return obj;
+      });
+    }
+  }, {
+    key: setFeedback,
+    value: function value() {
+      this.fib2Model.feedback = this.entity.feedback;
+    }
+  }, {
+    key: setScoring,
+    value: function value() {
+      this.fib2Model.scoring = this.entity.meta.score;
+    }
+  }]);
+
+  return FIB2Transformer;
+}();
+
+exports.FIB2Transformer = FIB2Transformer;
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports) {
+
+module.exports = "<!-- Engine Renderer Template -->\r\n<div class=\"fib2-body\" id=\"fib2-engine\">\r\n  <main rv-addclass='content.theme'>\r\n    <section class=\"instructions\">\r\n      <p class=\"instruction\" rv-each-instruction=\"content.instructions\" rv-text-parse=\"instruction.text\"></p>\r\n    </section>\r\n\r\n    <section class=\"smart-form inline-input\">\r\n      <ol>\r\n        <li rv-each-question=\"content.questionData\" class=\"question-li\">\r\n          <span class=\"invisible pull-left\" rv-answer-id=\"index\"></span>\r\n          <label class=\"question\">\r\n            <span rv-text-parse=\"question.questionText\"></span>\r\n          </label>\r\n        </li>\r\n      </ol>\r\n    </section>\r\n\r\n    <section class=\"feedback\">\r\n      <div class=\"row\">\r\n        <div class=\"col-sm-12 col-md-12\">\r\n          <div class=\"alert alert-success align-2-item\" role=\"alert\" rv-show=\"content.feedbackState.correct\">\r\n            <span>\r\n              <i class=\"fa fa-2x fa-smile-o vertical-align\"></i>\r\n            </span>\r\n            <span class=\"vertical-align pl-sm\" rv-text=\"content.feedback.global.correct\"></span>\r\n          </div>\r\n        </div>\r\n      </div>\r\n      <div class=\"row\">\r\n        <div class=\"col-sm-12 col-md-12\">\r\n          <div class=\"alert alert-danger align-2-item\" role=\"alert\" rv-show=\"content.feedbackState.incorrect\">\r\n            <span>\r\n              <i class=\"fa fa-2x  fa-smile-o vertical-align\"></i>\r\n            </span>\r\n            <span class=\"vertical-align pl-sm\" rv-text=\"content.feedback.global.incorrect\"></span>\r\n          </div>\r\n        </div>\r\n      </div>\r\n      <div class=\"row\">\r\n        <div class=\"col-sm-12 col-md-12\">\r\n          <div class=\"alert alert-danger align-2-item\" role=\"alert\" rv-show=\"content.feedbackState.partiallyCorrect\">\r\n            <span>\r\n              <i class=\"fa fa-2x fa-meh-o vertical-align\"></i>\r\n            </span>\r\n            <span class=\"vertical-align pl-sm\" rv-text=\"content.feedback.global.partiallyCorrect\"></span>\r\n          </div>\r\n        </div>\r\n      </div>\r\n      <div class=\"row\">\r\n        <div class=\"col-sm-12 col-md-12\">\r\n          <div class=\"alert alert-danger align-2-item\" role=\"alert\" rv-show=\"content.feedbackState.partiallyIncorrect\">\r\n            <span>\r\n              <i class=\"fa fa-2x fa-frown-o vertical-align\"></i>\r\n            </span>\r\n            <span class=\"vertical-align pl-sm\" rv-text=\"content.feedback.global.partiallyIncorrect\"></span>\r\n          </div>\r\n        </div>\r\n      </div>\r\n      <div class=\"row\">\r\n        <div class=\"col-sm-12 col-md-12\">\r\n          <div class=\"alert alert-warning align-2-item\" role=\"alert\" rv-show=\"content.feedbackState.empty\">\r\n            <span>\r\n              <i class=\"fa fa-2x fa-meh-o vertical-align\"></i>\r\n            </span>\r\n            <span class=\"vertical-align pl-sm\" rv-text=\"content.feedback.global.empty\"></span>\r\n          </div>\r\n        </div>\r\n      </div>\r\n    </section>\r\n  </main>\r\n</div>\r\n";
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Fib2ModelAndView = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /* global $ */
+
+var _constant = __webpack_require__(0);
+
+var _rivets = __webpack_require__(2);
+
+var _rivets2 = _interopRequireDefault(_rivets);
+
+__webpack_require__(15);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var initializeRivets = Symbol('initializeRivets');
+
+var Fib2ModelAndView = function () {
+  function Fib2ModelAndView(fib2Model) {
+    _classCallCheck(this, Fib2ModelAndView);
+
+    this.model = fib2Model;
+  }
+
+  _createClass(Fib2ModelAndView, [{
+    key: 'clearGrades',
+
+
+    /**
+     * Function to clear grades and reset feedback state
+     */
+    value: function clearGrades() {
+      this.model.feedbackState = {
+        'correct': false,
+        'partiallyCorrect': false,
+        'incorrect': false,
+        'partiallyIncorrect': false,
+        'empty': false
+      };
+    }
+
+    /**
+     * Function to bind data with rivets
+     */
+
+  }, {
+    key: 'bindData',
+    value: function bindData() {
+      var data = this[initializeRivets]();
+
+      /*Bind the data to template using rivets*/
+      _rivets2.default.bind($('#fib2-engine'), data);
+    }
+
+    /**
+     * Function to initialize rivets
+     */
+
+  }, {
+    key: initializeRivets,
+    value: function value() {
+      _rivets2.default.binders.addclass = function (el, value) {
+        if (el.addedClass) {
+          $(el).removeClass(el.addedClass);
+          delete el.addedClass;
+        }
+
+        if (value) {
+          $(el).addClass(value);
+          el.addedClass = value;
+        }
+      };
+
+      _rivets2.default.binders['text-parse'] = function (el, value) {
+        $(el).html(value);
+      };
+
+      _rivets2.default.binders['answer-id'] = function (el, value) {
+        el.id = 'answer' + value;
+      };
+
+      return {
+        content: this.model
+      };
+    }
+  }, {
+    key: 'template',
+    get: function get() {
+      return _constant.Constants.TEMPLATES.FIB2;
+    }
+  }, {
+    key: 'themes',
+    get: function get() {
+      return _constant.Constants.THEMES;
+    }
+  }]);
+
+  return Fib2ModelAndView;
+}();
+
+exports.Fib2ModelAndView = Fib2ModelAndView;
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(16);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// Prepare cssTransformation
+var transform;
+
+var options = {"hmr":true}
+options.transform = transform
+// add the styles to the DOM
+var update = __webpack_require__(5)(content, options);
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./index.scss", function() {
+			var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./index.scss");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
 /* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(4)(false);
+// imports
+
+
+// module
+exports.push([module.i, "/*******************************************************\r\n *\r\n * ----------------------\r\n * Engine Renderer Styles\r\n * ----------------------\r\n *\r\n * These styles do not include any product-specific branding\r\n * and/or layout / design. They represent minimal structural\r\n * SCSS which is necessary for a default rendering of an\r\n * FIB2 activity\r\n *\r\n * The styles are linked/depending on the presence of\r\n * certain elements (classes / ids / tags) in the DOM (as would\r\n * be injected via a valid FIB2 layout HTML and/or dynamically\r\n * created by the FIB2 engine JS)\r\n *\r\n *\r\n *******************************************************/\nmain {\n  font-size: 14px;\n  font-family: 'Open Sans', Verdana, sans-serif; }\n\n.instructions {\n  font-size: 1.1em;\n  color: #5c5c5c;\n  margin-bottom: 0.9em; }\n\n.smart-form {\n  line-height: 0.8em; }\n  .smart-form ol {\n    padding: 0; }\n  .smart-form .question-li {\n    padding: .7em .4em .7em 1.8em;\n    margin-left: 2em;\n    color: #666; }\n    .smart-form .question-li .wrong:before {\n      content: \"\\F00D\";\n      color: red;\n      font-family: fontawesome;\n      display: block;\n      margin: .15em .36em auto -4.5em; }\n    .smart-form .question-li .correct:before {\n      content: \"\\F00C\";\n      color: green;\n      display: block;\n      font-family: fontawesome;\n      margin: .15em .36em auto -4.5em; }\n  .smart-form .question {\n    font-weight: normal;\n    margin: 0;\n    line-height: 1.5em; }\n    .smart-form .question input {\n      border-width: 0 0 1px 0;\n      outline: none;\n      width: 150px;\n      text-align: center;\n      border-radius: 0; }\n    .smart-form .question input:disabled {\n      opacity: 0.6;\n      background: #ffffff; }\n  .smart-form .state-success input {\n    border-color: #7DC27D; }\n  .smart-form .state-success input:disabled {\n    background: #f0fff0; }\n  .smart-form .state-error input {\n    border-color: #A90329; }\n  .smart-form .state-error input:disabled {\n    background: #fff0f0; }\n\n.feedback .alert-success {\n  background-color: #f2fdee; }\n\n.feedback .alert-danger {\n  background-color: #fdeeee; }\n\n.feedback .vertical-align {\n  vertical-align: middle; }\n\n.feedback .pl-sm {\n  padding-left: 0.5em; }\n\n.fib2-dark .instruction,\n.fib2-dark .question-li {\n  color: #ffffff; }\n\n.fib2-dark .smart-form .state-success input {\n  background: #363636;\n  border-color: #7DC27D; }\n\n.fib2-dark .smart-form .state-error input {\n  background: #363636;\n  border-color: #A90329; }\n\n.fib2-dark .smart-form input {\n  background: #363636;\n  color: #ffffff; }\n\n.fib2-dark .smart-form input:disabled {\n  opacity: 0.6 !important;\n  background: #363636; }\n\n.fib2-dark .feedback .alert-success {\n  background-color: #363636;\n  color: #40fd21;\n  border: 1px solid #494949; }\n\n.fib2-dark .feedback .alert-danger {\n  background-color: #363636;\n  color: #e30e0e;\n  border: 1px solid #494949; }\n\n.fib2-light {\n  background-color: #f6f6f6; }\n  .fib2-light .instructions {\n    color: #535353; }\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3301,7 +3290,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _constant = __webpack_require__(0);
 
-var _fib = __webpack_require__(2);
+var _fib = __webpack_require__(8);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
