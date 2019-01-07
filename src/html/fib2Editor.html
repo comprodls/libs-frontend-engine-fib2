@@ -1,0 +1,121 @@
+<!-- Engine Editor Template -->
+<div class="fib-body main-container" id="fib-editor">
+  <main class="main global">
+    <section id="instruction" class="section instruction border-bottom-shadow">
+      <div class="section-box mt-sm">
+        <div class="row">
+          <div class="col-sm-12" id="instructionLabel" rv-hide="isInstructionEmpty">
+            <header>
+              <h4 class="headerlabel font-semibold color-gray">Instruction Text</h4>
+            </header>
+          </div>
+          <div class="col-sm-12">
+            <ul class="list-unstyled nested-list">
+              <li class="text-box colborder mt-sm mb-add-offset"
+                  rv-each-instruction="editorContent.content.instructions" rv-instructionIndex="%instruction%">
+                <div class="vertical-top-align">
+                  <span class="pull-left icon-pencil">
+                    <i class="fa fa-pencil"></i>
+                  </span>
+                  <div rv-content-editable="instruction.text" style="width: 100%;"
+                       data-text='Placeholder Instruction text. Update "Me" with a valid Instruction text for this question.'
+                       class="pr-3pc pb-1pc pl-md border-bottom-dashed" role="button"></div>
+                  <span class="pull-right icon-horizontal-align">
+                    <a class="color-lightgray fa fa-times outline-none" data-toggle="tooltip"
+                       title="Click to remove this option"
+                       rv-on-click="removeInstruction | args instruction %instruction%"></a>
+                  </span>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="row mb-add-offset">
+          <div class="col-sm-12 dropdown">
+            <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="menu1" data-toggle="dropdown">Add
+            </button>
+            <ul class="dropdown-menu" role="menu" id="instructionmenu" aria-labelledby="menu1" style="left: 15px;">
+              <li class="border-bottom-dashed" role="presentation">
+                <a class='dropdown-toggle disabled' role="menuitem" href="#" rv-on-click="addInstruction">Instruction
+                  Text</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="question" class="section question">
+      <!-- Loop over all instructions text -->
+      <div class="section-box">
+        <div class="row">
+          <div class="col-sm-12">
+            <header>
+              <h4 class="headerlabel font-semibold color-gray">Questions</h4>
+            </header>
+          </div>
+          <!-- Loop over all question data text -->
+          <div class="col-sm-12 mt-sm smart-form inline-input">
+            <ol class="list-unstyled nested-list">
+              <li class="text-box vertical-top-align mt-md mb-add-offset" rv-each-qdata="editorContent.content.questiondata">
+                <span class="pull-left icon-pencil">
+                  <i class="fa fa-pencil" aria-hidden="true"></i>
+                </span>
+                <div style="width: 100%;" data-text="Please Enter Question Test here."
+                     class="question-container pl-md border-bottom-dashed" role="button">
+                  <div class="question-data mb-sm" rv-content-editable="qdata.questionText"></div>
+                  <div class="answer-data mb-sm" rv-content="qdata.answerText"></div>
+                  <div class="alert alert-danger question-alert" role="alert" rv-show="qdata.alert" rv-text="qdata.alert"></div>
+                </div>
+                <span class="pull-right icon-horizontal-align">
+                  <a class="color-lightgray fa fa-times outline-none" data-toggle="tooltip"
+                     title="Remove Question" rv-on-click="removeQuestion | args qdata %qdata%"></a>
+                </span>
+              </li>
+            </ol>
+          </div>
+        </div>
+        <div class="row mb-add-offset">
+          <div class="col-sm-12 dropdown">
+            <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-toggle="dropdown"
+                    rv-on-click="addQuestion">Add Question
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="feedback" class="section feedback  border-bottom-shadow">
+      <div class="section-box">
+        <div class="row mt-sm mb-sm">
+          <div class="col-sm-12" rv-hide="editorContent.enableFeedBack">
+            <a class="enable-feedback">
+              <button type="button" class="btn btn-default active-btn border-dashed" rv-on-click="showFeedBack">
+                <h4 class="font-semibold color-gray">Enable Feedback</h4>
+              </button>
+            </a>
+          </div>
+          <div class="col-sm-12 pl-0 pr-0" rv-show="editorContent.enableFeedBack">
+            <div class="col-sm-12 mb-md">
+              <header>
+                <h4 class="headerlabel font-semibold color-gray">Feedback</h4>
+              </header>
+            </div>
+            <ul class="list-unstyled nested-list">
+              <li class="vertical-center-align col-xs-12 col-sm-12 bg-white  mb-add-offset pl-0 pr-0"
+                  rv-each-element="editorContent.feedback.global">
+                <div class="vertical-top-align" style="width: 100%">
+                  <span class="pull-left option-icon-pencil"><i class="fa fa-pencil"></i></span>
+                  <div rv-content-editable="element.customAttribs.value" style="width: 100%;"
+                       data-text='Placeholder Feedback text. Update "Me" with a valid Feedback text for this question.'
+                       class="pr-3pc pb-1pc pl-md border-bottom-dashed" role="button"></div>
+                </div>
+                <span class="pull-right">
+                    <i class="fa fa-2x" rv-addclass='element.customAttribs.icon'></i>
+                </span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>

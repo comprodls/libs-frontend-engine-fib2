@@ -1,15 +1,72 @@
 <!-- Engine Renderer Template -->
-{{#with content}}
-<div class="activity-body fib-body">    
-    <p class="instructions">{{{directions.text}}} </p>
-    <div class="smart-form inline-input" id="test">
-        <ol>
-            <li>    
-                <label class="input">
-                     <span class="question_content">{{{questionData.text}}}</span>
-                </label>
-            </li>
-        </ol>
-    </div>
+<div class="fib2-body" id="fib2-engine">
+  <main rv-addclass='content.theme'>
+    <section class="instructions">
+      <p class="instruction" rv-each-instruction="content.instructions" rv-text-parse="instruction.text"></p>
+    </section>
+
+    <section class="smart-form inline-input">
+      <ol>
+        <li rv-each-question="content.questionData" class="question-li">
+          <span class="invisible pull-left" rv-answer-id="index"></span>
+          <label class="question">
+            <span rv-text-parse="question.questionText"></span>
+          </label>
+        </li>
+      </ol>
+    </section>
+
+    <section class="feedback">
+      <div class="row">
+        <div class="col-sm-12 col-md-12">
+          <div class="alert alert-success align-2-item" role="alert" rv-show="content.feedbackState.correct">
+            <span>
+              <i class="fa fa-2x fa-smile-o vertical-align"></i>
+            </span>
+            <span class="vertical-align pl-sm" rv-text="content.feedback.global.correct"></span>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-12">
+          <div class="alert alert-danger align-2-item" role="alert" rv-show="content.feedbackState.incorrect">
+            <span>
+              <i class="fa fa-2x  fa-smile-o vertical-align"></i>
+            </span>
+            <span class="vertical-align pl-sm" rv-text="content.feedback.global.incorrect"></span>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-12">
+          <div class="alert alert-danger align-2-item" role="alert" rv-show="content.feedbackState.partiallyCorrect">
+            <span>
+              <i class="fa fa-2x fa-meh-o vertical-align"></i>
+            </span>
+            <span class="vertical-align pl-sm" rv-text="content.feedback.global.partiallyCorrect"></span>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-12">
+          <div class="alert alert-danger align-2-item" role="alert" rv-show="content.feedbackState.partiallyIncorrect">
+            <span>
+              <i class="fa fa-2x fa-frown-o vertical-align"></i>
+            </span>
+            <span class="vertical-align pl-sm" rv-text="content.feedback.global.partiallyIncorrect"></span>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-12">
+          <div class="alert alert-warning align-2-item" role="alert" rv-show="content.feedbackState.empty">
+            <span>
+              <i class="fa fa-2x fa-meh-o vertical-align"></i>
+            </span>
+            <span class="vertical-align pl-sm" rv-text="content.feedback.global.empty"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
 </div>
-{{/with}}
