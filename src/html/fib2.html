@@ -5,6 +5,20 @@
       <p class="instruction" rv-each-instruction="content.instructions" rv-text-parse="instruction.text"></p>
     </section>
 
+    <section class="stimulus">
+      <div class="row" rv-each-stimuli="content.stimuli">
+        <div class="col-sm-12 col-md-12 horizontal-center-align" rv-show="stimuli.audio">
+          <audio rv-src="stimuli.src" preload="auto" controls controlsList="nodownload"></audio>
+        </div>
+        <div class="col-sm-12 col-md-12 horizontal-center-align" rv-show="stimuli.video" controlsList="nodownload">
+          <video rv-src="stimuli.src" preload="auto"></video>
+        </div>
+        <div class="col-sm-12 col-md-12 horizontal-center-align" rv-show="stimuli.image">
+          <img rv-src="stimuli.src">
+        </div>
+      </div>
+    </section>
+
     <section class="smart-form inline-input">
       <ol>
         <li rv-each-question="content.questionData" class="question-li">

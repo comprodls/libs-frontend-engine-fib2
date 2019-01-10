@@ -70,7 +70,7 @@ class fib2 {
   [renderView]() {
     fib2ModelAndView = new Fib2ModelAndView(this.fib2Model);
 
-    $(this.elRoot).html(fib2ModelAndView.template);
+    $(this.elRoot).html(Constants.TEMPLATES.FIB2);
     fib2ModelAndView.bindData();
   }
 

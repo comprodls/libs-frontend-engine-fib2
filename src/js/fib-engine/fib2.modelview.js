@@ -67,6 +67,12 @@ class Fib2ModelAndView {
       el.id = 'answer' + value;
     };
 
+    rivets.binders['src'] = function (el, src) {
+      if (src) {
+        el.src = src;
+      }
+    };
+
     return {
       content: this.model
     };
